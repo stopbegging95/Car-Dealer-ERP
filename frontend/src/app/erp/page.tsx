@@ -35,6 +35,8 @@ import {
   FiSearch,
   FiCheck,
   FiX,
+  FiShoppingBag,
+  FiPercent,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import {
@@ -318,29 +320,25 @@ export function ERPConsoleContent({
                 title="Total Cars Listed"
                 value="1,248"
                 change="+12.4% vs last mo"
-                icon={<FaCar className="w-4 h-4" />}
-                sparklinePath="M0 20 Q 20 8, 40 15 T 80 5 T 120 12"
+                icon={<FaCar className="w-5 h-5 text-[#2563EB]" />}
               />
               <KPICard
                 title="Active Users"
                 value="8,432"
                 change="+8.1% vs last mo"
-                icon={<FiUsers className="w-4 h-4" />}
-                sparklinePath="M0 18 Q 30 18, 50 8 T 90 4 T 120 6"
+                icon={<FiUsers className="w-5 h-5 text-[#2563EB]" />}
               />
               <KPICard
                 title="Total Transactions"
                 value="412"
                 change="+14.2% vs last mo"
-                icon={<FiShoppingCart className="w-4 h-4" />}
-                sparklinePath="M0 16 Q 25 4, 55 12 T 85 2 T 120 8"
+                icon={<FiShoppingCart className="w-5 h-5 text-[#2563EB]" />}
               />
               <KPICard
                 title="Total Revenue ($)"
                 value="$48.2M"
                 change="+21.0% vs last mo"
-                icon={<FiDollarSign className="w-4 h-4" />}
-                sparklinePath="M0 22 Q 35 15, 65 6 T 95 2 T 120 4"
+                icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
               />
             </div>
 
@@ -517,9 +515,24 @@ export function ERPConsoleContent({
         {activeModule === "Orders & Sales" && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-              <KPICard title="Open Purchase Orders" value="8 Pending" change="$1.4M Committed" />
-              <KPICard title="Completed Deliveries" value="48 Units" change="This Quarter" />
-              <KPICard title="Average Margin" value="18.4%" change="+$24.5k per car" />
+              <KPICard
+                title="Open Purchase Orders"
+                value="8 Pending"
+                change="$1.4M Committed"
+                icon={<FiShoppingBag className="w-5 h-5 text-[#2563EB]" />}
+              />
+              <KPICard
+                title="Completed Deliveries"
+                value="48 Units"
+                change="This Quarter"
+                icon={<FiTruck className="w-5 h-5 text-[#2563EB]" />}
+              />
+              <KPICard
+                title="Average Margin"
+                value="18.4%"
+                change="+$24.5k per car"
+                icon={<FiPercent className="w-5 h-5 text-[#2563EB]" />}
+              />
             </div>
 
             <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md p-4 sm:p-5 shadow-xs space-y-3">

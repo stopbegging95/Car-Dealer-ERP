@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FiSearch, FiStar, FiTag, FiLayers, FiChevronDown } from "react-icons/fi";
+import { FiSearch, FiStar, FiTag, FiLayers, FiX } from "react-icons/fi";
 import { Dropdown } from "./Dropdown";
 
 export interface FilterState {
@@ -23,6 +23,104 @@ export interface FilterBarProps {
   modelsByMake?: Record<string, string[]>;
   className?: string;
 }
+
+interface StepperInputProps {
+  placeholder: string;
+  value: string;
+  onChange: (val: string) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  defaultIncrementStart?: number;
+}
+
+/**
+ * High-precision numeric input with permanently visible increase & decrease stepper buttons.
+ * Guarantees identical h-10 (40px) height and seamless user interaction without relying on hover-only browser spinners.
+ */
+const StepperNumberInput: React.FC<StepperInputProps> = ({
+  placeholder,
+  value,
+  onChange,
+  min = 0,
+  max,
+  step = 1,
+  defaultIncrementStart,
+}) => {
+  const handleIncrement = () => {
+    let nextVal: number;
+    if (!value && defaultIncrementStart !== undefined) {
+      nextVal = defaultIncrementStart;
+    } else {
+      const current = value ? parseInt(value, 10) : min;
+      nextVal = current + step;
+    }
+    if (max !== undefined && nextVal > max) nextVal = max;
+    onChange(String(nextVal));
+  };
+
+  const handleDecrement = () => {
+    let nextVal: number;
+    if (!value && defaultIncrementStart !== undefined) {
+      nextVal = defaultIncrementStart;
+    } else {
+      const current = value ? parseInt(value, 10) : min;
+      nextVal = Math.max(min, current - step);
+    }
+    onChange(String(nextVal));
+  };
+
+  return (
+    <div className="relative flex items-center w-full h-10 bg-[#FFFFFF] border border-[#CBD5E1] rounded-md shadow-xs focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all overflow-hidden">
+      <input
+        type="number"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full h-full pl-2.5 pr-7 bg-transparent text-[#0F172A] placeholder-[#64748B] text-xs sm:text-sm font-semibold outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      />
+      {/* Permanently visible increase and decrease stepper buttons */}
+      <div className="absolute right-0 inset-y-0 w-6 flex flex-col border-l border-[#CBD5E1] bg-[#F8FAFC]">
+        <button
+          type="button"
+          onClick={handleIncrement}
+          aria-label={`Increase ${placeholder}`}
+          className="flex-1 flex items-center justify-center hover:bg-[#EFF6FF] text-[#2563EB] hover:text-[#1D4ED8] transition-colors border-b border-[#E2E8F0] cursor-pointer"
+        >
+          <svg
+            className="w-2.5 h-2.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={handleDecrement}
+          aria-label={`Decrease ${placeholder}`}
+          className="flex-1 flex items-center justify-center hover:bg-[#EFF6FF] text-[#2563EB] hover:text-[#1D4ED8] transition-colors cursor-pointer"
+        >
+          <svg
+            className="w-2.5 h-2.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export const FilterBar: React.FC<FilterBarProps> = ({
   onSearch,
@@ -46,9 +144,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     maxYear: "",
     minPrice: "",
     maxPrice: "",
+    category: "",
+    fuel: "",
+    transmission: "",
   });
-
-  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const availableModels = filters.make && modelsByMake[filters.make]
     ? modelsByMake[filters.make]
@@ -68,6 +167,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       maxYear: "",
       minPrice: "",
       maxPrice: "",
+      category: "",
+      fuel: "",
+      transmission: "",
     };
     setFilters(resetState);
     onSearch(resetState);
@@ -79,17 +181,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     >
       {/* Transparent Overlay Background Stack as in Banner Slider */}
       <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none -z-10 bg-[#0F172A]/75 backdrop-blur-xl border border-white/15 shadow-2xl">
-        {/* Directional Transparent Atmospheric Gradient Overlays (Banner Slider Style) */}
         <div className="absolute inset-0 bg-[#0F172A]/45" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/60 to-transparent sm:w-4/5" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-[#0F172A]/30 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/40 via-transparent to-[#0F172A]/60" />
-        {/* Subtle Cobalt Accent Ambient Sheen (matches banner) */}
         <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#2563EB]/15 blur-3xl pointer-events-none" />
       </div>
 
       {/* Top Type Switcher Tabs (Active = Black, Non-active = White per user specification) */}
-      <div className="flex items-center gap-2 mb-2.5 overflow-x-auto sm:overflow-visible pb-1">
+      <div className="flex items-center gap-2 mb-3 overflow-x-auto sm:overflow-visible pb-1">
         <button
           type="button"
           onClick={() => setFilters({ ...filters, type: "all" })}
@@ -130,14 +230,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </button>
       </div>
 
-      {/* Main Filter Inputs Grid */}
-      <form onSubmit={handleSearch} className="space-y-2.5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+      {/* Main Filter Inputs: All Dropdowns & Range Inputs Visible By Default (No Toggle Button) */}
+      <form onSubmit={handleSearch} className="space-y-3">
+        {/* Row 1: All 5 Primary Dropdowns Visible with Identical h-10 Height */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
           {/* Make Dropdown */}
           <Dropdown
             label="Make"
-            labelClassName="text-xs sm:text-sm font-bold text-[#FFFFFF]"
-            placeholder="Select Make"
+            labelClassName="h-5 flex items-center text-xs sm:text-sm font-bold text-[#FFFFFF]"
+            placeholder="All Makes"
             value={filters.make}
             onChange={(val) => setFilters({ ...filters, make: String(val), model: "" })}
             options={[
@@ -149,8 +250,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           {/* Model Dropdown */}
           <Dropdown
             label="Model"
-            labelClassName="text-xs sm:text-sm font-bold text-[#FFFFFF]"
-            placeholder={filters.make ? "Select Model" : "Select Make first"}
+            labelClassName="h-5 flex items-center text-xs sm:text-sm font-bold text-[#FFFFFF]"
+            placeholder={filters.make ? "All Models" : "Select Make first"}
             disabled={!filters.make}
             value={filters.model}
             onChange={(val) => setFilters({ ...filters, model: String(val) })}
@@ -160,143 +261,135 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             ]}
           />
 
-          {/* Year Range */}
+          {/* Vehicle Category Dropdown */}
+          <Dropdown
+            label="Category"
+            labelClassName="h-5 flex items-center text-xs sm:text-sm font-bold text-[#FFFFFF]"
+            placeholder="All Categories"
+            value={filters.category || ""}
+            onChange={(val) => setFilters({ ...filters, category: String(val) })}
+            options={[
+              { label: "All Categories", value: "" },
+              { label: "Executive Class", value: "Executive Class" },
+              { label: "Sport & Performance", value: "Sport & Performance" },
+              { label: "Premium SUVs", value: "Premium SUVs" },
+              { label: "Electric Vehicles", value: "Electric Vehicles" },
+              { label: "Power Bikes", value: "Power Bikes" },
+              { label: "Executive Buses", value: "Executive Buses" },
+            ]}
+          />
+
+          {/* Fuel Type Dropdown */}
+          <Dropdown
+            label="Fuel Type"
+            labelClassName="h-5 flex items-center text-xs sm:text-sm font-bold text-[#FFFFFF]"
+            placeholder="Any Fuel Type"
+            value={filters.fuel || ""}
+            onChange={(val) => setFilters({ ...filters, fuel: String(val) })}
+            options={[
+              { label: "Any Fuel", value: "" },
+              { label: "Petrol", value: "Petrol" },
+              { label: "Diesel", value: "Diesel" },
+              { label: "Electric", value: "Electric" },
+              { label: "Hybrid", value: "Hybrid" },
+            ]}
+          />
+
+          {/* Transmission Dropdown */}
+          <Dropdown
+            label="Transmission"
+            labelClassName="h-5 flex items-center text-xs sm:text-sm font-bold text-[#FFFFFF]"
+            placeholder="Any Transmission"
+            value={filters.transmission || ""}
+            onChange={(val) => setFilters({ ...filters, transmission: String(val) })}
+            options={[
+              { label: "Any Transmission", value: "" },
+              { label: "Automatic", value: "Automatic" },
+              { label: "Manual", value: "Manual" },
+              { label: "Dual-Clutch", value: "Dual-Clutch" },
+            ]}
+          />
+        </div>
+
+        {/* Row 2: Range Inputs with Visible Steppers + Action Buttons (Exact Same h-10 Height) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+          {/* Year Range with Always-Visible Increase/Decrease Steppers */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs sm:text-sm font-bold text-[#FFFFFF]">
+            <label className="h-5 flex items-center text-xs sm:text-sm font-bold text-[#FFFFFF]">
               Year Range
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <input
-                type="number"
+              <StepperNumberInput
                 placeholder="Min Year"
                 value={filters.minYear}
-                onChange={(e) => setFilters({ ...filters, minYear: e.target.value })}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs py-1.5 sm:py-2 px-2.5 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
+                onChange={(val) => setFilters({ ...filters, minYear: val })}
+                min={2010}
+                max={2026}
+                step={1}
+                defaultIncrementStart={2020}
               />
-              <input
-                type="number"
+              <StepperNumberInput
                 placeholder="Max Year"
                 value={filters.maxYear}
-                onChange={(e) => setFilters({ ...filters, maxYear: e.target.value })}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs py-1.5 sm:py-2 px-2.5 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
+                onChange={(val) => setFilters({ ...filters, maxYear: val })}
+                min={2010}
+                max={2026}
+                step={1}
+                defaultIncrementStart={2026}
               />
             </div>
           </div>
 
-          {/* Price Range */}
+          {/* Price Range with Always-Visible Increase/Decrease Steppers */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs sm:text-sm font-bold text-[#FFFFFF]">
+            <label className="h-5 flex items-center text-xs sm:text-sm font-bold text-[#FFFFFF]">
               Price Range ($)
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <input
-                type="number"
+              <StepperNumberInput
                 placeholder="Min Price"
                 value={filters.minPrice}
-                onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs py-1.5 sm:py-2 px-2.5 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
+                onChange={(val) => setFilters({ ...filters, minPrice: val })}
+                min={0}
+                step={10000}
+                defaultIncrementStart={50000}
               />
-              <input
-                type="number"
+              <StepperNumberInput
                 placeholder="Max Price"
                 value={filters.maxPrice}
-                onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs py-1.5 sm:py-2 px-2.5 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
+                onChange={(val) => setFilters({ ...filters, maxPrice: val })}
+                min={0}
+                step={10000}
+                defaultIncrementStart={250000}
               />
             </div>
           </div>
 
-          {/* Search Button */}
+          {/* Clear Filters Button (Matching h-10 Height) */}
           <div>
+            <div className="h-5" />
+            <button
+              type="button"
+              onClick={handleReset}
+              className="w-full h-10 flex items-center justify-center gap-1.5 px-3 rounded-md text-xs sm:text-sm font-bold bg-[#FFFFFF] hover:bg-[#F1F5F9] text-[#0F172A] border border-white/20 transition-all shadow-xs cursor-pointer select-none"
+            >
+              <FiX className="w-4 h-4 text-[#64748B]" />
+              <span>Clear Filters</span>
+            </button>
+          </div>
+
+          {/* Search Vehicles Button (Matching h-10 Height) */}
+          <div>
+            <div className="h-5" />
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 py-1.5 sm:py-2 px-3 rounded-md text-xs sm:text-sm font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-[#FFFFFF] transition-all shadow-lg shadow-[#2563EB]/25 border border-[#2563EB] cursor-pointer"
+              className="w-full h-10 flex items-center justify-center gap-2 px-3 rounded-md text-xs sm:text-sm font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-[#FFFFFF] transition-all shadow-lg shadow-[#2563EB]/25 border border-[#2563EB] cursor-pointer select-none"
             >
               <FiSearch className="w-4 h-4 text-[#FFFFFF]" />
               <span>Search Vehicles</span>
             </button>
           </div>
         </div>
-
-        {/* Collapsible Advanced Filters Row */}
-        <div className="flex items-center justify-between pt-2 border-t border-white/10">
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all border select-none cursor-pointer ${
-              showAdvanced
-                ? "bg-[#000000] text-[#FFFFFF] border-2 border-white/20 shadow-md"
-                : "bg-[#FFFFFF] text-[#0F172A] border border-white/20 hover:bg-[#F1F5F9] shadow-xs"
-            }`}
-          >
-            <span>{showAdvanced ? "Hide Advanced Filters" : "More Filters (Fuel, Transmission, Category)"}</span>
-            <FiChevronDown
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                showAdvanced ? "rotate-180 text-[#FFFFFF]" : "text-[#0F172A]"
-              }`}
-            />
-          </button>
-
-          {(filters.make || filters.model || filters.minYear || filters.minPrice || filters.category || filters.fuel || filters.transmission) && (
-            <button
-              type="button"
-              onClick={handleReset}
-              className="px-3 py-1.5 rounded-md text-xs font-bold bg-[#FFFFFF] text-[#0F172A] hover:bg-[#F1F5F9] border border-white/20 transition-all select-none cursor-pointer shadow-xs"
-            >
-              Clear All Filters
-            </button>
-          )}
-        </div>
-
-        {showAdvanced && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-white/10 animate-in fade-in duration-200">
-            <Dropdown
-              label="Vehicle Category"
-              labelClassName="text-xs sm:text-sm font-bold text-[#FFFFFF]"
-              placeholder="All Categories"
-              value={filters.category || ""}
-              onChange={(val) => setFilters({ ...filters, category: String(val) })}
-              options={[
-                { label: "All Categories", value: "" },
-                { label: "Executive Class", value: "Executive Class" },
-                { label: "Sport & Performance", value: "Sport & Performance" },
-                { label: "Premium SUVs", value: "Premium SUVs" },
-                { label: "Electric Vehicles", value: "Electric Vehicles" },
-                { label: "Power Bikes", value: "Power Bikes" },
-                { label: "Executive Buses", value: "Executive Buses" },
-              ]}
-            />
-
-            <Dropdown
-              label="Fuel Type"
-              labelClassName="text-xs sm:text-sm font-bold text-[#FFFFFF]"
-              placeholder="Any Fuel Type"
-              value={filters.fuel || ""}
-              onChange={(val) => setFilters({ ...filters, fuel: String(val) })}
-              options={[
-                { label: "Any Fuel", value: "" },
-                { label: "Petrol", value: "Petrol" },
-                { label: "Diesel", value: "Diesel" },
-                { label: "Electric", value: "Electric" },
-                { label: "Hybrid", value: "Hybrid" },
-              ]}
-            />
-
-            <Dropdown
-              label="Transmission"
-              labelClassName="text-xs sm:text-sm font-bold text-[#FFFFFF]"
-              placeholder="Any Transmission"
-              value={filters.transmission || ""}
-              onChange={(val) => setFilters({ ...filters, transmission: String(val) })}
-              options={[
-                { label: "Any Transmission", value: "" },
-                { label: "Automatic", value: "Automatic" },
-                { label: "Manual", value: "Manual" },
-                { label: "Dual-Clutch", value: "Dual-Clutch" },
-              ]}
-            />
-          </div>
-        )}
       </form>
     </div>
   );

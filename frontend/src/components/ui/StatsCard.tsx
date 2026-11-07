@@ -2,6 +2,21 @@
 
 import React from "react";
 import { Card } from "./Card";
+import {
+  FiDollarSign,
+  FiShoppingBag,
+  FiTruck,
+  FiUsers,
+  FiTool,
+  FiBox,
+  FiCheckSquare,
+  FiClock,
+  FiShield,
+  FiLayers,
+  FiPercent,
+  FiFileText,
+} from "react-icons/fi";
+import { FaCar } from "react-icons/fa6";
 
 export interface StatsCardProps {
   title: string;
@@ -18,24 +33,135 @@ export interface StatsCardProps {
 }
 
 /**
+ * Intelligent fallback resolver that matches an icon demonstrating what the card details are talking about.
+ */
+function resolveDetailIcon(title: string): React.ReactNode {
+  const lower = title.toLowerCase();
+  if (lower.includes("margin") || lower.includes("percent") || lower.includes("rate") || lower.includes("pass")) {
+    return <FiPercent className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("revenue") ||
+    lower.includes("valuation") ||
+    lower.includes("dollar") ||
+    lower.includes("cost") ||
+    lower.includes("portfolio") ||
+    lower.includes("receivable") ||
+    lower.includes("equity")
+  ) {
+    return <FiDollarSign className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("order") ||
+    lower.includes("purchase") ||
+    lower.includes("sales") ||
+    lower.includes("transaction") ||
+    lower.includes("pipeline") ||
+    lower.includes("contract")
+  ) {
+    return <FiShoppingBag className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("deliver") ||
+    lower.includes("transit") ||
+    lower.includes("vessel") ||
+    lower.includes("port") ||
+    lower.includes("customs") ||
+    lower.includes("discharge")
+  ) {
+    return <FiTruck className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("car") ||
+    lower.includes("vehicle") ||
+    lower.includes("fleet") ||
+    lower.includes("garage") ||
+    lower.includes("stock")
+  ) {
+    return <FaCar className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("user") ||
+    lower.includes("client") ||
+    lower.includes("customer") ||
+    lower.includes("csat") ||
+    lower.includes("commission") ||
+    lower.includes("rep") ||
+    lower.includes("team")
+  ) {
+    return <FiUsers className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("workshop") ||
+    lower.includes("service") ||
+    lower.includes("bay") ||
+    lower.includes("repair") ||
+    lower.includes("job")
+  ) {
+    return <FiTool className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (lower.includes("part") || lower.includes("sku") || lower.includes("moving")) {
+    return <FiBox className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("pdi") ||
+    lower.includes("recon") ||
+    lower.includes("detailing") ||
+    lower.includes("inspection") ||
+    lower.includes("checklist")
+  ) {
+    return <FiCheckSquare className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("mfa") ||
+    lower.includes("security") ||
+    lower.includes("shield") ||
+    lower.includes("integrity") ||
+    lower.includes("insurance") ||
+    lower.includes("policy") ||
+    lower.includes("lock")
+  ) {
+    return <FiShield className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("session") ||
+    lower.includes("log") ||
+    lower.includes("audit") ||
+    lower.includes("layer")
+  ) {
+    return <FiLayers className="w-5 h-5 text-[#2563EB]" />;
+  }
+  if (
+    lower.includes("hour") ||
+    lower.includes("time") ||
+    lower.includes("cycle") ||
+    lower.includes("day") ||
+    lower.includes("schedule") ||
+    lower.includes("pending")
+  ) {
+    return <FiClock className="w-5 h-5 text-[#2563EB]" />;
+  }
+  return <FiFileText className="w-5 h-5 text-[#2563EB]" />;
+}
+
+/**
  * Reusable high-density Statistics & KPI Card component for dealership and customer dashboards.
  * Strictly adheres to luxury styling tokens: reduced radius (rounded-md), crisp typography,
- * optional dynamic SVG trend sparklines, and icon pill container.
+ * and a prominent thematic icon container that directly communicates the metric's subject matter.
+ * Trend line/icon has been replaced with the dedicated thematic icon.
  */
 export const StatsCard: React.FC<StatsCardProps> = ({
   title,
   value,
   change,
   isPositive = true,
-  trend,
   icon,
   badge,
   subtitle,
-  sparklinePath = "M0 18 Q 20 5, 40 14 T 80 4 T 120 10",
   onClick,
   className = "",
 }) => {
-  const isUp = trend ? trend === "up" : isPositive;
+  const displayIcon = icon || resolveDetailIcon(title);
 
   return (
     <Card
@@ -46,40 +172,34 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       {/* Subtle Blue ambient glow on top right */}
       <div className="-top-12 -right-12 absolute bg-[#2563EB]/10 blur-2xl rounded-full w-28 h-28 pointer-events-none" />
 
-      {/* Top Row: Title + Icon / Badge */}
-      <div className="flex justify-between items-center mb-2.5 sm:mb-3">
-        <span className="pr-2 font-semibold text-[#64748B] text-xs sm:text-sm truncate">
-          {title}
-        </span>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {badge && (
-            <span className="bg-[#EFF6FF] px-1.5 py-0.5 border border-[#BFDBFE] rounded font-mono font-bold text-[#1D4ED8] text-[10px]">
-              {badge}
+      <div className="flex items-center justify-between gap-3">
+        {/* Metric Information */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <span className="font-semibold text-[#64748B] text-xs sm:text-sm truncate">
+              {title}
             </span>
-          )}
-          {icon && (
-            <div className="flex justify-center items-center bg-[#EFF6FF] shadow-xs border border-[#BFDBFE] rounded-md w-8 h-8 shrink-0">
-              <span className="text-[#2563EB] text-sm">{icon}</span>
-            </div>
-          )}
-        </div>
-      </div>
+            {badge && (
+              <span className="bg-[#EFF6FF] px-1.5 py-0.5 border border-[#BFDBFE] rounded font-mono font-bold text-[#1D4ED8] text-[10px]">
+                {badge}
+              </span>
+            )}
+          </div>
 
-      {/* Main Metric Row: Value + Sparkline/Trend */}
-      <div className="flex justify-between items-end gap-2">
-        <div className="min-w-0">
           <div className="font-extrabold text-[#0F172A] text-xl sm:text-2xl md:text-3xl truncate tracking-tight">
             {value}
           </div>
+
           {change && (
             <div
               className={`inline-flex items-center gap-1 mt-1 text-[11px] sm:text-xs font-bold ${
-                isUp ? "text-[#2563EB]" : "text-[#64748B]"
+                isPositive ? "text-[#2563EB]" : "text-[#64748B]"
               }`}
             >
               <span>{change}</span>
             </div>
           )}
+
           {subtitle && (
             <div className="mt-0.5 text-[#94A3B8] text-[10px] truncate">
               {subtitle}
@@ -87,20 +207,10 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           )}
         </div>
 
-        {/* Dynamic Blue Sparkline Curve */}
-        {sparklinePath && (
-          <div className="pb-1 shrink-0">
-            <svg className="w-16 sm:w-20 md:w-24 h-6 sm:h-7" viewBox="0 0 120 24" fill="none">
-              <path
-                d={sparklinePath}
-                stroke="#2563EB"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-        )}
+        {/* Thematic Icon demonstrating what the card details are talking about (Replacing the trend icon) */}
+        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] text-xl shrink-0 shadow-xs">
+          {displayIcon}
+        </div>
       </div>
     </Card>
   );
@@ -109,4 +219,3 @@ export const StatsCard: React.FC<StatsCardProps> = ({
 // KPICard alias for backward compatibility across all existing dashboard imports
 export const KPICard = StatsCard;
 export type KPICardProps = StatsCardProps;
-

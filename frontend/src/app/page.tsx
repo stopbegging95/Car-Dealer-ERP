@@ -12,9 +12,6 @@ import {
   FiChevronRight,
   FiArrowRight,
   FiCompass,
-  FiPlay,
-  FiMaximize2,
-  FiVideo,
   FiCheck,
   FiX,
 } from "react-icons/fi";
@@ -100,37 +97,20 @@ export default function App() {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const brandsRef = useRef<HTMLDivElement>(null);
 
-  // Banner Slider State (4 slides: 0 = Hero text + image bg, 1 = Cinematic Video, 2 = Image showcase, 3 = Editorial text)
+  // Banner Slider State (3 curated luxury slides: 0 = Premier Fleet, 1 = Exotic Supercar, 2 = Editorial Prestige)
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Synchronize video element playback so it continuously autoplays seamlessly
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.defaultMuted = true;
-      videoRef.current.muted = true;
-      if (currentSlide === 1) {
-        videoRef.current.play().catch(() => {
-          // Handled silently for browser policies
-        });
-      } else {
-        videoRef.current.pause();
-      }
-    }
-  }, [currentSlide]);
 
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 4);
+      setCurrentSlide((prev) => (prev + 1) % 3);
     }, 6000);
     return () => clearInterval(timer);
   }, [isPaused]);
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % 4);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + 4) % 4);
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % 3);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + 3) % 3);
 
   const scrollBrands = (direction: "left" | "right") => {
     if (brandsRef.current) {
@@ -152,7 +132,7 @@ export default function App() {
     el?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Handle Search on Public FilterBar
+  // Handle Search on Public FilterBar (supports All Makes, Models, Categories, Fuel, Transmission, Years, and Prices)
   const handleFilterSearch = (filters: FilterState) => {
     let result = [...VEHICLES];
     if (filters.make) {
@@ -160,6 +140,15 @@ export default function App() {
     }
     if (filters.model) {
       result = result.filter((v) => v.model.toLowerCase().includes(filters.model.toLowerCase()));
+    }
+    if (filters.category) {
+      result = result.filter((v) => v.category.toLowerCase() === filters.category!.toLowerCase());
+    }
+    if (filters.fuel) {
+      result = result.filter((v) => v.fuel.toLowerCase() === filters.fuel!.toLowerCase());
+    }
+    if (filters.transmission) {
+      result = result.filter((v) => v.transmission.toLowerCase().includes(filters.transmission!.toLowerCase()));
     }
     if (filters.minYear) {
       result = result.filter((v) => v.year >= parseInt(filters.minYear, 10));
@@ -188,14 +177,14 @@ export default function App() {
 
       {/* 2. HERO SLIDER BANNER SECTION */}
       <main className="flex-1 flex flex-col">
-        <section className="relative overflow-visible py-4 sm:py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#FFFFFF] via-[#F8FAFC] to-[#F1F5F9] border-b border-[#E2E8F0]">
+        <section className="relative overflow-visible pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#FFFFFF] via-[#F8FAFC] to-[#F1F5F9] border-b border-[#E2E8F0]">
           {/* Main Slider Container */}
           <div
             className="max-w-7xl mx-auto w-full relative h-[420px] sm:h-[480px] md:h-[520px] lg:h-[540px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-[#CBD5E1] bg-[#0F172A] group"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            {/* SLIDE 1: Image Background with Text Stacked on Top */}
+            {/* SLIDE 1 (Index 0): Premier Luxury Fleet with Stacked Text */}
             <div
               className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 currentSlide === 0
@@ -248,7 +237,7 @@ export default function App() {
                   Explore our prestigious collection of luxury and executive vehicles. Hand-selected, fully certified, and delivered with VIP concierge excellence.
                 </p>
 
-                {/* Dual CTAs & Video Action */}
+                {/* Direct Action Buttons */}
                 <div
                   className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
                     currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -274,15 +263,6 @@ export default function App() {
                   >
                     Book a Test Drive
                   </Button>
-
-                  <button
-                    type="button"
-                    onClick={() => setCurrentSlide(1)}
-                    className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-md bg-[#0F172A]/75 hover:bg-[#0F172A] border border-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all shadow-md cursor-pointer"
-                  >
-                    <FiPlay className="w-4 h-4 text-[#60A5FA]" />
-                    <span>Watch Film</span>
-                  </button>
                 </div>
 
                 {/* Sub-badge perks */}
@@ -304,7 +284,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* SLIDE 2 (Index 1): High-Definition Automotive Video Background with Animated Text Slide */}
+            {/* SLIDE 2 (Index 1): Exotic Supercar Showcase */}
             <div
               className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 currentSlide === 1
@@ -312,42 +292,28 @@ export default function App() {
                   : "opacity-0 z-0 pointer-events-none"
               }`}
             >
-              {/* Background Video - Autoplays automatically without play button */}
-              <video
-                ref={videoRef}
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
-                className="w-full h-full object-cover object-center"
-              >
-                <source
-                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
-                  type="video/mp4"
-                />
-                <source
-                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
-                  type="video/mp4"
-                />
-              </video>
-
-              {/* Transparent Dark Gradient Overlays for optimal text legibility */}
+              <Image
+                src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1920&q=80"
+                alt="Premier Exotic Supercar Showcase"
+                fill
+                unoptimized
+                className="object-cover object-center"
+              />
+              {/* Color Layer Stack on top */}
               <div className="absolute inset-0 bg-[#0F172A]/45" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/75 via-[#0F172A]/40 to-transparent sm:w-4/5 md:w-3/4" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
 
-              {/* Stacked Animated Text Content Layer (matches Text & Image Slide layout with animation) */}
+              {/* Supercar Overlay Text */}
               <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
                 <div
                   className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
                     currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                   }`}
                 >
-                  <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-ping" />
-                  <FiVideo className="w-3.5 h-3.5 text-[#60A5FA]" />
+                  <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-pulse" />
                   <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
-                    LIVE 4K AUTOMOTIVE MOTION
+                    EXOTIC & SUPERCAR FLEET
                   </span>
                 </div>
 
@@ -356,9 +322,9 @@ export default function App() {
                     currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                   }`}
                 >
-                  POWER, PRECISION & <br />
+                  UNCOMPROMISED <br />
                   <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
-                    PURITY IN MOTION
+                    PERFORMANCE
                   </span>
                 </h2>
 
@@ -367,10 +333,9 @@ export default function App() {
                     currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                   }`}
                 >
-                  Experience our premier high-performance and executive vehicle collection undergoing dynamic track trials and VIP white-glove delivery verification.
+                  Commanding presence and track-bred engineering. Experience the apex of automotive power and design in our climate-controlled showrooms.
                 </p>
 
-                {/* Dual CTAs & Fullscreen Cinema Action */}
                 <div
                   className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
                     currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -388,60 +353,22 @@ export default function App() {
                     Explore Fleet
                   </Button>
 
-                  <button
-                    type="button"
-                    onClick={() => setIsVideoModalOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-md bg-[#0F172A]/80 hover:bg-[#0F172A] border border-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all shadow-md cursor-pointer"
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    onClick={() => openTestDriveModal()}
+                    leftIcon={<FiCalendar className="w-4 h-4 text-[#2563EB]" />}
                   >
-                    <FiMaximize2 className="w-3.5 h-3.5 text-[#38BDF8]" />
-                    <span>Watch Fullscreen Cinema</span>
-                  </button>
-                </div>
-
-                {/* Sub-badge perks */}
-                <div
-                  className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
-                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  <span className="flex items-center gap-1.5">
-                    <FiShield className="w-3.5 h-3.5 text-[#60A5FA]" />
-                    4K Ultra HD Track Footage
-                  </span>
-                  <span>&bull;</span>
-                  <span className="flex items-center gap-1.5">
-                    <FiClock className="w-3.5 h-3.5 text-[#60A5FA]" />
-                    Live Road Performance
-                  </span>
+                    Book Private Viewing
+                  </Button>
                 </div>
               </div>
             </div>
 
-            {/* SLIDE 3 (Index 2): Only Image with Color Layer Stack on Top */}
+            {/* SLIDE 3 (Index 2): Editorial Statement */}
             <div
               className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 currentSlide === 2
-                  ? "opacity-100 z-10 pointer-events-auto"
-                  : "opacity-0 z-0 pointer-events-none"
-              }`}
-            >
-              <Image
-                src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1920&q=80"
-                alt="Premier Exotic Supercar Showcase"
-                fill
-                unoptimized
-                className="object-cover object-center"
-              />
-              {/* Color Layer Stack on top (softens excessive sharpness with #0F172A atmospheric layers as in Slide 1) */}
-              <div className="absolute inset-0 bg-[#0F172A]/45" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/75 via-[#0F172A]/40 to-transparent sm:w-4/5 md:w-3/4" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
-            </div>
-
-            {/* SLIDE 4 (Index 3): Only Text */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                currentSlide === 3
                   ? "opacity-100 z-10 pointer-events-auto"
                   : "opacity-0 z-0 pointer-events-none"
               }`}
@@ -454,7 +381,7 @@ export default function App() {
                 <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-5">
                   <div
                     className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/20 border border-[#38BDF8]/30 w-fit transition-all duration-700 ease-out transform ${
-                      currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      currentSlide === 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >
                     <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#38BDF8]">
@@ -464,7 +391,7 @@ export default function App() {
 
                   <h2
                     className={`text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight text-white transition-all duration-700 delay-150 ease-out transform ${
-                      currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      currentSlide === 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >
                     CRAFTED FOR THE EXCEPTIONAL. <br />
@@ -475,7 +402,7 @@ export default function App() {
 
                   <p
                     className={`text-xs sm:text-sm md:text-base text-[#94A3B8] leading-relaxed max-w-2xl transition-all duration-700 delay-300 ease-out transform ${
-                      currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      currentSlide === 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >
                     Premier Auto Motors redefines luxury vehicle ownership with verified provenance, bespoke international sourcing, zero-demurrage terminal logistics, and private showroom viewings across Lagos and Abuja.
@@ -484,7 +411,7 @@ export default function App() {
                   {/* 4 Feature Value Highlights */}
                   <div
                     className={`grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2 transition-all duration-700 delay-450 ease-out transform ${
-                      currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      currentSlide === 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >
                     <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
@@ -540,7 +467,7 @@ export default function App() {
 
             {/* Slide Pagination Indicators */}
             <div className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5 bg-[#0F172A]/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15">
-              {[0, 1, 2, 3].map((idx) => (
+              {[0, 1, 2].map((idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentSlide(idx)}
@@ -884,59 +811,6 @@ export default function App() {
                 <option value="Home Delivery">VIP Private Concierge Residence Dispatch</option>
               </select>
             </div>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Cinema Video Modal */}
-      <Modal
-        isOpen={isVideoModalOpen}
-        onClose={() => setIsVideoModalOpen(false)}
-        title={
-          <div className="flex items-center gap-2">
-            <FiVideo className="w-5 h-5 text-[#2563EB]" />
-            <span>Cinematic Fleet Performance Film</span>
-          </div>
-        }
-        description="Exclusive 4K dynamic motion footage of our premier high-performance exotic vehicles."
-        size="2xl"
-        footer={
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsVideoModalOpen(false)}
-            leftIcon={<FiX className="w-3.5 h-3.5 text-white" />}
-          >
-            Close Theater
-          </Button>
-        }
-      >
-        <div className="space-y-3">
-          <div className="relative aspect-video w-full rounded-md overflow-hidden bg-black shadow-2xl border border-white/10">
-            <video
-              autoPlay
-              controls
-              playsInline
-              preload="auto"
-              className="w-full h-full object-cover"
-            >
-              <source
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
-                type="video/mp4"
-              />
-              <source
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#64748B] pt-1">
-            <p className="flex items-center gap-1.5 font-medium">
-              <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
-              Official Premier Auto Motors track validation & logistics film.
-            </p>
-            <span className="font-mono text-[11px] text-[#2563EB] font-bold">1080p 60FPS MASTER</span>
           </div>
         </div>
       </Modal>

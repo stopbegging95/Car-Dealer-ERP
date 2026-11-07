@@ -13,6 +13,7 @@ export interface DropdownOption {
 export interface DropdownProps {
   label?: string;
   labelClassName?: string;
+  triggerClassName?: string;
   placeholder?: string;
   options: DropdownOption[];
   value?: string | number;
@@ -28,6 +29,7 @@ export interface DropdownProps {
 export const Dropdown: React.FC<DropdownProps> = ({
   label,
   labelClassName = "",
+  triggerClassName = "",
   placeholder = "Select an option",
   options,
   value,
@@ -88,7 +90,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between rounded-md bg-[#FFFFFF] text-[#0F172A] border transition-all duration-200 outline-none
-          text-xs sm:text-sm px-3 py-1.5 sm:py-2 text-left shadow-xs
+          text-xs sm:text-sm px-3 h-10 text-left shadow-xs ${triggerClassName}
           ${
             error
               ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
