@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+:root {
+  /* Strictly 5-Color Automotive Theme Palette: 
+     1. Black (#000000) 
+     2. Dark Slate (#0F172A) 
+     3. White (#FFFFFF) 
+     4. Cobalt Blue (#2563EB) 
+     5. Canvas Slate (#F8FAFC) 
+  */
+  --color-canvas: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-dark: #0F172A;
+  --color-surface-card: #FFFFFF;
+  --color-light: #F8FAFC;
+  --color-blue: #2563EB;
+  --color-blue-deep: #1D4ED8;
+  --color-blue-light: #EFF6FF;
+
+  /* Semantic Theme Mappings */
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --border: #E2E8F0;
+  --accent: #2563EB;
+  --accent-secondary: #1D4ED8;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-canvas: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-dark: #0F172A;
+  --color-light: #F8FAFC;
+  --color-blue: #2563EB;
+  --color-blue-deep: #1D4ED8;
+  --color-blue-light: #EFF6FF;
+
+  --color-primary-dark: #0F172A;
+  --color-primary-light: #F8FAFC;
+  --color-accent-blue: #2563EB;
+  --color-accent-deep: #1D4ED8;
+}
+
+body {
+  background-color: #F8FAFC;
+  background-image: 
+    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(37, 99, 235, 0.08), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(15, 23, 42, 0.04), transparent 70%);
+  color: #0F172A;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+/* Modern Automotive Theme Utilities */
+.luxury-gradient-blue {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+}
+
+.blue-gradient-text {
+  background: linear-gradient(135deg, #0F172A 0%, #1E40AF 60%, #2563EB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.luxury-card-surface {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+}
+
+.luxury-card-surface:hover {
+  border-color: #2563EB;
+  box-shadow: 0 12px 30px -4px rgba(37, 99, 235, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+}
+
+.luxury-glass-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+}
+
+.blue-glow-button {
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.28);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.blue-glow-button:hover {
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.45);
+  transform: translateY(-1px);
+}
+
+/* Custom scrollbar optimized for 1366x768 screens */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.35);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563EB;
+}
+
+/* Text selection in Cobalt Blue */
+::selection {
+  background-color: #2563EB;
+  color: #FFFFFF;
+}

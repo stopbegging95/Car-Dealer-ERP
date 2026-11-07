@@ -1,0 +1,584 @@
+================================================================================
+AUTOMOTIVE DEALERSHIP ERP & BUSINESS PLATFORM
+FRONTEND DESIGN & DEVELOPMENT STEP-BY-STEP WORKFLOW SPECIFICATION
+================================================================================
+Based on: Automotive_Dealership_ERP_Requirements.pdf
+Project: CarDealsCMS / LuxAuto Automotive Enterprise Platform
+Color Palette: Strictly 3 Luxury Colors: #101820 | #F5F5F5 | #C5A059 (Red and #343A40 removed per user requests)
+Target Tech Stack: Next.js (App Router), TypeScript, Tailwind CSS v4, Lucide/Heroicons
+Output File: FRONTEND_DESIGN_WORKFLOW.txt
+================================================================================
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. EXECUTIVE PLATFORM ARCHITECTURE & SCOPE
+2. COLOR SYSTEM & DESIGN TOKENS SPECIFICATION
+3. OVERALL STEP-BY-STEP FRONTEND WORKFLOW (PHASES 1 TO 9)
+   - PHASE 1: Architecture, Layout Shells & Routing Foundation
+   - PHASE 2: Core Design System & Reusable UI Component Library
+   - PHASE 3: Public-Facing Website Modules & Discovery
+   - PHASE 4: Interactive Automotive Services & Calculation Engines
+   - PHASE 5: Customer Portal & Self-Service Experience
+   - PHASE 6: Internal Dealership ERP Workspace (11 Core Modules)
+   - PHASE 7: State Management, Form Validation & API Integration
+   - PHASE 8: Role-Based Access Control (RBAC) & Permission Guards
+   - PHASE 9: Quality Assurance, Performance, Accessibility & Handoff
+4. DETAILED SCREEN-BY-SCREEN INVENTORY & WIREFRAME SPECIFICATIONS
+5. CORE BUSINESS WORKFLOWS & FRONTEND STATE MACHINES
+   - 5.1 Lead-to-Sale Workflow
+   - 5.2 Import-to-Stock Workflow
+   - 5.3 Sell-or-Swap Workflow
+6. BUSINESS CONTROLS & VALIDATION RULES MATRIX
+7. IMPLEMENTATION MILESTONES & DELIVERY CHECKLIST
+
+================================================================================
+1. EXECUTIVE PLATFORM ARCHITECTURE & SCOPE
+================================================================================
+The platform consists of four distinct user-facing frontend surfaces sharing a 
+unified design system and backend API:
+
+1. PUBLIC-FACING WEBSITE:
+   - Brand awareness, marketing, vehicle inventory discovery, specifications, 
+     company story, news, event listings, careers, and contact lead generation.
+
+2. INTERACTIVE AUTOMOTIVE SERVICES:
+   - High-engagement self-service tools: AI Car Match, Loan Calculator, Multi-Car 
+     Comparison, Auto Broker Sourcing, Customs Clearance Coordination, and Sell/Swap 
+     Trade-in valuation.
+
+3. CUSTOMER SELF-SERVICE PORTAL:
+   - Authenticated portal for retail/corporate clients: saved vehicles, comparison 
+     sheets, active quote tracking, trade-in/swap requests, broker sourcing requests, 
+     customs tracking, document uploads, and profile settings.
+
+4. INTERNAL DEALERSHIP ERP:
+   - High-density back-office administrative console for staff and management: 
+     Inventory control, Sales CRM, Import & Shipping Logistics, Trade-in Valuations, 
+     Financials/Accounting, Approvals, HR & Roles, and Website CMS.
+
+================================================================================
+2. COLOR SYSTEM & DESIGN TOKENS SPECIFICATION
+================================================================================
+In accordance with the latest user instructions, the entire frontend strictly 
+uses the following 3 luxury colors with zero deviations:
+
+1. #101820 (Deep Obsidian / Dark Gunmetal):
+   - Role: Primary Canvas, Main Dark Background, Deep Sidebar Base, Shell Container, Card Surfaces.
+   - Tailwind Class: bg-[#101820] / text-[#101820] / border-[#101820]
+   - CSS Variable: var(--color-dark) / var(--background) / var(--card)
+
+2. #F5F5F5 (Alabaster White / Off-White):
+   - Role: Primary Typography, Headings, High-contrast Badges, Contrast Surfaces.
+   - Tailwind Class: text-[#F5F5F5] / bg-[#F5F5F5] / border-[#F5F5F5]
+   - CSS Variable: var(--color-light) / var(--foreground)
+
+3. #C5A059 (Vegas Gold / Luxury Warm Brass):
+   - Role: Primary Accent, Active Tabs, CTA Buttons, Trend Peaks, Sparklines, Glows, Borders.
+   - Tailwind Class: text-[#C5A059] / bg-[#C5A059] / border-[#C5A059]
+   - CSS Variable: var(--color-gold) / var(--accent) / var(--border)
+
+* Note: #B83232 (Red) and #343A40 (Charcoal) were removed completely from the application 
+per explicit user requests.
+
+Typography Stack: Inter, Helvetica Neue, system-ui, -apple-system, sans-serif
+Border Radii: Rounded-sm (2px), Rounded-md (6px), Rounded-lg (8px), Rounded-xl (12px)
+Grid System: 12-column responsive layout, 4px baseline grid
+
+================================================================================
+3. OVERALL STEP-BY-STEP FRONTEND WORKFLOW (PHASES 1 TO 9)
+================================================================================
+
+--------------------------------------------------------------------------------
+PHASE 1: ARCHITECTURE, LAYOUT SHELLS & ROUTING FOUNDATION
+--------------------------------------------------------------------------------
+Step 1.1: Next.js App Router Structure Setup
+  - Define folder structure under `src/app/`:
+    * `(public)/`: Public marketing routes (Home, Products, Services, Company)
+    * `(portal)/`: Authenticated customer portal routes (`/portal/...`)
+    * `(erp)/`: Internal ERP back-office routes (`/erp/...`)
+    * `(auth)/`: Authentication routes (Login, Register, Reset Password)
+    * `api/`: API proxy/route handlers if necessary
+
+Step 1.2: Shell Layout Implementations
+  - Public Website Shell:
+    * Global sticky Header with Logo, Navigation Mega-Menu, Currency selector 
+      (USD / NGN), and "Sell or Swap" CTA button.
+    * Global Footer with Vehicle Category links, Services directory, Showroom 
+      locations, WhatsApp direct link, and legal notices.
+  - Customer Portal Shell:
+    * Collapsible portal sidebar (My Garage, Saved Cars, Active Requests, Documents).
+    * Top navigation bar with Notification Center and Account Menu.
+  - Internal ERP Admin Shell:
+    * High-density ERP sidebar with Main Menu (Dashboard, Inventory, Sales, CRM, 
+      Imports, Trade-in, Finance, HR, CMS, Settings) and red Logout button.
+    * Top utility bar with global search (VIN, Stock ID, Customer), Branch Switcher, 
+      Role Badge, and Notification bell.
+
+Step 1.3: Responsive & Viewport Strategy
+  - Mobile breakpoint (<640px): Drawer navigation, sticky mobile bottom action bar.
+  - Tablet breakpoint (640px - 1024px): Collapsed icons sidebar, responsive data tables.
+  - Desktop breakpoint (>1024px): Full multi-column dashboard, split-view drawers.
+
+--------------------------------------------------------------------------------
+PHASE 2: CORE DESIGN SYSTEM & REUSABLE UI COMPONENT LIBRARY
+--------------------------------------------------------------------------------
+Build reusable UI components strictly utilizing the 5 brand colors:
+
+Step 2.1: Base Atoms
+  - Typography: Heading1 to Heading6, BodyText, Caption, Monospace VIN tags.
+  - Buttons: Primary Gold (`#C5A059`), Secondary Charcoal (`#343A40`), Destructive 
+    Crimson (`#B83232`), Ghost, and Outline variants.
+  - Badges & Pills: Status indicators (Available, In Transit, Clearance, Inspection, 
+    Reserved, Sold, Archived).
+  - Form Inputs: TextInput, NumberInput, SelectDropdown, SearchInput, Checkbox, 
+    RadioGroup, SwitchToggle, Textarea, FileUploadDropzone.
+
+Step 2.2: Composite Molecules & Organisms
+  - Vehicle Card (Grid & List View): Image carousel thumbnail, badge, Make/Model/Trim, 
+    Year, Mileage, Transmission, Fuel type, Price (USD/NGN), and Action CTAs.
+  - Data Table Component: Sortable columns, paginator, search filter bar, status badge 
+    renderer, column toggle, bulk action selector, and CSV/PDF export.
+  - KPI Stat Card: Metric title, primary value, trend badge (% increase/decrease), 
+    and gold SVG sparkline.
+  - Modal & Slide-over Drawer: Confirmations, quick edit forms, inspection sheets.
+  - Multi-Step Stepper: Wizard header for multi-step applications (Brokering, Swap, 
+    AI Car Match, Loan Application).
+  - Currency Formatter: Dynamic switching between USD ($) and NGN (₦) with live 
+    rate conversion assumptions.
+
+--------------------------------------------------------------------------------
+PHASE 3: PUBLIC-FACING WEBSITE MODULES & DISCOVERY
+--------------------------------------------------------------------------------
+Step 3.1: Homepage (`/`)
+  - Hero Banner: Headline ("DRIVE YOUR DREAM CAR"), dynamic background vehicle banner, 
+    dual CTAs ("View Inventory" & "Book a Test Drive").
+  - Quick Vehicle Filter Bar: Tabbed selector (All, New, Used), Make dropdown, Model 
+    dropdown, Year range slider, Price range slider, and Search button.
+  - Value Proposition Strip: 200+ Premium Vehicles, 100% Quality Guaranteed, 
+    24/7 Concierge Support, Easy Finance.
+  - Featured Inventory Grid: Carousel of latest arrivals with Category tabs.
+  - Specialized Services Showcase: AI Car Match, Auto Brokers, Sell or Swap teaser.
+  - Testimonials & Customer Proof: Reviews, verified delivery photos.
+
+Step 3.2: Products Module (`/products` & `/products/[category]`)
+  - Category Landing Pages:
+    * Executive Class (`/products/executive-class`)
+    * Sport & Performance (`/products/sport-performance`)
+    * Premium SUVs (`/products/premium-suvs`)
+    * Electric Vehicles (`/products/electric-vehicles`)
+    * Power Bikes (`/products/power-bikes`)
+    * Executive Buses (`/products/executive-buses`)
+  - Inventory Catalog & Filter Drawer:
+    * Sidebar filters: Make, Model, Year, Price Range, Mileage, Transmission, Fuel, 
+      Exterior/Interior Color, Condition (Brand-new, Foreign-used, Locally-used).
+    * Sorting: Price (Low to High, High to Low), Year, Mileage, Date Added.
+    * View Toggle: Grid view vs List view.
+  - Vehicle Detail Page (`/inventory/[stockId]`):
+    * Hero Gallery: High-resolution image gallery with thumbnail ribbon, full-screen 
+      modal preview, and video walk-around player.
+    * Key Vehicle Highlights: Price in USD and NGN, Stock ID, VIN (masked/unmasked), 
+      Availability status badge.
+    * Complete Specification Matrix: Engine, Horsepower, Drivetrain, Fuel economy, 
+      Dimensions, Interior features, Safety rating.
+    * Interactive Finance Estimator Widget: Inline monthly repayment calculator.
+    * Action Panel: "Book a Test Drive", "Make an Enquiry", "Start Trade-In Swap", 
+      "Download Brochure PDF", "Share Vehicle".
+
+Step 3.3: Company Module (`/company/...`)
+  - About Us (`/about`): Dealership history, mission, leadership, showroom locations, 
+    interactive map, and certifications.
+  - News & Events (`/news`): Article list, category filters, featured release, event 
+    calendar, and attendee RSVP form.
+  - News Detail (`/news/[slug]`): Article body, rich media gallery, related inventory.
+  - Careers (`/careers`): Department listings, vacancy cards, job search filter, 
+    application submission modal with resume attachment.
+  - Contact Us (`/contact`): Branch phone numbers, physical addresses, operating hours, 
+    interactive Google/OpenStreetMap, WhatsApp direct chat trigger, and categorized 
+    enquiry form.
+
+--------------------------------------------------------------------------------
+PHASE 4: INTERACTIVE AUTOMOTIVE SERVICES & CALCULATION ENGINES
+--------------------------------------------------------------------------------
+Step 4.1: AI Car Match Tool (`/services/ai-car-match`)
+  - Step 1 (Preferences): Budget range, preferred category, brand affinities.
+  - Step 2 (Usage & Lifestyle): Daily commute, family size, performance vs fuel 
+    efficiency priority, off-road requirements.
+  - Step 3 (Condition & Tech): New vs foreign-used preference, EV interest.
+  - Matching Results Screen:
+    * Top 3 Recommended Vehicles ranked by compatibility score (e.g. 96% Match).
+    * "Why this fits you" rationale cards explaining key highlights.
+    * Direct actions: "Compare", "Book Test Drive", "Speak to a Concierge".
+    * Instant CRM Lead Capture submission.
+
+Step 4.2: Loan Financing Calculator (`/services/loan-calculator`)
+  - Input Controls:
+    * Vehicle Price (or pre-filled from selected car)
+    * Cash Down Payment / Deposit amount slider
+    * Loan Term (12, 24, 36, 48, 60, 72 months)
+    * Interest Rate slider (%)
+    * Currency toggle ($ USD / ₦ NGN)
+  - Formula Engine:
+    M = P * [r(1 + r)^n] / [(1 + r)^n - 1]
+  - Real-Time Output Dashboard:
+    * Estimated Monthly Repayment (M)
+    * Total Principal Financed (P)
+    * Total Interest Payable
+    * Total Loan Cost
+    * Interactive Amortization Chart (Principal vs Interest breakdown over time).
+  - Lead Submission: "Submit for Pre-Qualification" enquiry form capturing customer 
+    details into CRM.
+
+Step 4.3: Vehicle Comparison Tool (`/services/compare`)
+  - Dynamic vehicle comparison matrix supporting 2 to 4 vehicles simultaneously.
+  - Add/remove vehicle slots with search autocomplete.
+  - "Highlight Differences" toggle switch.
+  - Side-by-side spec rows: Price, Mileage, Engine, HP, Fuel, Transmission, Warranty, 
+    Condition, Safety features.
+  - Export comparison as PDF or shareable link.
+
+Step 4.4: Auto Broker Sourcing Concierge (`/services/auto-brokers`)
+  - Customer Sourcing Request Form:
+    * Target vehicle specifications (Make, Model, Year range, Trim, acceptable colors).
+    * Budget ceiling (including shipping & customs expectations).
+    * Preferred sourcing market (USA, Europe, UAE, Japan, Local).
+    * Urgency / target delivery timeframe.
+  - Sourcing Status Tracker: View quotes, broker notes, and inspection reports.
+
+Step 4.5: Customs & Logistics Specialist Portal (`/services/customs-specialists`)
+  - Public informational guide on import regulations, duties, and port procedures.
+  - Customs Clearance Request Form:
+    * Vehicle VIN/Chassis, Bill of Lading, Purchase invoice upload.
+    * Country of Origin and Shipping Port.
+  - Indicative Duty & Clearance Fee Estimator.
+  - Document verification submission.
+
+Step 4.6: Sell or Swap Vehicle Trade-In Engine (`/services/sell-or-swap`)
+  - Mode Switcher: "Sell My Car" vs "Swap My Car".
+  - Sell Flow:
+    * Step 1: Vehicle details (Year, Make, Model, VIN, Mileage, Condition).
+    * Step 2: Upload vehicle exterior/interior photos and registration papers.
+    * Step 3: Expected price and preferred inspection branch.
+  - Swap Flow:
+    * Step 1: Select desired car from current dealership inventory.
+    * Step 2: Submit current trade-in car details & photos.
+    * Step 3: Real-Time Swap Calculation Preview:
+      Target Vehicle Price - Trade-in Estimated Value + Approved Fees = Balance Payable.
+    * Step 4: Schedule inspection appointment.
+
+--------------------------------------------------------------------------------
+PHASE 5: CUSTOMER PORTAL & SELF-SERVICE EXPERIENCE
+--------------------------------------------------------------------------------
+Step 5.1: Customer Authentication & Onboarding
+  - Sign In, Sign Up, Password Recovery with OTP / magic link options.
+  - Profile Setup: Contact info, preferred currency, notification preferences.
+
+Step 5.2: Customer Dashboard (`/portal/dashboard`)
+  - Overview cards: Saved Vehicles, Active Enquiries, Sourcing Requests, Test Drives.
+  - Status Timeline for active vehicle orders or broker requests.
+
+Step 5.3: My Garage & Saved Vehicles (`/portal/garage`)
+  - Wishlisted vehicles with price-drop alerts.
+  - Saved vehicle comparisons.
+
+Step 5.4: Transaction & Enquiry Tracker (`/portal/transactions`)
+  - Status tracker for:
+    * Purchase orders & invoices
+    * Trade-in / Swap valuation progress
+    * Auto broker sourcing quotes
+    * Customs clearance and vessel shipment tracking
+  - Document Vault: Access downloaded sales agreements, receipts, and inspection sheets.
+
+--------------------------------------------------------------------------------
+PHASE 6: INTERNAL DEALERSHIP ERP WORKSPACE (11 CORE MODULES)
+--------------------------------------------------------------------------------
+Step 6.1: Executive Dashboard & Analytics (`/erp/dashboard`)
+  - Top KPI Stat Cards: Total Cars Listed, Active Users, Total Transactions, Revenue.
+  - Monthly Sales Trend: 12-month bar chart with gold highlighted peak.
+  - New User Growth: Area chart with Weekly / Monthly / Yearly toggles.
+  - Top Performing Brands: Market share breakdown with progress indicators.
+  - Recent Inventory Table: Quick actions for incoming, available, and sold stock.
+
+Step 6.2: Inventory & Vehicle Management (`/erp/inventory`)
+  - Master Stock Table: Filter by status (Draft, In Transit, Clearance, Inspection, 
+    Available, Reserved, Sold, Archived), Location/Branch, and Category.
+  - Add/Edit Vehicle Modal & Multi-tab Form:
+    * General Info: Stock ID, VIN, Make, Model, Trim, Year, Category.
+    * Specs: Mileage, Condition, Fuel, Transmission, Colors.
+    * Financials: Purchase Cost, Landed Cost, Selling Price, Gross Margin.
+    * Media: Drag-and-drop multi-image uploader with primary photo selector.
+    * Publishing: Toggle "Publish to Public Website", SEO meta tags.
+  - Stock Movement & Transfer Drawer: Transfer vehicles between Showroom and Warehouse.
+  - Reservation Management: Set customer deposit, expiry date, and reservation lock.
+
+Step 6.3: Sales & Order Management (`/erp/sales`)
+  - Quotation Builder: Select customer, attach vehicle, apply discounts (with approval 
+    limits), configure payment milestones.
+  - Order Processing Pipeline: Draft -> Approved -> Payment Pending -> Ready for Delivery 
+    -> Completed.
+  - Invoice & Receipt Generator: Print-ready branded PDF invoices.
+  - Delivery Handover Checklist: PDI (Pre-Delivery Inspection) sign-off form.
+
+Step 6.4: Import & Shipping Logistics (`/erp/imports`)
+  - Import Pipeline Board: Supplier Purchase -> Shipped -> Vessel in Transit -> 
+    Port Arrival -> Customs Clearance -> Received at Dealership.
+  - Shipping Record Form: Vessel name, container number, shipping agent, ETA.
+  - Landed Cost Sheet: Separate fields for purchase price, freight, insurance, 
+    customs duties, port storage, and transit inspection.
+  - Expense Reconciliation: Variance tracking between estimated and actual expenses.
+
+Step 6.5: Trade-In & Swap Module (`/erp/trade-ins`)
+  - Incoming Requests Queue: Review customer sell/swap submissions.
+  - Digital Vehicle Inspection Sheet: 150-point condition checklist with photo evidence.
+  - Valuation & Pricing Engine: Set estimated trade-in value, manager approval trigger.
+  - Swap Settlement Calculator: Difference reconciliation, customer invoice or refund.
+
+Step 6.6: CRM & Customer Management (`/erp/crm`)
+  - Customer 360 Directory: Retail buyers, corporate fleets, VIP collectors.
+  - Lead Pipeline Kanban: New Lead -> Contacted -> Qualified -> Quotation -> 
+    Won / Lost.
+  - Interaction Timeline: Call logs, WhatsApp notes, test drive feedback, follow-up dates.
+  - Auto-assignment rules for sales representatives.
+
+Step 6.7: Accounting & Finance (`/erp/finance`)
+  - Revenue & Expense Ledger: Realized margins per vehicle sold.
+  - Accounts Receivable & Accounts Payable boards.
+  - Sales Commission Tracker: Broker and sales rep fee schedules.
+  - Multi-Currency Management: Exchange rate configuration (USD to NGN).
+
+Step 6.8: HR & Employee Management (`/erp/hr`)
+  - Employee Directory: Sales reps, logistics officers, accountants, mechanics.
+  - Recruitment Applicant Tracker: Review resumes submitted through public careers page, 
+    shortlist, schedule interviews, and log hiring decisions.
+
+Step 6.9: Roles & Permissions (RBAC) (`/erp/roles`)
+  - Permission Matrix Editor: Define granular read/write/approve access across 
+    11 user roles (Super Admin, Sales Manager, Inventory Officer, Broker, Accountant, etc.).
+  - Branch & Location isolation rules.
+
+Step 6.10: Document Management System (`/erp/documents`)
+  - Secure repository for vehicle title documents, customs bills, bills of lading, 
+    contracts, invoices, and customer IDs.
+  - Role-based document access controls and watermarked previews.
+
+Step 6.11: Content Management System (CMS) (`/erp/cms`)
+  - Website Page Editor: Manage homepage banners, promo callouts, About Us content.
+  - News & Events Publisher: Rich text editor, publication scheduler, SEO metadata.
+  - Career Vacancies Manager: Create, edit, and archive job postings.
+
+--------------------------------------------------------------------------------
+PHASE 7: STATE MANAGEMENT, FORM VALIDATION & API INTEGRATION
+--------------------------------------------------------------------------------
+Step 7.1: Frontend State Management Architecture
+  - Global State (Zustand / React Context):
+    * Authentication session & active user role.
+    * Currency selector state (USD / NGN) and live exchange rate.
+    * Compare Drawer state (active vehicle comparison list).
+    * Notification toast queue.
+  - Server State (TanStack Query / SWR):
+    * Optimistic updates for inventory status, lead stage changes, and comments.
+    * Cached public inventory with background revalidation.
+
+Step 7.2: Robust Form Validation (Zod + React Hook Form)
+  - VIN validation (17-character alphanumeric checksum).
+  - Currency and financial number sanitization.
+  - File upload restrictions (image MIME types, max file size 10MB, PDF documents).
+  - Required KYC customer information.
+
+Step 7.3: API Client & Error Boundary Layer
+  - Standardized Axios/Fetch client with Bearer token injection and refresh rotation.
+  - Global Toast Alert provider for success, warning, and error events in palette colors.
+  - Fallback Empty States and Loading Skeletons matching `#343A40` container shapes.
+
+--------------------------------------------------------------------------------
+PHASE 8: ROLE-BASED ACCESS CONTROL (RBAC) & PERMISSION GUARDS
+--------------------------------------------------------------------------------
+Step 8.1: Client-Side Route Guards
+  - Higher-Order Components and Next.js middleware checking user authentication and 
+    role permissions before rendering ERP or Portal modules.
+
+Step 8.2: Data Redaction & View Customization
+  - Field-level permission rendering:
+    * Sales Reps see Selling Price and Inventory Status, but NOT purchase cost or 
+      landed cost margins.
+    * Accountants see Landed Cost, Invoices, and Payment Details.
+    * Public Users see only Approved & Published vehicles, never sensitive VINs or 
+      internal stock IDs.
+
+--------------------------------------------------------------------------------
+PHASE 9: QUALITY ASSURANCE, PERFORMANCE, ACCESSIBILITY & HANDOFF
+--------------------------------------------------------------------------------
+Step 9.1: Color Palette & Visual Audit
+  - Automated scanner to ensure 100% adherence to `#101820`, `#F5F5F5`, `#C5A059`, 
+    `#343A40`, and `#B83232`.
+  - Contrast Ratio Verification: WCAG AA / AAA compliance for text legibility.
+
+Step 9.2: Performance Optimization
+  - Next.js Image Optimization with webp/avif formats for vehicle galleries.
+  - Dynamic imports / lazy loading for heavy chart libraries (Recharts / Chart.js).
+  - Virtualized lists for high-volume inventory tables (>1,000 vehicles).
+
+Step 9.3: End-to-End User Flow Testing
+  - Test lead capture from public website into ERP CRM.
+  - Test Sell/Swap calculation flow and customer notification.
+  - Test Loan Calculator accuracy against standard financial formulas.
+  - Test Inventory publication and reservation locking mechanism.
+
+================================================================================
+4. DETAILED SCREEN-BY-SCREEN INVENTORY
+================================================================================
+
+PUBLIC WEBSITE:
+  [PUB-01] Homepage (`/`)
+  [PUB-02] Inventory / Vehicle Catalog (`/products` or `/inventory`)
+  [PUB-03] Category View: Executive Class (`/products/executive-class`)
+  [PUB-04] Category View: Sport & Performance (`/products/sport-performance`)
+  [PUB-05] Category View: Premium SUVs (`/products/premium-suvs`)
+  [PUB-06] Category View: Electric Vehicles (`/products/electric-vehicles`)
+  [PUB-07] Category View: Power Bikes (`/products/power-bikes`)
+  [PUB-08] Category View: Executive Buses (`/products/executive-buses`)
+  [PUB-09] Vehicle Detail Page (`/inventory/[stockId]`)
+  [PUB-10] AI Car Match Recommendation Wizard (`/services/ai-car-match`)
+  [PUB-11] Loan Financing Calculator (`/services/loan-calculator`)
+  [PUB-12] Vehicle Side-by-Side Comparison Matrix (`/services/compare`)
+  [PUB-13] Auto Broker Sourcing Concierge (`/services/auto-brokers`)
+  [PUB-14] Customs Clearance Coordination (`/services/customs-specialists`)
+  [PUB-15] Sell or Swap Trade-In Portal (`/services/sell-or-swap`)
+  [PUB-16] About Us & Showrooms (`/about`)
+  [PUB-17] News, Events & Announcements (`/news`)
+  [PUB-18] News Article Detail (`/news/[slug]`)
+  [PUB-19] Careers Job Board (`/careers`)
+  [PUB-20] Contact & Showroom Directory (`/contact`)
+
+CUSTOMER PORTAL:
+  [CP-01] Customer Sign In / Register (`/auth/login`, `/auth/register`)
+  [CP-02] Customer Overview Dashboard (`/portal/dashboard`)
+  [CP-03] My Saved Vehicles & Comparisons (`/portal/garage`)
+  [CP-04] Active Enquiries & Test Drive Appointments (`/portal/enquiries`)
+  [CP-05] Trade-In & Swap Tracker (`/portal/swap-requests`)
+  [CP-06] Broker Sourcing Requests (`/portal/sourcing`)
+  [CP-07] Customs Import Progress Tracker (`/portal/customs`)
+  [CP-08] Invoices & Payment Receipts (`/portal/invoices`)
+  [CP-09] Profile, Security & KYC Settings (`/portal/profile`)
+
+INTERNAL ERP:
+  [ERP-01] Executive Analytics & KPI Dashboard (`/erp/dashboard`)
+  [ERP-02] Vehicle Inventory Master Table (`/erp/inventory`)
+  [ERP-03] Vehicle Detail & Edit Drawer (`/erp/inventory/[id]`)
+  [ERP-04] Vehicle Intake & Inspection Sheet (`/erp/inventory/intake`)
+  [ERP-05] Stock Movement & Branch Transfers (`/erp/inventory/transfers`)
+  [ERP-06] Sales Pipeline & Order Management (`/erp/sales`)
+  [ERP-07] Quotation & Invoice Builder (`/erp/sales/new-quote`)
+  [ERP-08] Import & Shipping Tracker (`/erp/imports`)
+  [ERP-09] Landed Cost Reconciliation Sheet (`/erp/imports/[id]/costs`)
+  [ERP-10] Trade-In & Swap Evaluation Queue (`/erp/trade-ins`)
+  [ERP-11] CRM Customer Directory & 360 View (`/erp/crm/customers`)
+  [ERP-12] CRM Lead Management Kanban Board (`/erp/crm/leads`)
+  [ERP-13] Financial Ledger & Margin Reports (`/erp/finance`)
+  [ERP-14] Accounts Payable / Receivable (`/erp/finance/invoices`)
+  [ERP-15] HR Staff Directory & Recruitment (`/erp/hr`)
+  [ERP-16] Role-Based Access Control Matrix (`/erp/roles`)
+  [ERP-17] Document Management Vault (`/erp/documents`)
+  [ERP-18] CMS Page, News & Careers Editor (`/erp/cms`)
+
+================================================================================
+5. CORE BUSINESS WORKFLOWS & FRONTEND STATE MACHINES
+================================================================================
+
+5.1 LEAD-TO-SALE WORKFLOW:
+  [Customer Browse / AI Car Match / Enquiry]
+     │
+     ▼
+  [CRM Lead Created & Auto-Assigned to Sales Rep]
+     │
+     ▼
+  [Sales Rep Prepares Vehicle Quotation]
+     │
+     ▼
+  [Availability Check & Concurrency Lock Applied]
+     │
+     ▼
+  [Customer Approves Quotation & Submits Deposit]
+     │
+     ▼
+  [ERP Records Sale, Transitions Status to 'Sold', Generates Invoice]
+     │
+     ▼
+  [Pre-Delivery Inspection (PDI) Signed & Delivery Handover Completed]
+
+5.2 IMPORT-TO-STOCK WORKFLOW:
+  [Create Import Purchase Order & Assign Supplier]
+     │
+     ▼
+  [Record Vehicle Specs, Purchase Price & Authorization]
+     │
+     ▼
+  [Track Shipping, Vessel/Container & ETA]
+     │
+     ▼
+  [Record Customs Paperwork, Port Charges, Duties & Taxes]
+     │
+     ▼
+  [Physical Inspection & Receiving at Dealership]
+     │
+     ▼
+  [Calculate Actual Landed Cost & Audit Gross Margin]
+     │
+     ▼
+  [Publish Vehicle to Public Inventory]
+
+5.3 SELL-OR-SWAP WORKFLOW:
+  [Customer Submits Vehicle Details & Photos]
+     │
+     ▼
+  [Staff Reviews & Schedules Inspection]
+     │
+     ▼
+  [Physical/Digital Valuation Generated & Approved]
+     │
+     ▼
+  [Company Issues Binding Offer / Swap Quotation]
+     │
+     ▼
+  [Customer Accepts Terms; Settlement Balance Finalized]
+     │
+     ▼
+  [Ownership Documents Transferred & Vehicle Handed Over]
+     │
+     ▼
+  [Acquired Vehicle Ingested into ERP Inventory]
+
+================================================================================
+6. BUSINESS CONTROLS & VALIDATION RULES MATRIX
+================================================================================
+- Double-Booking Prevention: Once a vehicle is marked "Reserved" or "Sold", the 
+  public "Book a Test Drive" or "Buy Now" button must immediately disable.
+- Reservation Expiry Timer: Active reservations must display an expiry timestamp 
+  with auto-release trigger if the deposit is not verified within 48 hours.
+- Margin Visibility Guard: Purchase cost, customs costs, and landed margins must 
+  be strictly hidden from public views and non-finance sales roles.
+- Loan Calculator Disclaimer: Mandatory warning badge: "Estimates only. Actual terms 
+  subject to financing partner approval."
+- Swap Valuation Limit: Swap valuations exceeding $50,000 (or ₦50,000,000) require 
+  Sales Director two-factor approval.
+- Audit Trail Logging: Any price override, discount, or vehicle status change must 
+  record the author, timestamp, previous value, and new value.
+
+================================================================================
+7. IMPLEMENTATION MILESTONES & DELIVERY CHECKLIST
+================================================================================
+[ ] Milestone 1: Design Tokens, Typography & Layout Shells (Public, Portal, ERP)
+[ ] Milestone 2: Reusable UI Component Library (Atoms, Form Inputs, Data Tables)
+[ ] Milestone 3: Public Website & Inventory Catalog (Filtered Discovery, VDP)
+[ ] Milestone 4: Automotive Services Suite (AI Match, Loan Calc, Compare, Sell/Swap)
+[ ] Milestone 5: Customer Portal (My Garage, Request Tracking, Document Vault)
+[ ] Milestone 6: ERP Core Modules (Inventory Control, Sales Pipeline, CRM 360)
+[ ] Milestone 7: ERP Operations (Import Logistics, Landed Costs, Trade-in Intake)
+[ ] Milestone 8: ERP Administration (Finance, HR, RBAC, Document Management, CMS)
+[ ] Milestone 9: API Integration, State Management & Form Validations
+[ ] Milestone 10: Performance Optimization, WCAG Contrast Audit & User Acceptance
+
+================================================================================
+END OF SPECIFICATION DOCUMENT
+================================================================================
+
