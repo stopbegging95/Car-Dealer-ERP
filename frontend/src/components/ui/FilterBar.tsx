@@ -75,10 +75,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   return (
     <div
-      className={`relative z-30 overflow-visible rounded-3xl border border-white/20 shadow-2xl transition-all duration-300 p-5 sm:p-7 text-[#FFFFFF] ${className}`}
+      className={`relative z-30 overflow-visible rounded-lg border border-white/20 shadow-2xl transition-all duration-300 px-4 sm:px-6 py-3 sm:py-3.5 text-[#FFFFFF] ${className}`}
     >
       {/* Transparent Overlay Background Stack as in Banner Slider */}
-      <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none -z-10 bg-[#0F172A]/75 backdrop-blur-xl border border-white/15 shadow-2xl">
+      <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none -z-10 bg-[#0F172A]/75 backdrop-blur-xl border border-white/15 shadow-2xl">
         {/* Directional Transparent Atmospheric Gradient Overlays (Banner Slider Style) */}
         <div className="absolute inset-0 bg-[#0F172A]/45" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/60 to-transparent sm:w-4/5" />
@@ -89,50 +89,50 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       </div>
 
       {/* Top Type Switcher Tabs (Active = Black, Non-active = White per user specification) */}
-      <div className="flex items-center gap-2.5 mb-5 overflow-x-auto sm:overflow-visible pb-1">
+      <div className="flex items-center gap-2 mb-2.5 overflow-x-auto sm:overflow-visible pb-1">
         <button
           type="button"
           onClick={() => setFilters({ ...filters, type: "all" })}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
             filters.type === "all"
               ? "bg-[#000000] text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
               : "bg-[#FFFFFF] text-[#0F172A] font-bold border border-white/20 hover:bg-[#F1F5F9] shadow-xs"
           }`}
         >
-          <FiLayers className="w-4 h-4" />
+          <FiLayers className="w-3.5 h-3.5" />
           All Vehicles
         </button>
 
         <button
           type="button"
           onClick={() => setFilters({ ...filters, type: "new" })}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
             filters.type === "new"
               ? "bg-[#000000] text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
               : "bg-[#FFFFFF] text-[#0F172A] font-bold border border-white/20 hover:bg-[#F1F5F9] shadow-xs"
           }`}
         >
-          <FiStar className="w-4 h-4" />
+          <FiStar className="w-3.5 h-3.5" />
           New Cars
         </button>
 
         <button
           type="button"
           onClick={() => setFilters({ ...filters, type: "used" })}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
             filters.type === "used"
               ? "bg-[#000000] text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
               : "bg-[#FFFFFF] text-[#0F172A] font-bold border border-white/20 hover:bg-[#F1F5F9] shadow-xs"
           }`}
         >
-          <FiTag className="w-4 h-4" />
+          <FiTag className="w-3.5 h-3.5" />
           Used Cars
         </button>
       </div>
 
       {/* Main Filter Inputs Grid */}
-      <form onSubmit={handleSearch} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 items-end">
+      <form onSubmit={handleSearch} className="space-y-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
           {/* Make Dropdown */}
           <Dropdown
             label="Make"
@@ -161,7 +161,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           />
 
           {/* Year Range */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1">
             <label className="text-xs sm:text-sm font-bold text-[#FFFFFF]">
               Year Range
             </label>
@@ -171,20 +171,20 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 placeholder="Min Year"
                 value={filters.minYear}
                 onChange={(e) => setFilters({ ...filters, minYear: e.target.value })}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs sm:text-sm py-2 sm:py-2.5 px-3 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
+                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs py-1.5 sm:py-2 px-2.5 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
               />
               <input
                 type="number"
                 placeholder="Max Year"
                 value={filters.maxYear}
                 onChange={(e) => setFilters({ ...filters, maxYear: e.target.value })}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs sm:text-sm py-2 sm:py-2.5 px-3 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
+                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs py-1.5 sm:py-2 px-2.5 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
               />
             </div>
           </div>
 
           {/* Price Range */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1">
             <label className="text-xs sm:text-sm font-bold text-[#FFFFFF]">
               Price Range ($)
             </label>
@@ -194,14 +194,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 placeholder="Min Price"
                 value={filters.minPrice}
                 onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs sm:text-sm py-2 sm:py-2.5 px-3 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
+                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs py-1.5 sm:py-2 px-2.5 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
               />
               <input
                 type="number"
                 placeholder="Max Price"
                 value={filters.maxPrice}
                 onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs sm:text-sm py-2 sm:py-2.5 px-3 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
+                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#64748B] text-xs py-1.5 sm:py-2 px-2.5 outline-none border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all shadow-xs"
               />
             </div>
           </div>
@@ -210,7 +210,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           <div>
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 px-4 rounded-md text-xs sm:text-sm font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-[#FFFFFF] transition-all shadow-lg shadow-[#2563EB]/25 border border-[#2563EB] cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-1.5 sm:py-2 px-3 rounded-md text-xs sm:text-sm font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-[#FFFFFF] transition-all shadow-lg shadow-[#2563EB]/25 border border-[#2563EB] cursor-pointer"
             >
               <FiSearch className="w-4 h-4 text-[#FFFFFF]" />
               <span>Search Vehicles</span>
@@ -219,7 +219,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </div>
 
         {/* Collapsible Advanced Filters Row */}
-        <div className="flex items-center justify-between pt-2.5 border-t border-white/10">
+        <div className="flex items-center justify-between pt-2 border-t border-white/10">
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
@@ -249,7 +249,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </div>
 
         {showAdvanced && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-3 border-t border-white/10 animate-in fade-in duration-200">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-white/10 animate-in fade-in duration-200">
             <Dropdown
               label="Vehicle Category"
               labelClassName="text-xs sm:text-sm font-bold text-[#FFFFFF]"

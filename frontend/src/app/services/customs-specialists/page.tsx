@@ -7,6 +7,7 @@ import {
   FiDollarSign,
   FiAnchor,
   FiUploadCloud,
+  FiCheck,
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -224,11 +225,17 @@ export default function CustomsSpecialistsPage() {
       <Modal
         isOpen={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}
+        size="md"
         title="Customs Clearance Docket Created"
         description="Your vehicle documentation has been assigned to our licensed terminal agent."
         footer={
-          <Button variant="primary" size="sm" onClick={() => setIsSubmitModalOpen(false)}>
-            Close
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsSubmitModalOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Close
           </Button>
         }
       >

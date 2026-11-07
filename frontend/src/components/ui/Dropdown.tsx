@@ -88,7 +88,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between rounded-md bg-[#FFFFFF] text-[#0F172A] border transition-all duration-200 outline-none
-          text-xs sm:text-sm px-3.5 py-2 sm:py-2.5 text-left shadow-xs
+          text-xs sm:text-sm px-3 py-1.5 sm:py-2 text-left shadow-xs
           ${
             error
               ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"

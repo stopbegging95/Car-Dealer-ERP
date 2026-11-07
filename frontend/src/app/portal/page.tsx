@@ -20,6 +20,8 @@ import {
   FiPlus,
   FiMapPin,
   FiPhone,
+  FiCheck,
+  FiX,
 } from "react-icons/fi";
 import { Button, Badge, KPICard, Modal, Input, Dropdown } from "@/components/ui";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -885,11 +887,17 @@ export function CustomerPortalContent({ initialTab = "Overview" }: { initialTab?
       <Modal
         isOpen={isNewBriefModalOpen}
         onClose={() => setIsNewBriefModalOpen(false)}
+        size="lg"
         title="Submit Bespoke Vehicle Sourcing Brief"
         description="Our European and American buying desks will scan private auctions and certified dealerships for your vehicle."
         footer={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsNewBriefModalOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsNewBriefModalOpen(false)}
+              leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+            >
               Cancel
             </Button>
             <Button
@@ -899,6 +907,7 @@ export function CustomerPortalContent({ initialTab = "Overview" }: { initialTab?
                 alert("Sourcing brief submitted! Your assigned broker will contact you within 4 hours.");
                 setIsNewBriefModalOpen(false);
               }}
+              leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
               Submit Brief
             </Button>

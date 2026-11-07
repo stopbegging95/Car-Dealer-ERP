@@ -7,6 +7,7 @@ import {
   FiMapPin,
   FiClock,
   FiMessageSquare,
+  FiCheck,
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa6";
 import { Navbar } from "@/components/Navbar";
@@ -170,9 +171,15 @@ export default function ContactPage() {
         onClose={() => setIsSuccessModalOpen(false)}
         title="Enquiry Received"
         description="Your message has been assigned to our lead concierge."
+        size="md"
         footer={
-          <Button variant="primary" size="sm" onClick={() => setIsSuccessModalOpen(false)}>
-            Close
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsSuccessModalOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Close
           </Button>
         }
       >

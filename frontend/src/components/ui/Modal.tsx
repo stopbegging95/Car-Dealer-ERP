@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { FiX } from "react-icons/fi";
 
-export type ModalSize = "sm" | "md" | "lg" | "xl" | "full";
+export type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl" | "fit" | "full";
 
 export interface ModalProps {
   isOpen: boolean;
@@ -48,30 +49,33 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Adaptive size classes providing generous width to prevent cramped content
   const sizeClasses: Record<ModalSize, string> = {
     sm: "max-w-md",
-    md: "max-w-lg",
-    lg: "max-w-2xl",
+    md: "max-w-2xl",
+    lg: "max-w-3xl",
     xl: "max-w-4xl",
+    "2xl": "max-w-5xl",
+    fit: "w-auto min-w-[320px] max-w-[95vw]",
     full: "max-w-6xl",
   };
 
   return (
-    <div className="z-50 fixed inset-0 flex justify-center items-center p-3 sm:p-4 md:p-6 overflow-y-auto">
+    <div className="z-50 fixed inset-0 flex justify-center items-center p-3 sm:p-5 md:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
         onClick={closeOnBackdropClick ? onClose : undefined}
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-in duration-200 fade-in"
+        className="fixed inset-0 bg-[#0F172A]/70 backdrop-blur-xs transition-opacity animate-in duration-200 fade-in"
       />
 
-      {/* Modal Dialog Container */}
+      {/* Modal Dialog Container - reduced radius (rounded-lg), adaptive width, clean shadow */}
       <div
         ref={modalRef}
-        className={`relative w-full ${sizeClasses[size]} bg-[#FFFFFF] border border-[#CBD5E1] rounded-2xl shadow-2xl overflow-hidden z-10 my-auto animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] text-[#0F172A] ${className}`}
+        className={`relative w-full ${sizeClasses[size]} bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg shadow-2xl overflow-hidden z-10 my-auto animate-in zoom-in-95 duration-200 flex flex-col max-h-[92vh] text-[#0F172A] ${className}`}
       >
         {/* Header */}
         {(title || description) && (
-          <div className="flex justify-between items-start p-4 sm:p-6 border-[#E2E8F0] border-b">
+          <div className="flex justify-between items-start p-4 sm:p-5 md:p-6 border-[#E2E8F0] border-b bg-[#FFFFFF]">
             <div>
               {title && (
                 <h3 className="font-bold text-[#0F172A] text-base sm:text-lg md:text-xl tracking-tight">
@@ -87,23 +91,22 @@ export const Modal: React.FC<ModalProps> = ({
             <button
               onClick={onClose}
               aria-label="Close dialog"
-              className="hover:bg-[#F1F5F9] ml-4 p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] transition-colors shrink-0"
+              className="hover:bg-[#EFF6FF] ml-4 p-1.5 rounded-md text-[#64748B] hover:text-[#2563EB] transition-colors shrink-0 cursor-pointer border border-transparent hover:border-[#BFDBFE]"
+              title="Close Modal"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <FiX className="w-5 h-5" />
             </button>
           </div>
         )}
 
-        {/* Body Content */}
+        {/* Body Content with spacious padding & scrolling */}
         <div className="p-4 sm:p-6 overflow-y-auto text-[#334155] text-xs sm:text-sm">
           {children}
         </div>
 
         {/* Footer Actions */}
         {footer && (
-          <div className="flex justify-end items-center gap-3 bg-[#F8FAFC] p-4 sm:p-6 border-[#E2E8F0] border-t shrink-0">
+          <div className="flex flex-wrap justify-end items-center gap-2.5 bg-[#F8FAFC] p-4 sm:p-5 border-[#E2E8F0] border-t shrink-0">
             {footer}
           </div>
         )}

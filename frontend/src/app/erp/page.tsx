@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import {
   FiLayers,
   FiShoppingCart,
@@ -25,6 +27,14 @@ import {
   FiActivity,
   FiCheckSquare,
   FiCheckCircle,
+  FiEye,
+  FiUser,
+  FiMapPin,
+  FiMail,
+  FiLock,
+  FiSearch,
+  FiCheck,
+  FiX,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import {
@@ -37,14 +47,170 @@ import {
   Dropdown,
 } from "@/components/ui";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { VEHICLES } from "@/data/vehicles";
+import { VEHICLES, Vehicle } from "@/data/vehicles";
+import {
+  DEALERSHIP_ROLES,
+  getRoleById,
+  isModuleAllowedForRole,
+} from "@/data/roles";
+import { AccessRestrictedGuard } from "@/components/AccessRestrictedGuard";
+import { INITIAL_SESSION_LOGS, SessionAuditLog } from "@/data/sessionAuditLogs";
+import { downloadOrderAsPdf, downloadVaultDocumentPdf } from "@/utils/pdfGenerator";
 
-export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModule?: string }) {
-  const [activeModule, setActiveModule] = useState<string>(initialModule);
+interface OrderItem {
+  id: string;
+  client: string;
+  car: string;
+  amount: string;
+  status: string;
+  stage: string;
+  rep: string;
+  vin?: string;
+  deposit?: string;
+  balance?: string;
+  deliveryDate?: string;
+}
+
+const SALES_ORDERS: OrderItem[] = [
+  {
+    id: "ORD-9912",
+    client: "Alhaji Bello & Sons Ltd",
+    car: "2024 Mercedes-Maybach S580 (Dual-Tone)",
+    amount: "$165,000",
+    status: "Delivery Inspection",
+    stage: "Ready for Handover",
+    rep: "Emeka O.",
+    vin: "WDD223...001",
+    deposit: "$100,000",
+    balance: "$65,000",
+    deliveryDate: "2026-11-12",
+  },
+  {
+    id: "ORD-9910",
+    client: "Dr. K. Somoye",
+    car: "2024 Porsche 911 Turbo S (Guards Red)",
+    amount: "$225,000",
+    status: "Payment Confirmed",
+    stage: "Registration & Armor",
+    rep: "Aisha M.",
+    vin: "WP0AD2...002",
+    deposit: "$225,000",
+    balance: "$0 (Paid in Full)",
+    deliveryDate: "2026-11-15",
+  },
+  {
+    id: "ORD-9908",
+    client: "Zenith Capital Partners",
+    car: "2023 Range Rover Autobiography LWB",
+    amount: "$195,000",
+    status: "Customs Clearance",
+    stage: "Tin Can Discharge",
+    rep: "Tariq K.",
+    vin: "SALWR2...003",
+    deposit: "$80,000",
+    balance: "$115,000",
+    deliveryDate: "2026-11-20",
+  },
+  {
+    id: "ORD-9904",
+    client: "Senator Godswill O.",
+    car: "2024 Mercedes-AMG G63 Magno Black",
+    amount: "$240,000",
+    status: "Quotation Approved",
+    stage: "Bank Wire Verification",
+    rep: "Emeka O.",
+    vin: "W1N9G8...007",
+    deposit: "$120,000",
+    balance: "$120,000",
+    deliveryDate: "2026-11-25",
+  },
+];
+
+export function ERPConsoleContent({
+  initialModule = "Dashboard",
+  initialRole = "admin",
+}: {
+  initialModule?: string;
+  initialRole?: string;
+}) {
+  const searchParams = useSearchParams();
+  const roleFromUrl = searchParams?.get("role") || initialRole;
+  const moduleFromUrl = searchParams?.get("module") || initialModule;
+
+  const [activeRoleId, setActiveRoleId] = useState<string>(roleFromUrl);
+  const activeRole = useMemo(() => getRoleById(activeRoleId), [activeRoleId]);
+
+  const [activeModule, setActiveModule] = useState<string>(() => {
+    const role = getRoleById(roleFromUrl);
+    if (role.allowedModules.includes(moduleFromUrl)) {
+      return moduleFromUrl;
+    }
+    return role.defaultModule;
+  });
+
   const [growthTimeframe, setGrowthTimeframe] = useState<string>("Weekly");
   const [isAddVehicleOpen, setIsAddVehicleOpen] = useState<boolean>(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState<boolean>(false);
   const [tableSearch, setTableSearch] = useState<string>("");
+
+  // Modals for Sales, Car Management, and Inspections
+  const [selectedOrderForPreview, setSelectedOrderForPreview] = useState<OrderItem | null>(null);
+  const [selectedOrderForInspection, setSelectedOrderForInspection] = useState<OrderItem | null>(null);
+  const [selectedVehicleForPreview, setSelectedVehicleForPreview] = useState<Vehicle | null>(null);
+  const [selectedTradeInForInspection, setSelectedTradeInForInspection] = useState<{
+    id: string;
+    client: string;
+    carOffered: string;
+    target: string;
+    valuation: string;
+    diff: string;
+    status: string;
+  } | null>(null);
+  const [selectedSessionForInspection, setSelectedSessionForInspection] = useState<SessionAuditLog | null>(null);
+
+  // Session History Search & Filtering
+  const [sessionFilter, setSessionFilter] = useState<"all" | "active" | "terminated">("all");
+  const [sessionSearch, setSessionSearch] = useState<string>("");
+
+  const filteredSessions = useMemo(() => {
+    return INITIAL_SESSION_LOGS.filter((s) => {
+      const matchesSearch =
+        s.id.toLowerCase().includes(sessionSearch.toLowerCase()) ||
+        s.userName.toLowerCase().includes(sessionSearch.toLowerCase()) ||
+        s.ipAddress.toLowerCase().includes(sessionSearch.toLowerCase()) ||
+        s.email.toLowerCase().includes(sessionSearch.toLowerCase());
+      if (sessionFilter === "active") return matchesSearch && !s.logoutTime;
+      if (sessionFilter === "terminated") return matchesSearch && !!s.logoutTime;
+      return matchesSearch;
+    });
+  }, [sessionSearch, sessionFilter]);
+
+  const handleDownloadOrderPdf = (order: OrderItem) => {
+    downloadOrderAsPdf({
+      orderId: order.id,
+      clientName: order.client,
+      vehicleName: order.car,
+      amount: order.amount,
+      status: order.status,
+      stage: order.stage,
+      salesRep: order.rep,
+      vin: order.vin,
+      date: order.deliveryDate,
+    });
+  };
+
+  // Role permissions check
+  const isAllowed = useMemo(() => {
+    return isModuleAllowedForRole(activeRole.id, activeModule);
+  }, [activeRole.id, activeModule]);
+
+  const handleRoleChange = (newRoleId: string) => {
+    setActiveRoleId(newRoleId);
+    const newRole = getRoleById(newRoleId);
+    if (!newRole.allowedModules.includes(activeModule)) {
+      setActiveModule(newRole.defaultModule);
+    }
+  };
 
   // Master stock filtering
   const filteredStock = VEHICLES.filter(
@@ -55,43 +221,93 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
       v.category.toLowerCase().includes(tableSearch.toLowerCase())
   );
 
-  const mainMenuItems = [
-    { name: "Dashboard", icon: <FiLayers className="w-4 h-4 shrink-0" /> },
-    { name: "Car Management", icon: <FaCar className="w-4 h-4 shrink-0" />, badge: `${filteredStock.length}` },
-    { name: "Orders & Sales", icon: <FiShoppingCart className="w-4 h-4 shrink-0" />, badge: "8" },
-    { name: "Service & Workshop", icon: <FiTool className="w-4 h-4 shrink-0" />, badge: "6 Bays" },
-    { name: "Parts & Inventory", icon: <FiBox className="w-4 h-4 shrink-0" />, badge: "4 Low" },
-    { name: "Finance & Insurance", icon: <FiActivity className="w-4 h-4 shrink-0" />, badge: "6 Pending" },
-    { name: "Detailing & Recon", icon: <FiCheckSquare className="w-4 h-4 shrink-0" />, badge: "4 Ready" },
-    { name: "Branch Transfers", icon: <FiNavigation className="w-4 h-4 shrink-0" />, badge: "2 Active" },
-    { name: "Import Logistics", icon: <FiTruck className="w-4 h-4 shrink-0" />, badge: "3 Vessels" },
-    { name: "Trade-In & Swap", icon: <FiRepeat className="w-4 h-4 shrink-0" />, badge: "3" },
-    { name: "CRM Pipeline & 360", icon: <FiMessageSquare className="w-4 h-4 shrink-0" />, badge: "14" },
-    { name: "Accounting & Finance", icon: <FiDollarSign className="w-4 h-4 shrink-0" /> },
-    { name: "HR & Recruitment", icon: <FiBriefcase className="w-4 h-4 shrink-0" />, badge: "5 Apps" },
-  ];
+  const mainMenuItems = useMemo(
+    () => [
+      { name: "Dashboard", icon: <FiLayers className="w-4 h-4 shrink-0" /> },
+      { name: "Car Management", icon: <FaCar className="w-4 h-4 shrink-0" />, badge: `${filteredStock.length}` },
+      { name: "Orders & Sales", icon: <FiShoppingCart className="w-4 h-4 shrink-0" />, badge: "8" },
+      { name: "Service & Workshop", icon: <FiTool className="w-4 h-4 shrink-0" />, badge: "6 Bays" },
+      { name: "Parts & Inventory", icon: <FiBox className="w-4 h-4 shrink-0" />, badge: "4 Low" },
+      { name: "Finance & Insurance", icon: <FiActivity className="w-4 h-4 shrink-0" />, badge: "6 Pending" },
+      { name: "Detailing & Recon", icon: <FiCheckSquare className="w-4 h-4 shrink-0" />, badge: "4 Ready" },
+      { name: "Branch Transfers", icon: <FiNavigation className="w-4 h-4 shrink-0" />, badge: "2 Active" },
+      { name: "Import Logistics", icon: <FiTruck className="w-4 h-4 shrink-0" />, badge: "3 Vessels" },
+      { name: "Trade-In & Swap", icon: <FiRepeat className="w-4 h-4 shrink-0" />, badge: "3" },
+      { name: "CRM Pipeline & 360", icon: <FiMessageSquare className="w-4 h-4 shrink-0" />, badge: "14" },
+      { name: "Accounting & Finance", icon: <FiDollarSign className="w-4 h-4 shrink-0" /> },
+      { name: "HR & Recruitment", icon: <FiBriefcase className="w-4 h-4 shrink-0" />, badge: "5 Apps" },
+    ],
+    [filteredStock.length]
+  );
 
-  const systemMenuItems = [
-    { name: "Roles & RBAC", icon: <FiShield className="w-4 h-4 shrink-0" /> },
-    { name: "Document Vault", icon: <FiFileText className="w-4 h-4 shrink-0" /> },
-    { name: "CMS Manager", icon: <FiEdit3 className="w-4 h-4 shrink-0" /> },
-    { name: "Settings", icon: <FiSettings className="w-4 h-4 shrink-0" /> },
-  ];
+  const systemMenuItems = useMemo(
+    () => [
+      { name: "Roles & RBAC", icon: <FiShield className="w-4 h-4 shrink-0" /> },
+      { name: "Document Vault", icon: <FiFileText className="w-4 h-4 shrink-0" /> },
+      { name: "CMS Manager", icon: <FiEdit3 className="w-4 h-4 shrink-0" /> },
+      { name: "Settings", icon: <FiSettings className="w-4 h-4 shrink-0" /> },
+    ],
+    []
+  );
+
+  // Filter menu items strictly according to role permissions
+  const filteredMainMenuItems = useMemo(() => {
+    return mainMenuItems.filter((item) => activeRole.allowedModules.includes(item.name));
+  }, [mainMenuItems, activeRole.allowedModules]);
+
+  const filteredSystemMenuItems = useMemo(() => {
+    return systemMenuItems.filter((item) => activeRole.allowedModules.includes(item.name));
+  }, [systemMenuItems, activeRole.allowedModules]);
 
   return (
     <DashboardLayout
       title={activeModule}
       activeModule={activeModule}
       onSelectModule={setActiveModule}
-      mainMenuItems={mainMenuItems}
-      systemMenuItems={systemMenuItems}
-      branchName="HQ Branch (Victoria Island)"
-      userRole="Super Admin"
-      userName="Admin Panel"
-      userInitials="AP"
+      mainMenuItems={filteredMainMenuItems}
+      systemMenuItems={filteredSystemMenuItems}
+      branchName={activeRole.branchName}
+      userRole={activeRole.badge}
+      userName={activeRole.userName}
+      userEmail={activeRole.email}
+      userInitials={activeRole.userInitials}
+      departmentName={activeRole.department}
+      availableRoles={DEALERSHIP_ROLES.map((r) => ({
+        id: r.id,
+        name: r.name,
+        badge: r.badge,
+        department: r.department,
+      }))}
+      activeRoleId={activeRoleId}
+      onSelectRole={handleRoleChange}
       onSearch={setTableSearch}
     >
-      <div className="space-y-4">
+      {!isAllowed ? (
+        <AccessRestrictedGuard
+          attemptedModule={activeModule}
+          activeRole={activeRole}
+          onReturnToAllowedModule={setActiveModule}
+          onSwitchRole={handleRoleChange}
+        />
+      ) : (
+        <div className="space-y-4">
+          {/* Department Desk Operational Banner (if not Super Admin) */}
+          {activeRole.id !== "admin" && (
+            <div className="p-3 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs text-xs animate-in fade-in duration-150">
+              <div className="flex items-center gap-2">
+                <FiShield className="w-4 h-4 text-[#2563EB] shrink-0" />
+                <div>
+                  <span className="font-bold text-[#0F172A]">{activeRole.department}</span>
+                  <span className="text-[#64748B] ml-2 hidden sm:inline">&bull; {activeRole.description}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 font-mono text-[10px] text-[#2563EB] font-bold shrink-0">
+                <span className="bg-white px-2 py-0.5 rounded border border-[#BFDBFE]">
+                  {activeRole.allowedModules.length} Workspaces Authorized
+                </span>
+              </div>
+            </div>
+          )}
         {/* ================================================================= */}
         {/* MODULE 1: DASHBOARD & EXECUTIVE ANALYTICS [ERP-01]                */}
         {/* ================================================================= */}
@@ -278,11 +494,15 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
                   align: "right",
                   render: (row) => (
                     <div className="flex items-center justify-end gap-1.5">
-                      <Link href={`/inventory/${row.stockId}`}>
-                        <button className="px-2.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer">
-                          Preview VDP
-                        </button>
-                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedVehicleForPreview(row)}
+                        className="px-2.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1"
+                        title="Preview Vehicle Specification Dossier"
+                      >
+                        <FiEye className="w-3.5 h-3.5" />
+                        <span>Preview</span>
+                      </button>
                     </div>
                   ),
                 },
@@ -303,26 +523,81 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
             </div>
 
             <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md p-4 sm:p-5 shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-[#2563EB]">Active Sales Pipeline & Concurrency Control</h3>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#E2E8F0]">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#2563EB]">Active Sales Pipeline & Concurrency Control</h3>
+                  <p className="text-[11px] text-[#64748B]">Preview contract details, inspect 150-point PDI certifications, or download official sales PDFs</p>
+                </div>
                 <Badge variant="gold" size="sm">5-Stage Concurrency Guard</Badge>
               </div>
-              <div className="space-y-2 text-xs">
-                {[
-                  { id: "ORD-9912", client: "Alhaji Bello & Sons Ltd", car: "Maybach S580", amount: "$165,000", status: "Delivery Inspection", stage: "Ready for Handover", rep: "Emeka O." },
-                  { id: "ORD-9910", client: "Dr. K. Somoye", car: "Porsche 911 Turbo S", amount: "$225,000", status: "Payment Confirmed", stage: "Registration & Armor", rep: "Aisha M." },
-                  { id: "ORD-9908", client: "Zenith Capital Partners", car: "Range Rover Autobiography", amount: "$195,000", status: "Customs Clearance", stage: "Tin Can Discharge", rep: "Tariq K." },
-                  { id: "ORD-9904", client: "Senator Godswill O.", car: "Mercedes G63 AMG Magno", amount: "$240,000", status: "Quotation Approved", stage: "Bank Wire Verification", rep: "Emeka O." },
-                ].map((ord) => (
-                  <div key={ord.id} className="p-3 bg-[#F8FAFC] rounded-md border border-[#E2E8F0] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <span className="font-mono font-bold text-[#2563EB] mr-2">{ord.id}</span>
-                      <span className="font-bold text-[#0F172A]">{ord.client}</span>
-                      <span className="text-[#64748B] text-[11px] block">{ord.car} &bull; Stage: {ord.stage} &bull; Rep: {ord.rep}</span>
+
+              <div className="space-y-2.5 text-xs">
+                {SALES_ORDERS.map((ord) => (
+                  <div
+                    key={ord.id}
+                    className="p-3.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0] flex flex-col md:flex-row md:items-center justify-between gap-3 hover:border-[#BFDBFE] transition-colors"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-[#2563EB]">{ord.id}</span>
+                        <span className="font-bold text-[#0F172A]">{ord.client}</span>
+                        <Badge variant="gold" size="sm">{ord.status}</Badge>
+                      </div>
+                      <div className="text-[#64748B] text-[11px] flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                        <span className="font-medium text-[#0F172A]">{ord.car}</span>
+                        <span>&bull;</span>
+                        <span>Stage: <strong className="text-[#0F172A]">{ord.stage}</strong></span>
+                        <span>&bull;</span>
+                        <span>Sales Rep: {ord.rep}</span>
+                        {ord.vin && (
+                          <>
+                            <span>&bull;</span>
+                            <span className="font-mono">VIN: {ord.vin}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono font-bold text-[#1D4ED8] text-sm">{ord.amount}</span>
-                      <Badge variant="gold" size="sm">{ord.status}</Badge>
+
+                    <div className="flex items-center justify-between md:justify-end gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-[#E2E8F0]">
+                      <div className="text-left md:text-right mr-1">
+                        <span className="font-mono font-bold text-[#1D4ED8] text-sm block">{ord.amount}</span>
+                        <span className="text-[10px] text-[#64748B] font-mono">Deposit: {ord.deposit || "$50,000"}</span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {/* 1. PREVIEW BUTTON (Opens Modal - No Page Redirection) */}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedOrderForPreview(ord)}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer"
+                          title="Preview Order Dossier in Modal"
+                        >
+                          <FiEye className="w-3.5 h-3.5" />
+                          <span>Preview</span>
+                        </button>
+
+                        {/* 2. INSPECT BUTTON (Opens Modal - No window.alert) */}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedOrderForInspection(ord)}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer"
+                          title="Inspect 150-Point PDI & Condition Sheet in Modal"
+                        >
+                          <FiCheckSquare className="w-3.5 h-3.5" />
+                          <span>Inspect</span>
+                        </button>
+
+                        {/* 3. DOWNLOAD BUTTON (Downloads Sales Order PDF) */}
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadOrderPdf(ord)}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#2563EB] text-[#FFFFFF] hover:bg-[#1D4ED8] text-xs font-semibold transition-colors shadow-xs cursor-pointer"
+                          title="Download Official Dealership Bill of Sale as PDF"
+                        >
+                          <FiDownload className="w-3.5 h-3.5" />
+                          <span>Download</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -728,10 +1003,13 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
                       </div>
                       <Badge variant="gold" size="sm">{item.status}</Badge>
                       <button
-                        onClick={() => alert(`Reviewing Inspection Sheet for ${item.id}`)}
-                        className="px-2.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer"
+                        type="button"
+                        onClick={() => setSelectedTradeInForInspection(item)}
+                        className="px-2.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1"
+                        title="Inspect Trade-In Condition & Appraisal Sheet in Modal"
                       >
-                        Inspect
+                        <FiCheckSquare className="w-3.5 h-3.5" />
+                        <span>Inspect</span>
                       </button>
                     </div>
                   </div>
@@ -936,10 +1214,21 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
                       </div>
                     </div>
                     <button
-                      onClick={() => alert(`Downloading watermarked PDF: ${doc.name}`)}
-                      className="px-3 py-1.5 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold self-start sm:self-auto transition-colors cursor-pointer"
+                      type="button"
+                      onClick={() =>
+                        downloadVaultDocumentPdf({
+                          title: doc.name,
+                          reference: doc.car,
+                          classification: "Dealership Restricted Vault",
+                          date: doc.date,
+                          details: `${doc.type} • File Size: ${doc.size}`,
+                          author: "Compliance & Legal Records Division",
+                        })
+                      }
+                      className="px-3 py-1.5 rounded-md bg-[#2563EB] text-[#FFFFFF] hover:bg-[#1D4ED8] text-xs font-semibold self-start sm:self-auto transition-colors shadow-xs cursor-pointer flex items-center gap-1.5"
                     >
-                      Download PDF
+                      <FiDownload className="w-3.5 h-3.5" />
+                      <span>Download PDF</span>
                     </button>
                   </div>
                 ))}
@@ -1019,17 +1308,337 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
             </div>
           </div>
         )}
+
+        {/* ================================================================= */}
+        {/* MODULE: MY PROFILE & CREDENTIALS                                   */}
+        {/* ================================================================= */}
+        {activeModule === "My Profile" && (
+          <div className="space-y-4">
+            {/* Header Profile Summary Card */}
+            <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md p-5 shadow-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-[#EFF6FF] border-2 border-[#BFDBFE] flex items-center justify-center font-bold text-[#2563EB] text-xl shadow-xs">
+                    {activeRole.userInitials}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base sm:text-lg font-bold text-[#0F172A]">{activeRole.userName}</h3>
+                      <span className="flex items-center gap-1 text-[10px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Online & Verified
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#64748B] flex items-center gap-1.5 mt-0.5">
+                      <FiMail className="w-3.5 h-3.5 text-[#2563EB]" />
+                      <span>{activeRole.email}</span>
+                      <span>&bull;</span>
+                      <span className="font-mono text-[#2563EB] font-bold">{activeRole.badge}</span>
+                    </p>
+                    <p className="text-[11px] text-[#94A3B8] mt-1">
+                      Assigned Department: <strong className="text-[#475569]">{activeRole.department}</strong> &bull; {activeRole.branchName}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-stretch sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setActiveModule("Session History")}
+                    className="flex-1 sm:flex-none px-3 py-1.5 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <FiClock className="w-3.5 h-3.5" />
+                    <span>View Session History</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Profile Grid Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Personnel Dossier */}
+              <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md p-4 sm:p-5 shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2.5 border-b border-[#E2E8F0]">
+                  <div className="flex items-center gap-2">
+                    <FiUser className="w-4 h-4 text-[#2563EB]" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Dealership Personnel Dossier</h4>
+                  </div>
+                  <Badge variant="gold" size="sm">Active Staff</Badge>
+                </div>
+
+                <div className="space-y-2.5 text-xs">
+                  <div className="flex justify-between py-1.5 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Full Staff Name</span>
+                    <span className="font-bold text-[#0F172A]">{activeRole.userName}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Work Email Address</span>
+                    <span className="font-mono font-medium text-[#2563EB]">{activeRole.email}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Assigned Department</span>
+                    <span className="font-semibold text-[#0F172A]">{activeRole.department}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Showroom Flagship Hub</span>
+                    <span className="font-medium text-[#0F172A]">{activeRole.branchName}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Internal Telephone Ext.</span>
+                    <span className="font-mono text-[#0F172A]">+234 1 888 2000 (Ext. 402)</span>
+                  </div>
+                  <div className="flex justify-between py-1.5">
+                    <span className="text-[#64748B]">Authorized Modules</span>
+                    <span className="font-mono font-bold text-[#1D4ED8] bg-[#EFF6FF] px-2 py-0.5 rounded border border-[#BFDBFE]">
+                      {activeRole.allowedModules.length} Modules Authorized
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Security & Multi-Factor Authentication */}
+              <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md p-4 sm:p-5 shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2.5 border-b border-[#E2E8F0]">
+                  <div className="flex items-center gap-2">
+                    <FiLock className="w-4 h-4 text-[#2563EB]" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">Security, MFA & Access Controls</h4>
+                  </div>
+                  <Badge variant="gold" size="sm">MFA Enforced</Badge>
+                </div>
+
+                <div className="space-y-2.5 text-xs">
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#F1F5F9]">
+                    <div>
+                      <div className="font-semibold text-[#0F172A]">Two-Factor Authentication (2FA)</div>
+                      <div className="text-[10px] text-[#64748B]">FIDO2 WebAuthn & Hardware Security Key</div>
+                    </div>
+                    <span className="font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[10px]">
+                      Enabled & Verified
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#F1F5F9]">
+                    <div>
+                      <div className="font-semibold text-[#0F172A]">Credential Rotation</div>
+                      <div className="text-[10px] text-[#64748B]">Last updated 14 days ago (90-day cycle)</div>
+                    </div>
+                    <span className="font-mono text-[10px] text-[#2563EB] font-bold">Compliant</span>
+                  </div>
+
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#F1F5F9]">
+                    <div>
+                      <div className="font-semibold text-[#0F172A]">Session Encryption Protocol</div>
+                      <div className="text-[10px] text-[#64748B]">TLS 1.3 / AES-256-GCM / Strict-Transport</div>
+                    </div>
+                    <span className="font-mono text-[10px] text-[#1D4ED8] bg-[#EFF6FF] px-1.5 py-0.5 rounded font-bold">
+                      AES-256
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between py-1.5">
+                    <div>
+                      <div className="font-semibold text-[#0F172A]">Compliance Audit Trail</div>
+                      <div className="text-[10px] text-[#64748B]">WORM Storage with SHA-256 integrity seal</div>
+                    </div>
+                    <span className="font-mono text-[10px] text-emerald-600 font-bold">WORM Active</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================= */}
+        {/* MODULE: IMMUTABLE LOGIN & LOGOUT SESSION AUDIT HISTORY (WORM)     */}
+        {/* ================================================================= */}
+        {activeModule === "Session History" && (
+          <div className="space-y-4">
+            {/* Header Description & WORM Notice */}
+            <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md p-4 sm:p-5 shadow-xs space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB]">
+                    <FiClock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-[#0F172A]">
+                      Immutable Login & Logout Session Audit Ledger
+                    </h3>
+                    <p className="text-[11px] text-[#64748B]">
+                      Write-Once-Read-Many (WORM) cryptographic audit trail. Records cannot be edited, tampered with, or erased.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                  <span className="px-2.5 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-mono font-bold flex items-center gap-1.5">
+                    <FiShield className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>WORM Enforced &bull; Read-Only</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* KPI Cards for Session Telemetry */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+              <KPICard
+                title="Total Recorded Sessions"
+                value={`${INITIAL_SESSION_LOGS.length} Logged`}
+                change="All dealership roles"
+                icon={<FiLayers className="w-4 h-4" />}
+              />
+              <KPICard
+                title="Active Sessions Now"
+                value={`${INITIAL_SESSION_LOGS.filter((s) => !s.logoutTime).length} Live`}
+                change="Authenticated TLS 1.3"
+                icon={<FiUsers className="w-4 h-4" />}
+              />
+              <KPICard
+                title="MFA Verification"
+                value="100%"
+                change="Hardware & FIDO2 enforced"
+                icon={<FiLock className="w-4 h-4" />}
+              />
+              <KPICard
+                title="Integrity Verification"
+                value="SHA-256"
+                change="Zero tampering detected"
+                icon={<FiCheckCircle className="w-4 h-4" />}
+              />
+            </div>
+
+            {/* Search & Filter Bar */}
+            <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md p-3.5 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2 bg-[#F8FAFC] px-3 py-1.5 border border-[#CBD5E1] rounded-md flex-1 max-w-md focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB]">
+                <FiSearch className="w-3.5 h-3.5 text-[#94A3B8]" />
+                <input
+                  type="text"
+                  placeholder="Filter by Session ID, staff, IP, email..."
+                  value={sessionSearch}
+                  onChange={(e) => setSessionSearch(e.target.value)}
+                  className="bg-transparent outline-none text-xs text-[#0F172A] placeholder-[#94A3B8] w-full"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 self-end sm:self-auto">
+                {(["all", "active", "terminated"] as const).map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    onClick={() => setSessionFilter(filter)}
+                    className={`px-2.5 py-1 rounded text-xs font-semibold capitalize transition-all cursor-pointer ${
+                      sessionFilter === filter
+                        ? "bg-[#2563EB] text-[#FFFFFF]"
+                        : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+                    }`}
+                  >
+                    {filter === "all" ? "All Sessions" : filter === "active" ? "Active Now" : "Terminated"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Session Ledger Table - Well-arranged columns, no broken text, horizontal scroll support */}
+            <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md shadow-xs overflow-hidden">
+              <div className="w-full overflow-x-auto scrollbar-thin">
+                <table className="min-w-full text-left text-xs border-collapse">
+                  <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#64748B]">
+                    <tr>
+                      <th className="py-3.5 px-4 whitespace-nowrap">Session & SHA-256</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">Staff User & Role</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">Network IP & Location</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">Device & Browser</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">Login / Logout</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">Duration</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap">MFA Status</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap text-right">Telemetry</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E2E8F0]">
+                    {filteredSessions.map((session) => (
+                      <tr key={session.id} className="hover:bg-[#F8FAFC] transition-colors">
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          <div className="font-mono font-bold text-[#2563EB]">{session.id}</div>
+                          <div className="font-mono text-[9px] text-[#94A3B8] truncate max-w-[130px]" title={session.checksum}>
+                            {session.checksum.substring(0, 16)}...
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          <div className="font-bold text-[#0F172A]">{session.userName}</div>
+                          <div className="text-[10px] text-[#64748B] font-mono">{session.email}</div>
+                          <div className="text-[9px] font-mono font-bold text-[#1D4ED8] mt-0.5">{session.role}</div>
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          <div className="font-mono font-semibold text-[#0F172A] flex items-center gap-1">
+                            <FiMapPin className="w-3 h-3 text-[#2563EB] shrink-0" />
+                            <span>{session.ipAddress}</span>
+                          </div>
+                          <div className="text-[10px] text-[#64748B]">{session.location}</div>
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          <div className="font-semibold text-[#0F172A]">{session.device}</div>
+                          <div className="text-[10px] text-[#64748B]">{session.browser}</div>
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap font-mono text-[11px]">
+                          <div className="text-[#0F172A]">In: {session.loginTime}</div>
+                          {session.logoutTime ? (
+                            <div className="text-[#64748B]">Out: {session.logoutTime}</div>
+                          ) : (
+                            <div className="text-emerald-600 font-bold flex items-center gap-1 mt-0.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              Active Session
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap font-mono text-[11px] font-bold text-[#475569]">
+                          {session.duration}
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          {session.mfaMethod ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded" title={session.mfaMethod}>
+                              <FiCheckCircle className="w-3 h-3 text-emerald-600 shrink-0" />
+                              FIDO2 Verified
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-[#94A3B8]">Standard</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap text-right">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedSessionForInspection(session)}
+                            className="px-2.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#2563EB] hover:text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer inline-flex items-center gap-1"
+                            title="Inspect Complete Audit Telemetry Dossier"
+                          >
+                            <FiEye className="w-3.5 h-3.5" />
+                            <span>Inspect</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+      )}
 
       {/* Add New Vehicle Modal */}
       <Modal
         isOpen={isAddVehicleOpen}
         onClose={() => setIsAddVehicleOpen(false)}
+        size="lg"
         title="Register New Vehicle to Stock"
         description="Add a new luxury vehicle to inventory for internal valuation and public listing."
         footer={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsAddVehicleOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsAddVehicleOpen(false)}
+              leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+            >
               Cancel
             </Button>
             <Button
@@ -1039,23 +1648,24 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
                 alert("New vehicle submitted to Inventory Master Table with 'Draft Inspection' status.");
                 setIsAddVehicleOpen(false);
               }}
+              leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
               Save Vehicle Record
             </Button>
           </>
         }
       >
-        <div className="space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <Input label="Make (Brand)" placeholder="e.g. Mercedes-Benz" required />
             <Input label="Model & Trim" placeholder="e.g. S580 4MATIC Maybach" required />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <Input label="Model Year" placeholder="2026" required />
             <Input label="Chassis / VIN" placeholder="WDD223..." required />
             <Input label="Mileage (KM)" placeholder="1,500" required />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <Input label="FOB Purchase Price ($)" placeholder="118500" required />
             <Input label="Target Showroom Price ($)" placeholder="165000" required />
           </div>
@@ -1075,11 +1685,17 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
       <Modal
         isOpen={isTransferModalOpen}
         onClose={() => setIsTransferModalOpen(false)}
+        size="lg"
         title="Dispatch Inter-Branch Carrier"
         description="Create an authorized vehicle carrier transport manifest between showroom locations."
         footer={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsTransferModalOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsTransferModalOpen(false)}
+              leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+            >
               Cancel
             </Button>
             <Button
@@ -1089,6 +1705,7 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
                 alert("Carrier dispatch authorized. Tracking number assigned.");
                 setIsTransferModalOpen(false);
               }}
+              leftIcon={<FiTruck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
               Authorize Carrier Dispatch
             </Button>
@@ -1123,6 +1740,467 @@ export function ERPConsoleContent({ initialModule = "Dashboard" }: { initialModu
           <Input label="Driver Name & Contact Number" placeholder="e.g. Musa Danladi (+234 803 111 2222)" required />
         </div>
       </Modal>
+
+      {/* 1. Order Preview Modal (Direct Modal - No Redirect, Spacious Size) */}
+      {selectedOrderForPreview && (
+        <Modal
+          isOpen={!!selectedOrderForPreview}
+          onClose={() => setSelectedOrderForPreview(null)}
+          size="xl"
+          title={`Order Dossier: ${selectedOrderForPreview.id}`}
+          description="Customer Sales Contract & Showroom Allocation"
+          footer={
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 w-full">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const ord = selectedOrderForPreview;
+                  setSelectedOrderForPreview(null);
+                  setSelectedOrderForInspection(ord);
+                }}
+                leftIcon={<FiCheckSquare className="w-3.5 h-3.5 text-[#2563EB]" />}
+              >
+                Inspect 150-Point PDI
+              </Button>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => handleDownloadOrderPdf(selectedOrderForPreview)}
+                  leftIcon={<FiDownload className="w-3.5 h-3.5 text-[#FFFFFF]" />}
+                >
+                  Download Sales PDF
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedOrderForPreview(null)}
+                  leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          }
+        >
+          <div className="space-y-4 text-xs">
+            <div className="p-4 bg-[#F8FAFC] rounded-md border border-[#E2E8F0] space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-bold text-[#2563EB] text-base">{selectedOrderForPreview.id}</span>
+                <Badge variant="gold" size="sm">{selectedOrderForPreview.status}</Badge>
+              </div>
+              <div className="text-[#0F172A] font-bold text-base">{selectedOrderForPreview.car}</div>
+              <div className="text-xs text-[#64748B] font-mono flex flex-wrap gap-x-3 gap-y-1">
+                <span>VIN: <strong className="text-[#0F172A]">{selectedOrderForPreview.vin || "WDD223847291001"}</strong></span>
+                <span>&bull;</span>
+                <span>Stage: <strong className="text-[#0F172A]">{selectedOrderForPreview.stage}</strong></span>
+                <span>&bull;</span>
+                <span>Rep: <strong className="text-[#0F172A]">{selectedOrderForPreview.rep}</strong></span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] space-y-2 shadow-xs">
+                <span className="font-bold text-[#0F172A] block uppercase text-[10px] tracking-wider text-[#64748B]">Buyer Information</span>
+                <div className="font-bold text-[#0F172A] text-sm">{selectedOrderForPreview.client}</div>
+                <div className="text-xs text-[#64748B] flex justify-between">
+                  <span>Assigned Specialist:</span>
+                  <strong className="text-[#0F172A]">{selectedOrderForPreview.rep}</strong>
+                </div>
+                <div className="text-xs text-[#64748B] flex justify-between">
+                  <span>Estimated Delivery Date:</span>
+                  <span className="font-mono font-bold text-[#0F172A]">{selectedOrderForPreview.deliveryDate || "2026-11-20"}</span>
+                </div>
+              </div>
+
+              <div className="p-4 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] space-y-2 shadow-xs">
+                <span className="font-bold text-[#0F172A] block uppercase text-[10px] tracking-wider text-[#64748B]">Financial Breakdown</span>
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#64748B]">Agreed Retail Price:</span>
+                  <span className="font-mono font-bold text-[#1D4ED8] text-sm">{selectedOrderForPreview.amount}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#64748B]">Committed Escrow Deposit:</span>
+                  <span className="font-mono font-semibold text-[#0F172A]">{selectedOrderForPreview.deposit || "$50,000"}</span>
+                </div>
+                <div className="flex justify-between border-t border-[#E2E8F0] pt-1.5 text-xs">
+                  <span className="text-[#64748B] font-semibold">Remaining Balance Due:</span>
+                  <span className="font-mono font-bold text-[#0F172A]">{selectedOrderForPreview.balance || "$0"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-xs text-[#1D4ED8]">
+              <strong>Dealership Escrow Security:</strong> Funds verified under Central Bank AML guidelines. Physical vehicle release authorized following lead technician PDI sign-off.
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* 2. Order 150-Point Inspection Modal (Direct Modal - Spacious 2-Column Grid) */}
+      {selectedOrderForInspection && (
+        <Modal
+          isOpen={!!selectedOrderForInspection}
+          onClose={() => setSelectedOrderForInspection(null)}
+          size="xl"
+          title={`150-Point PDI Inspection Sheet: ${selectedOrderForInspection.id}`}
+          description={`Master Mechanical & Diagnostic Certification for ${selectedOrderForInspection.car}`}
+          footer={
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 w-full">
+              <span className="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-md font-bold">
+                PDI Status: 100% Certified Pass
+              </span>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => handleDownloadOrderPdf(selectedOrderForInspection)}
+                  leftIcon={<FiDownload className="w-3.5 h-3.5 text-[#FFFFFF]" />}
+                >
+                  Download Certified PDF
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedOrderForInspection(null)}
+                  leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          }
+        >
+          <div className="space-y-4 text-xs">
+            <div className="p-3.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <span className="font-mono font-bold text-[#2563EB] text-sm">{selectedOrderForInspection.id}</span>
+                <span className="font-bold text-[#0F172A] text-sm ml-2">{selectedOrderForInspection.car}</span>
+                <span className="text-xs text-[#64748B] block mt-0.5">
+                  VIN: {selectedOrderForInspection.vin || "WDD223...001"} &bull; Inspector: <strong>Engr. Tunde B. (Lead Master Diagnostic Tech)</strong>
+                </span>
+              </div>
+              <Badge variant="gold" size="sm">Score: 99.4 / 100</Badge>
+            </div>
+
+            <div className="space-y-2.5">
+              <span className="font-bold text-[#0F172A] block uppercase text-[10px] tracking-wider text-[#64748B]">
+                Key Diagnostic Checkpoints (150-Point Factory Standard)
+              </span>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  { title: "Powertrain & Dual-Clutch Transmission", desc: "Zero stored DTC error codes, fluid pressure verified, dyno shift timing nominal.", status: "PASSED" },
+                  { title: "Dynamic Air Suspension & Leveling", desc: "4-corner air struts calibrated to OEM ride height tolerances at 100km/h simulation.", status: "PASSED" },
+                  { title: "Carbon-Ceramic & High-Performance ABS", desc: "Pad thickness 98.5%, brake line pressure verified, zero rotor runout.", status: "PASSED" },
+                  { title: "ECU Firmware & Radar ADAS Calibration", desc: "Level-2+ driver assistance cameras and radar sensors laser aligned.", status: "PASSED" },
+                  { title: "360-Degree Paint Depth & Coating", desc: "Laser micrometer: 114 - 128 microns throughout. 9H ceramic topcoat verified.", status: "PASSED" },
+                  { title: "Cabin Sanitization & Leather Conditioning", desc: "Ozone purification complete, Nappa leather nourished, zero cabin blemishes.", status: "PASSED" },
+                ].map((pt, idx) => (
+                  <div key={idx} className="p-3 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] flex items-center justify-between gap-2.5 shadow-xs">
+                    <div>
+                      <div className="font-bold text-[#0F172A] text-xs">{pt.title}</div>
+                      <div className="text-[11px] text-[#64748B] mt-0.5">{pt.desc}</div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 shrink-0">
+                      {pt.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* 3. Vehicle Specification Dossier Preview Modal (Spacious Side-by-Side) */}
+      {selectedVehicleForPreview && (
+        <Modal
+          isOpen={!!selectedVehicleForPreview}
+          onClose={() => setSelectedVehicleForPreview(null)}
+          size="xl"
+          title={`Vehicle Specification Dossier: ${selectedVehicleForPreview.stockId}`}
+          description={`${selectedVehicleForPreview.year} ${selectedVehicleForPreview.make} ${selectedVehicleForPreview.model}`}
+          footer={
+            <div className="flex items-center justify-between w-full">
+              <Link href={`/inventory/${selectedVehicleForPreview.stockId}`}>
+                <Button variant="outline" size="sm" leftIcon={<FiEye className="w-3.5 h-3.5 text-[#2563EB]" />}>
+                  Open Full Showroom VDP
+                </Button>
+              </Link>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setSelectedVehicleForPreview(null)}
+                leftIcon={<FiX className="w-3.5 h-3.5 text-white" />}
+              >
+                Close Preview
+              </Button>
+            </div>
+          }
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+            {/* Left Column: Vehicle Image & Badges */}
+            <div className="space-y-3">
+              <div className="relative h-56 w-full rounded-md overflow-hidden border border-[#CBD5E1] bg-[#0F172A]">
+                <Image
+                  src={selectedVehicleForPreview.image}
+                  alt={selectedVehicleForPreview.model}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute top-2.5 right-2.5">
+                  <Badge variant="gold" size="sm" dot>
+                    {selectedVehicleForPreview.status}
+                  </Badge>
+                </div>
+                <div className="absolute bottom-2.5 left-2.5 bg-[#0F172A]/90 backdrop-blur-xs text-[#FFFFFF] px-3 py-1.5 rounded text-xs font-mono font-bold">
+                  ${selectedVehicleForPreview.priceUSD.toLocaleString()} USD &bull; ₦{selectedVehicleForPreview.priceNGN.toLocaleString()} NGN
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#F8FAFC] rounded-md border border-[#E2E8F0] space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] block">Chassis & VIN Verification</span>
+                <div className="font-mono text-xs text-[#0F172A] font-bold">VIN: {selectedVehicleForPreview.vin || "W1N9G8EJ6PA...041"}</div>
+                <div className="text-[11px] text-[#64748B]">Showroom Hub: {selectedVehicleForPreview.location}</div>
+              </div>
+            </div>
+
+            {/* Right Column: Technical Specifications & Highlights */}
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="p-2.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase font-bold">Year</span>
+                  <span className="font-bold text-[#0F172A] text-xs">{selectedVehicleForPreview.year}</span>
+                </div>
+                <div className="p-2.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase font-bold">Mileage</span>
+                  <span className="font-bold text-[#0F172A] text-xs font-mono">{selectedVehicleForPreview.mileage.toLocaleString()} KM</span>
+                </div>
+                <div className="p-2.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase font-bold">Transmission</span>
+                  <span className="font-bold text-[#0F172A] text-xs">{selectedVehicleForPreview.transmission}</span>
+                </div>
+                <div className="p-2.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase font-bold">Fuel Type</span>
+                  <span className="font-bold text-[#0F172A] text-xs">{selectedVehicleForPreview.fuel}</span>
+                </div>
+                <div className="p-2.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase font-bold">Exterior Color</span>
+                  <span className="font-bold text-[#0F172A] text-xs">{selectedVehicleForPreview.exteriorColor}</span>
+                </div>
+                <div className="p-2.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase font-bold">Interior Trim</span>
+                  <span className="font-bold text-[#0F172A] text-xs">{selectedVehicleForPreview.interiorColor}</span>
+                </div>
+                <div className="p-2.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0] col-span-2">
+                  <span className="text-[#64748B] block text-[9px] uppercase font-bold">Engine & Output</span>
+                  <span className="font-bold text-[#0F172A] text-xs truncate block">{selectedVehicleForPreview.engine}</span>
+                </div>
+              </div>
+
+              {/* Key Features */}
+              <div className="space-y-1.5">
+                <span className="font-bold text-[#0F172A] block uppercase text-[10px] tracking-wider text-[#64748B]">Equipment Highlights</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedVehicleForPreview.features.slice(0, 8).map((f) => (
+                    <span key={f} className="px-2 py-0.5 rounded text-[10px] bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] font-medium">
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* 4. Trade-In Appraisal & Condition Sheet Modal */}
+      {selectedTradeInForInspection && (
+        <Modal
+          isOpen={!!selectedTradeInForInspection}
+          onClose={() => setSelectedTradeInForInspection(null)}
+          size="lg"
+          title={`Trade-In Appraisal & Condition Sheet: ${selectedTradeInForInspection.id}`}
+          description={`Customer Trade-In Evaluation for ${selectedTradeInForInspection.client}`}
+          footer={
+            <div className="flex items-center justify-between w-full">
+              <span className="text-xs font-mono text-[#2563EB] font-bold">
+                Valuation: {selectedTradeInForInspection.valuation}
+              </span>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setSelectedTradeInForInspection(null)}
+                leftIcon={<FiX className="w-3.5 h-3.5 text-white" />}
+              >
+                Close Appraisal Sheet
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-3.5 text-xs">
+            <div className="p-3.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0] space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-bold text-[#2563EB] text-sm">{selectedTradeInForInspection.id}</span>
+                <Badge variant="gold" size="sm">{selectedTradeInForInspection.status}</Badge>
+              </div>
+              <div className="text-[#0F172A] font-bold text-sm">
+                Offered Vehicle: {selectedTradeInForInspection.carOffered}
+              </div>
+              <div className="text-xs text-[#64748B]">
+                Target Acquisition: <strong className="text-[#0F172A]">{selectedTradeInForInspection.target}</strong>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="p-3.5 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] shadow-xs space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] block">Appraised Trade-In Value</span>
+                <div className="font-mono font-bold text-[#1D4ED8] text-base">{selectedTradeInForInspection.valuation}</div>
+                <div className="text-[11px] text-[#64748B]">Based on verified auction comps & condition score</div>
+              </div>
+
+              <div className="p-3.5 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] shadow-xs space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] block">Balance Settlement Required</span>
+                <div className="font-mono font-bold text-[#0F172A] text-base">{selectedTradeInForInspection.diff}</div>
+                <div className="text-[11px] text-[#64748B]">Payable by bank wire before vehicle release</div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <span className="font-bold text-[#0F172A] block uppercase text-[10px] tracking-wider text-[#64748B]">
+                Physical & Mechanical Verification Points
+              </span>
+              {[
+                { title: "Structural Frame & Chassis", status: "100% Uncompromised (Zero Accident History)" },
+                { title: "Laser Paint Depth Gauge", status: "115 - 128 microns (Factory Original Paint)" },
+                { title: "OBD-II Engine & Transmission Scan", status: "Zero Stored Faults, Clean Catalyst" },
+                { title: "Tire Tread & Braking System", status: "Front: 7.2mm, Rear: 6.8mm, Rotors Clean" },
+              ].map((pt, idx) => (
+                <div key={idx} className="p-2.5 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] flex justify-between items-center text-xs">
+                  <span className="font-medium text-[#475569]">{pt.title}</span>
+                  <span className="font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px]">
+                    {pt.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* 5. Session Audit Telemetry Modal */}
+      {selectedSessionForInspection && (
+        <Modal
+          isOpen={!!selectedSessionForInspection}
+          onClose={() => setSelectedSessionForInspection(null)}
+          size="xl"
+          title={`Session Audit Telemetry: ${selectedSessionForInspection.id}`}
+          description={`Cryptographic WORM Audit Record for ${selectedSessionForInspection.userName}`}
+          footer={
+            <div className="flex items-center justify-between w-full">
+              <span className="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md font-bold">
+                Status: Tamper-Evident SHA-256 Validated
+              </span>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setSelectedSessionForInspection(null)}
+                leftIcon={<FiX className="w-3.5 h-3.5 text-white" />}
+              >
+                Close Audit Record
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-4 text-xs">
+            <div className="p-3.5 bg-[#F8FAFC] rounded-md border border-[#E2E8F0] space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-bold text-[#2563EB] text-sm">{selectedSessionForInspection.id}</span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                  !selectedSessionForInspection.logoutTime
+                    ? "text-emerald-700 bg-emerald-50 border border-emerald-200"
+                    : "text-[#64748B] bg-[#F1F5F9] border border-[#CBD5E1]"
+                }`}>
+                  {!selectedSessionForInspection.logoutTime ? "Live Active Session" : "Terminated Session"}
+                </span>
+              </div>
+              <div className="font-bold text-[#0F172A] text-sm">{selectedSessionForInspection.userName}</div>
+              <div className="text-xs text-[#64748B]">
+                {selectedSessionForInspection.email} &bull; <strong className="text-[#2563EB]">{selectedSessionForInspection.role}</strong> &bull; {selectedSessionForInspection.department}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div className="p-3.5 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] shadow-xs space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] block">Network & Geolocation</span>
+                <div className="flex justify-between">
+                  <span className="text-[#64748B]">IP Address:</span>
+                  <span className="font-mono font-bold text-[#0F172A]">{selectedSessionForInspection.ipAddress}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#64748B]">Location:</span>
+                  <span className="font-medium text-[#0F172A]">{selectedSessionForInspection.location}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#64748B]">WORM Record Seal:</span>
+                  <span className="font-mono text-emerald-600 font-bold">
+                    {selectedSessionForInspection.immutableSeal ? "Immutable WORM" : "Verified"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-3.5 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] shadow-xs space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] block">Device Architecture</span>
+                <div className="flex justify-between">
+                  <span className="text-[#64748B]">Operating System:</span>
+                  <span className="font-medium text-[#0F172A]">{selectedSessionForInspection.device}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#64748B]">Browser:</span>
+                  <span className="text-[#0F172A]">{selectedSessionForInspection.browser}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#64748B]">MFA Protocol:</span>
+                  <span className="font-mono font-bold text-emerald-600 text-[10px]">
+                    {selectedSessionForInspection.mfaMethod}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] shadow-xs space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] block">Session Timestamps & Duration</span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono text-[11px]">
+                <div className="p-2.5 bg-[#F8FAFC] rounded border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase">Login Authenticated</span>
+                  <span className="font-bold text-[#0F172A]">{selectedSessionForInspection.loginTime}</span>
+                </div>
+                <div className="p-2.5 bg-[#F8FAFC] rounded border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase">Session Terminated</span>
+                  <span className="font-bold text-[#0F172A]">{selectedSessionForInspection.logoutTime || "Active"}</span>
+                </div>
+                <div className="p-2.5 bg-[#F8FAFC] rounded border border-[#E2E8F0]">
+                  <span className="text-[#64748B] block text-[9px] uppercase">Total Duration</span>
+                  <span className="font-bold text-[#1D4ED8]">{selectedSessionForInspection.duration}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* SHA-256 Tamper-Proof Cryptographic Hash */}
+            <div className="p-3.5 bg-[#0F172A] rounded-md text-[#FFFFFF] space-y-1.5">
+              <div className="flex items-center justify-between text-[10px] text-[#94A3B8]">
+                <span className="uppercase tracking-wider font-bold">SHA-256 WORM Cryptographic Seal</span>
+                <span className="text-emerald-400 font-mono font-bold">Immutable Audit Lock</span>
+              </div>
+              <div className="font-mono text-[11px] text-[#BFDBFE] break-all select-all p-2 bg-[#000000]/50 rounded border border-[#1E293B]">
+                {selectedSessionForInspection.checksum}
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
     </DashboardLayout>
   );
 }

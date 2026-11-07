@@ -53,9 +53,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             disabled={disabled}
             className={`w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#94A3B8] border transition-all duration-200 outline-none
-              text-xs sm:text-sm py-2 sm:py-2.5 shadow-xs
-              ${leftIcon ? "pl-10" : "pl-3.5"} 
-              ${rightIcon ? "pr-10" : "pr-3.5"}
+              text-xs sm:text-sm py-1.5 sm:py-2 shadow-xs
+              ${leftIcon ? "pl-10" : "pl-3"} 
+              ${rightIcon ? "pr-10" : "pr-3"}
               ${
                 error
                   ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"

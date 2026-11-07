@@ -8,6 +8,8 @@ import {
   FiDollarSign,
   FiCheckCircle,
   FiUploadCloud,
+  FiCheck,
+  FiX,
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -175,11 +177,17 @@ export default function CareersPage() {
         <Modal
           isOpen={isApplyModalOpen}
           onClose={() => setIsApplyModalOpen(false)}
+          size="lg"
           title={`Application: ${selectedJob.title}`}
           description={`Department: ${selectedJob.department} • ${selectedJob.location}`}
           footer={
             <>
-              <Button variant="outline" size="sm" onClick={() => setIsApplyModalOpen(false)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsApplyModalOpen(false)}
+                leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+              >
                 Cancel
               </Button>
               <Button
@@ -189,6 +197,7 @@ export default function CareersPage() {
                   alert("Application submitted! Our recruitment team will review your CV.");
                   setIsApplyModalOpen(false);
                 }}
+                leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
               >
                 Submit Application
               </Button>

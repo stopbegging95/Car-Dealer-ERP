@@ -10,6 +10,13 @@ import {
   FiMenu,
   FiX,
   FiShield,
+  FiTool,
+  FiBox,
+  FiActivity,
+  FiCheckSquare,
+  FiTruck,
+  FiRepeat,
+  FiShoppingCart,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import { Button } from "./ui";
@@ -234,57 +241,151 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
             </button>
 
             {loginDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-[#FFFFFF] border border-[#CBD5E1] rounded-lg shadow-2xl p-2.5 grid gap-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-2.5 py-1.5 border-b border-[#E2E8F0] flex items-center justify-between">
+              <div className="absolute right-0 top-full mt-2 w-96 sm:w-[460px] bg-[#FFFFFF] border border-[#CBD5E1] rounded-md shadow-2xl p-3.5 z-50 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
+                {/* 1. Primary Dashboards */}
+                <div className="pb-2 border-b border-[#E2E8F0] flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-[#2563EB] font-bold">
-                    Enterprise Portals
+                    PRIMARY ENTERPRISE DASHBOARDS
                   </span>
-                  <span className="text-[10px] font-mono text-[#64748B]">Direct Access</span>
+                  <span className="text-[10px] font-mono text-[#64748B]">Direct Sign-In</span>
                 </div>
 
-                {[
-                  {
-                    title: "Admin Dashboard",
-                    subtitle: "Dealership ERP Console",
-                    href: "/erp",
-                    badge: "Admin & Staff",
-                    desc: "Executive analytics, master inventory control, sales, imports & financial ledger",
-                    icon: <FiShield className="w-4 h-4 text-[#2563EB]" />,
-                  },
-                  {
-                    title: "User Dashboard",
-                    subtitle: "Customer VIP Portal",
-                    href: "/portal",
-                    badge: "Customer",
-                    desc: "Saved garage, test drive bookings, trade-in valuations & personal document vault",
-                    icon: <FaCar className="w-4 h-4 text-[#2563EB]" />,
-                  },
-                ].map((item) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2.5 pb-3 border-b border-[#E2E8F0]">
                   <Link
-                    key={item.title}
-                    href={item.href}
+                    href="/erp"
                     onClick={() => setLoginDropdownOpen(false)}
-                    className="p-3 rounded-md hover:bg-[#EFF6FF] border border-transparent hover:border-[#BFDBFE] transition-all flex items-center justify-between group cursor-pointer"
+                    className="p-3 rounded-md bg-[#0F172A] text-white hover:bg-[#1E293B] border border-[#0F172A] transition-all flex flex-col justify-between group shadow-xs cursor-pointer"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] text-[#2563EB] group-hover:bg-[#2563EB] group-hover:text-[#FFFFFF] transition-colors shrink-0">
-                        {item.icon}
+                    <div className="flex items-center justify-between">
+                      <div className="p-1.5 rounded-md bg-[#2563EB] text-white">
+                        <FiShield className="w-4 h-4" />
                       </div>
-                      <div>
-                        <div className="text-xs font-bold text-[#0F172A] group-hover:text-[#2563EB] transition-colors flex items-center gap-1.5">
-                          <span>{item.title}</span>
-                          <span className="text-[10px] text-[#64748B] font-normal">({item.subtitle})</span>
-                        </div>
-                        <div className="text-[10px] text-[#64748B] mt-0.5 line-clamp-1">
-                          {item.desc}
-                        </div>
+                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-white/10 text-[#60A5FA] font-bold">
+                        Admin & Staff
+                      </span>
+                    </div>
+                    <div className="mt-3">
+                      <div className="text-xs font-bold text-white group-hover:text-[#60A5FA] transition-colors">
+                        Admin Dashboard
+                      </div>
+                      <div className="text-[10px] text-[#94A3B8] line-clamp-1 mt-0.5">
+                        Dealership Master ERP & P&L
                       </div>
                     </div>
-                    <span className="text-[9px] font-mono px-2 py-0.5 rounded-md bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] shrink-0 font-bold">
-                      {item.badge}
-                    </span>
                   </Link>
-                ))}
+
+                  <Link
+                    href="/portal"
+                    onClick={() => setLoginDropdownOpen(false)}
+                    className="p-3 rounded-md bg-[#EFF6FF] hover:bg-[#DBEAFE] border border-[#BFDBFE] transition-all flex flex-col justify-between group shadow-xs cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="p-1.5 rounded-md bg-[#2563EB] text-white">
+                        <FaCar className="w-4 h-4" />
+                      </div>
+                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-[#2563EB]/15 text-[#1D4ED8] font-bold">
+                        Customer VIP
+                      </span>
+                    </div>
+                    <div className="mt-3">
+                      <div className="text-xs font-bold text-[#0F172A] group-hover:text-[#2563EB] transition-colors">
+                        User Dashboard
+                      </div>
+                      <div className="text-[10px] text-[#64748B] line-clamp-1 mt-0.5">
+                        Garage, Test Drives & Vault
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+
+                {/* 2. Dealership Department Desks (Direct Access) */}
+                <div className="pt-3 pb-1.5 flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#0F172A] font-bold">
+                    DEALERSHIP DEPARTMENT DESKS
+                  </span>
+                  <span className="text-[10px] font-mono text-[#2563EB]">ERP Workspaces</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                  {[
+                    {
+                      name: "Sales & Orders",
+                      href: "/erp/sales",
+                      dept: "Showroom Sales & Quotes",
+                      icon: <FiShoppingCart className="w-3.5 h-3.5 text-[#2563EB]" />,
+                    },
+                    {
+                      name: "Service & Workshop",
+                      href: "/erp/service",
+                      dept: "150-Point PDI & Diagnostics",
+                      icon: <FiTool className="w-3.5 h-3.5 text-[#2563EB]" />,
+                    },
+                    {
+                      name: "Parts & Inventory",
+                      href: "/erp/parts",
+                      dept: "OEM Parts & Styling",
+                      icon: <FiBox className="w-3.5 h-3.5 text-[#2563EB]" />,
+                    },
+                    {
+                      name: "Finance & Insurance",
+                      href: "/erp/financing",
+                      dept: "Auto Loans & Policies",
+                      icon: <FiActivity className="w-3.5 h-3.5 text-[#2563EB]" />,
+                    },
+                    {
+                      name: "Detailing & Recon",
+                      href: "/erp/recon",
+                      dept: "9H Ceramic & Handover",
+                      icon: <FiCheckSquare className="w-3.5 h-3.5 text-[#2563EB]" />,
+                    },
+                    {
+                      name: "Import Logistics",
+                      href: "/erp/imports",
+                      dept: "Port Clearing & SGDs",
+                      icon: <FiTruck className="w-3.5 h-3.5 text-[#2563EB]" />,
+                    },
+                    {
+                      name: "Trade-In & Swap",
+                      href: "/erp/trade-ins",
+                      dept: "Valuations & Equity",
+                      icon: <FiRepeat className="w-3.5 h-3.5 text-[#2563EB]" />,
+                    },
+                  ].map((dept) => (
+                    <Link
+                      key={dept.name}
+                      href={dept.href}
+                      onClick={() => setLoginDropdownOpen(false)}
+                      className="p-2 rounded-md hover:bg-[#EFF6FF] border border-transparent hover:border-[#BFDBFE] transition-all flex items-center gap-2.5 group cursor-pointer"
+                    >
+                      <div className="p-1.5 rounded-md bg-[#F1F5F9] group-hover:bg-[#EFF6FF] text-[#2563EB] shrink-0 border border-[#CBD5E1] group-hover:border-[#BFDBFE]">
+                        {dept.icon}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-xs font-bold text-[#0F172A] group-hover:text-[#2563EB] transition-colors truncate">
+                          {dept.name}
+                        </div>
+                        <div className="text-[10px] text-[#64748B] truncate">
+                          {dept.dept}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Footer security tag */}
+                <div className="mt-3 pt-2.5 border-t border-[#E2E8F0] flex items-center justify-between text-[10px] text-[#64748B]">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    Encrypted Session & RBAC Protected
+                  </span>
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setLoginDropdownOpen(false)}
+                    className="font-bold text-[#2563EB] hover:underline"
+                  >
+                    Auth Portal &rarr;
+                  </Link>
+                </div>
               </div>
             )}
           </div>
@@ -294,7 +395,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 rounded-xl bg-[#FFFFFF] text-[#0F172A] border border-[#CBD5E1] hover:border-[#2563EB]"
+          className="lg:hidden p-2 rounded-md bg-[#FFFFFF] text-[#0F172A] border border-[#CBD5E1] hover:border-[#2563EB]"
           aria-label="Toggle Navigation Menu"
         >
           {mobileMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
@@ -320,7 +421,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
           </Link>
           <div className="pt-2 border-t border-[#E2E8F0] space-y-1.5">
             <span className="text-[10px] font-mono uppercase tracking-wider text-[#64748B] block px-3">
-              Dashboards
+              Primary Dashboards
             </span>
             <Link
               href="/erp"
@@ -338,6 +439,30 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
               <span>User Dashboard</span>
               <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#2563EB]/15 text-[#2563EB]">Customer</span>
             </Link>
+
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#64748B] block px-3 pt-2">
+              Dealership Department Desks
+            </span>
+            <div className="grid grid-cols-2 gap-1 px-1">
+              {[
+                { name: "Sales & Orders", href: "/erp/sales" },
+                { name: "Service & Workshop", href: "/erp/service" },
+                { name: "Parts & Inventory", href: "/erp/parts" },
+                { name: "Finance & Insurance", href: "/erp/financing" },
+                { name: "Detailing & Recon", href: "/erp/recon" },
+                { name: "Import Logistics", href: "/erp/imports" },
+                { name: "Trade-In & Swap", href: "/erp/trade-ins" },
+              ].map((d) => (
+                <Link
+                  key={d.name}
+                  href={d.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-2.5 py-1.5 rounded-md text-[11px] font-semibold text-[#475569] hover:text-[#2563EB] hover:bg-[#EFF6FF] transition-colors"
+                >
+                  {d.name}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       )}

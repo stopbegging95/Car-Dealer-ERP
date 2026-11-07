@@ -7,6 +7,7 @@ export * from "./Modal";
 export * from "./Toggle";
 export * from "./Tabs";
 export * from "./Card";
+export * from "./StatsCard";
 export * from "./Radio";
 export * from "./Checkbox";
 export * from "./DatePicker";

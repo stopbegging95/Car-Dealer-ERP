@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FiSearch, FiSliders, FiGrid, FiList } from "react-icons/fi";
+import { FiSearch, FiSliders, FiGrid, FiList, FiCheck, FiX } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Tabs, Dropdown, VehicleCard, Modal, Input, DatePicker, Button } from "@/components/ui";
@@ -12,7 +12,7 @@ export default function InventoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("price-desc");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [currency, setCurrency] = useState<"USD" | "NGN">("USD");
+  const currency: "USD" | "NGN" = "USD";
 
   // Modal
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
@@ -65,31 +65,6 @@ export default function InventoryPage() {
               Browse our verified collection of luxury and executive automobiles available for immediate delivery.
             </p>
           </div>
-
-          {/* Currency Switcher */}
-          <div className="flex items-center gap-2 self-start md:self-auto bg-[#FFFFFF] p-1 rounded-md border border-[#CBD5E1] shadow-xs">
-            <span className="text-xs text-[#64748B] px-2 font-medium">Currency:</span>
-            <button
-              onClick={() => setCurrency("USD")}
-              className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
-                currency === "USD"
-                  ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs"
-                  : "text-[#64748B] hover:text-[#0F172A]"
-              }`}
-            >
-              $ USD
-            </button>
-            <button
-              onClick={() => setCurrency("NGN")}
-              className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
-                currency === "NGN"
-                  ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs"
-                  : "text-[#64748B] hover:text-[#0F172A]"
-              }`}
-            >
-              ₦ NGN
-            </button>
-          </div>
         </div>
 
         {/* Category Filter Pills (from requirements) */}
@@ -107,16 +82,16 @@ export default function InventoryPage() {
         </div>
 
         {/* Search, Sort, and View Controls Strip */}
-        <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl p-3 sm:p-3.5 flex flex-wrap items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3 flex-1 min-w-[240px]">
             <div className="relative w-full max-w-md">
-              <FiSearch className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
+              <FiSearch className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2 sm:top-2.5" />
               <input
                 type="text"
                 placeholder="Search by make, model, category, stock ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#F8FAFC] text-xs sm:text-sm text-[#0F172A] placeholder-[#94A3B8] rounded-md pl-9 pr-3.5 py-2 border border-[#CBD5E1] focus:border-[#2563EB] outline-none shadow-xs"
+                className="w-full bg-[#F8FAFC] text-xs sm:text-sm text-[#0F172A] placeholder-[#94A3B8] rounded-md pl-9 pr-3.5 py-1.5 sm:py-2 border border-[#CBD5E1] focus:border-[#2563EB] outline-none shadow-xs"
               />
             </div>
             <span className="text-xs text-[#64748B] whitespace-nowrap hidden sm:inline">
@@ -205,6 +180,7 @@ export default function InventoryPage() {
       <Modal
         isOpen={isTestDriveOpen}
         onClose={() => setIsTestDriveOpen(false)}
+        size="lg"
         title={
           selectedVehicle ? (
             <span>
@@ -217,7 +193,12 @@ export default function InventoryPage() {
         description="Schedule a private VIP test drive appointment at one of our luxury showrooms."
         footer={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsTestDriveOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsTestDriveOpen(false)}
+              leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+            >
               Cancel
             </Button>
             <Button
@@ -227,6 +208,7 @@ export default function InventoryPage() {
                 alert("VIP appointment scheduled successfully!");
                 setIsTestDriveOpen(false);
               }}
+              leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
               Confirm Appointment
             </Button>

@@ -16,6 +16,8 @@ import {
   FiRepeat,
   FiCpu,
   FiActivity,
+  FiCheck,
+  FiX,
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa6";
 import { Navbar } from "@/components/Navbar";
@@ -471,6 +473,7 @@ function VehicleDetailContent() {
       <Modal
         isOpen={isTestDriveOpen}
         onClose={() => setIsTestDriveOpen(false)}
+        size="lg"
         title={
           <span>
             Book VIP Test Drive: <span className="text-[#2563EB]">{vehicle.make} {vehicle.model}</span>
@@ -479,7 +482,12 @@ function VehicleDetailContent() {
         description="Schedule a private appointment with our sales executives."
         footer={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsTestDriveOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsTestDriveOpen(false)}
+              leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+            >
               Cancel
             </Button>
             <Button
@@ -489,6 +497,7 @@ function VehicleDetailContent() {
                 alert(`Appointment confirmed for ${vehicle.make} ${vehicle.model} on ${testDriveDate}!`);
                 setIsTestDriveOpen(false);
               }}
+              leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
               Confirm VIP Appointment
             </Button>

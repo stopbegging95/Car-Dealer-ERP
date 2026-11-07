@@ -8,6 +8,7 @@ import {
   FiCalendar,
   FiUploadCloud,
   FiInfo,
+  FiCheck,
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -295,11 +296,17 @@ export default function SellOrSwapPage() {
       <Modal
         isOpen={isBookedModalOpen}
         onClose={() => setIsBookedModalOpen(false)}
+        size="md"
         title="Appraisal Appointment Confirmed"
         description="Our valuation team has created your trade-in / direct sale inspection file."
         footer={
-          <Button variant="primary" size="sm" onClick={() => setIsBookedModalOpen(false)}>
-            Close
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsBookedModalOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Close
           </Button>
         }
       >

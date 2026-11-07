@@ -73,10 +73,10 @@ export function Table<T>({
     : 1;
 
   return (
-    <div className={`w-full flex flex-col bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm ${className}`}>
-      {/* Responsive Horizontal Scroll Container */}
-      <div className="w-full overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+    <div className={`w-full flex flex-col bg-[#FFFFFF] border border-[#E2E8F0] rounded-md overflow-hidden shadow-xs ${className}`}>
+      {/* Responsive Horizontal Scroll Container - allows scrolling of x-axis if content needs it */}
+      <div className="w-full overflow-x-auto scrollbar-thin">
+        <table className="min-w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#64748B]">
               {columns.map((col) => {
@@ -92,7 +92,7 @@ export function Table<T>({
                   <th
                     key={col.key}
                     onClick={() => col.sortable && handleSort(col.key)}
-                    className={`py-3.5 px-3 sm:px-4 ${alignClass} ${
+                    className={`py-3.5 px-3 sm:px-4 whitespace-nowrap ${alignClass} ${
                       col.sortable ? "cursor-pointer select-none hover:text-[#2563EB]" : ""
                     } ${col.className || ""}`}
                   >
@@ -134,7 +134,7 @@ export function Table<T>({
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
                   {columns.map((col) => (
-                    <td key={col.key} className="py-3.5 px-3 sm:px-4">
+                    <td key={col.key} className="py-3.5 px-3 sm:px-4 whitespace-nowrap">
                       <div className="h-4 bg-slate-200 rounded w-3/4" />
                     </td>
                   ))}
@@ -175,7 +175,7 @@ export function Table<T>({
                       return (
                         <td
                           key={col.key}
-                          className={`py-3 px-3 sm:px-4 text-xs sm:text-sm ${alignClass} ${col.className || ""}`}
+                          className={`py-3 px-3 sm:px-4 text-xs sm:text-sm whitespace-nowrap ${alignClass} ${col.className || ""}`}
                         >
                           {col.render
                             ? col.render(row, index)
@@ -212,21 +212,21 @@ export function Table<T>({
             <button
               disabled={pagination.currentPage <= 1}
               onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
-              className="p-1.5 rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] text-[#0F172A] hover:border-[#2563EB] hover:text-[#2563EB] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-xs"
+              className="p-1.5 rounded-md border border-[#CBD5E1] bg-[#FFFFFF] text-[#0F172A] hover:border-[#2563EB] hover:text-[#2563EB] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
 
-            <span className="px-3 py-1 rounded-lg bg-[#FFFFFF] border border-[#CBD5E1] text-[#2563EB] font-mono font-bold shadow-xs">
+            <span className="px-3 py-1 rounded-md bg-[#FFFFFF] border border-[#CBD5E1] text-[#2563EB] font-mono font-bold shadow-xs">
               {pagination.currentPage} / {totalPages}
             </span>
 
             <button
               disabled={pagination.currentPage >= totalPages}
               onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
-              className="p-1.5 rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] text-[#0F172A] hover:border-[#2563EB] hover:text-[#2563EB] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-xs"
+              className="p-1.5 rounded-md border border-[#CBD5E1] bg-[#FFFFFF] text-[#0F172A] hover:border-[#2563EB] hover:text-[#2563EB] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />

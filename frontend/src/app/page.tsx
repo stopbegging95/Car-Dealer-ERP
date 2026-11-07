@@ -13,11 +13,10 @@ import {
   FiArrowRight,
   FiCompass,
   FiPlay,
-  FiPause,
-  FiVolume2,
-  FiVolumeX,
   FiMaximize2,
   FiVideo,
+  FiCheck,
+  FiX,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import {
@@ -87,7 +86,7 @@ const BRAND_LOGOS = [
 
 export default function App() {
   // Currency state
-  const [currency, setCurrency] = useState<"USD" | "NGN">("USD");
+  const currency: "USD" | "NGN" = "USD";
 
   // Modal states
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
@@ -105,47 +104,22 @@ export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
-  const [isVideoMuted, setIsVideoMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const toggleVideoPlay = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    if (videoRef.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play().then(() => setIsVideoPlaying(true)).catch(() => setIsVideoPlaying(false));
-      } else {
-        videoRef.current.pause();
-        setIsVideoPlaying(false);
-      }
-    }
-  };
-
-  const toggleVideoMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-      setIsVideoMuted(videoRef.current.muted);
-    }
-  };
-
-  // Synchronize video element playback when transitioning slides
+  // Synchronize video element playback so it continuously autoplays seamlessly
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.defaultMuted = true;
-      videoRef.current.muted = isVideoMuted;
-    }
-    if (currentSlide === 1 && videoRef.current) {
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setIsVideoPlaying(true))
-          .catch(() => setIsVideoPlaying(false));
+      videoRef.current.muted = true;
+      if (currentSlide === 1) {
+        videoRef.current.play().catch(() => {
+          // Handled silently for browser policies
+        });
+      } else {
+        videoRef.current.pause();
       }
-    } else if (videoRef.current) {
-      videoRef.current.pause();
     }
-  }, [currentSlide, isVideoMuted]);
+  }, [currentSlide]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -244,26 +218,42 @@ export default function App() {
 
               {/* Stacked Text Content */}
               <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit">
+                <div
+                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
+                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
                   <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-pulse" />
                   <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
                     PREMIUM LUXURY CAR DEALERSHIP
                   </span>
                 </div>
 
-                <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm">
+                <h1
+                  className={`text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm transition-all duration-700 delay-150 ease-out transform ${
+                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
                   DRIVE YOUR <br />
                   <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
                     DREAM CAR
                   </span>
                 </h1>
 
-                <p className="text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow">
+                <p
+                  className={`text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow transition-all duration-700 delay-300 ease-out transform ${
+                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
                   Explore our prestigious collection of luxury and executive vehicles. Hand-selected, fully certified, and delivered with VIP concierge excellence.
                 </p>
 
                 {/* Dual CTAs & Video Action */}
-                <div className="flex flex-wrap items-center gap-3 pt-2">
+                <div
+                  className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
+                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
                   <Button
                     variant="primary"
                     size="md"
@@ -296,7 +286,11 @@ export default function App() {
                 </div>
 
                 {/* Sub-badge perks */}
-                <div className="flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium">
+                <div
+                  className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
+                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
                   <span className="flex items-center gap-1.5">
                     <FiShield className="w-3.5 h-3.5 text-[#60A5FA]" />
                     150-Point Certified
@@ -310,7 +304,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* SLIDE 2 (Index 1): High-Definition Automotive Video Slide */}
+            {/* SLIDE 2 (Index 1): High-Definition Automotive Video Background with Animated Text Slide */}
             <div
               className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 currentSlide === 1
@@ -318,6 +312,7 @@ export default function App() {
                   : "opacity-0 z-0 pointer-events-none"
               }`}
             >
+              {/* Background Video - Autoplays automatically without play button */}
               <video
                 ref={videoRef}
                 autoPlay
@@ -337,74 +332,87 @@ export default function App() {
                 />
               </video>
 
-              {/* Central Play/Resume Overlay if paused by browser */}
-              {!isVideoPlaying && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-xs">
-                  <button
-                    type="button"
-                    onClick={(e) => toggleVideoPlay(e)}
-                    className="flex items-center gap-3 px-6 py-3.5 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm shadow-2xl transition-all scale-100 hover:scale-105 cursor-pointer border border-white/20"
-                  >
-                    <FiPlay className="w-5 h-5 fill-white text-white" />
-                    <span>Play Performance Video</span>
-                  </button>
-                </div>
-              )}
-
-              {/* Transparent Overlay Stack (keeps consistent atmospheric overlay matching user rules) */}
+              {/* Transparent Dark Gradient Overlays for optimal text legibility */}
               <div className="absolute inset-0 bg-[#0F172A]/45" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/50 to-transparent sm:w-4/5 md:w-3/4" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
 
-              {/* Text & Playback Controls Layer */}
-              <div className="relative h-full flex flex-col justify-between p-6 sm:p-12 md:p-16 text-white z-10">
-                <div className="space-y-3 sm:space-y-4 max-w-2xl">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit">
-                    <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-ping" />
-                    <FiVideo className="w-3.5 h-3.5 text-[#60A5FA]" />
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
-                      LIVE 4K AUTOMOTIVE MOTION VIDEO
-                    </span>
-                  </div>
-                  <h2 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight">
-                    POWER, PRECISION & <br />
-                    <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
-                      PURITY IN MOTION
-                    </span>
-                  </h2>
-                  <p className="text-xs sm:text-sm text-[#E2E8F0] leading-relaxed max-w-lg">
-                    Experience our flagship performance and executive collection undergoing dynamic road trials and VIP port delivery verification.
-                  </p>
+              {/* Stacked Animated Text Content Layer (matches Text & Image Slide layout with animation) */}
+              <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
+                <div
+                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
+                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-ping" />
+                  <FiVideo className="w-3.5 h-3.5 text-[#60A5FA]" />
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
+                    LIVE 4K AUTOMOTIVE MOTION
+                  </span>
                 </div>
 
-                {/* Bottom Video Control Bar */}
-                <div className="flex flex-wrap items-center gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={(e) => toggleVideoPlay(e)}
-                    className="flex items-center gap-2 px-3.5 py-2 rounded-md bg-[#0F172A]/85 hover:bg-[#0F172A] border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all shadow-md cursor-pointer"
-                  >
-                    {isVideoPlaying ? <FiPause className="w-4 h-4 text-[#60A5FA]" /> : <FiPlay className="w-4 h-4 text-[#60A5FA]" />}
-                    <span>{isVideoPlaying ? "Pause Video" : "Play Video"}</span>
-                  </button>
+                <h2
+                  className={`text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm transition-all duration-700 delay-150 ease-out transform ${
+                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  POWER, PRECISION & <br />
+                  <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
+                    PURITY IN MOTION
+                  </span>
+                </h2>
 
-                  <button
-                    type="button"
-                    onClick={toggleVideoMute}
-                    className="p-2 rounded-md bg-[#0F172A]/85 hover:bg-[#0F172A] border border-white/20 text-white text-xs backdrop-blur-md transition-all shadow-md cursor-pointer"
-                    title={isVideoMuted ? "Unmute Audio" : "Mute Audio"}
+                <p
+                  className={`text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow transition-all duration-700 delay-300 ease-out transform ${
+                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  Experience our premier high-performance and executive vehicle collection undergoing dynamic track trials and VIP white-glove delivery verification.
+                </p>
+
+                {/* Dual CTAs & Fullscreen Cinema Action */}
+                <div
+                  className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
+                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => {
+                      const el = document.getElementById("inventory-section");
+                      el?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
                   >
-                    {isVideoMuted ? <FiVolumeX className="w-4 h-4 text-[#CBD5E1]" /> : <FiVolume2 className="w-4 h-4 text-[#60A5FA]" />}
-                  </button>
+                    Explore Fleet
+                  </Button>
 
                   <button
                     type="button"
                     onClick={() => setIsVideoModalOpen(true)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-md shadow-[#2563EB]/25 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-md bg-[#0F172A]/80 hover:bg-[#0F172A] border border-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all shadow-md cursor-pointer"
                   >
-                    <FiMaximize2 className="w-3.5 h-3.5" />
-                    <span>Full Cinema Mode</span>
+                    <FiMaximize2 className="w-3.5 h-3.5 text-[#38BDF8]" />
+                    <span>Watch Fullscreen Cinema</span>
                   </button>
+                </div>
+
+                {/* Sub-badge perks */}
+                <div
+                  className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
+                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <FiShield className="w-3.5 h-3.5 text-[#60A5FA]" />
+                    4K Ultra HD Track Footage
+                  </span>
+                  <span>&bull;</span>
+                  <span className="flex items-center gap-1.5">
+                    <FiClock className="w-3.5 h-3.5 text-[#60A5FA]" />
+                    Live Road Performance
+                  </span>
                 </div>
               </div>
             </div>
@@ -444,25 +452,41 @@ export default function App() {
                 <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#0284C7]/15 blur-3xl pointer-events-none" />
 
                 <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-5">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/20 border border-[#38BDF8]/30 w-fit">
+                  <div
+                    className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/20 border border-[#38BDF8]/30 w-fit transition-all duration-700 ease-out transform ${
+                      currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    }`}
+                  >
                     <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#38BDF8]">
                       THE PINNACLE OF AUTOMOTIVE PRESTIGE
                     </span>
                   </div>
 
-                  <h2 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight text-white">
+                  <h2
+                    className={`text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight text-white transition-all duration-700 delay-150 ease-out transform ${
+                      currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    }`}
+                  >
                     CRAFTED FOR THE EXCEPTIONAL. <br />
                     <span className="bg-gradient-to-r from-[#38BDF8] via-[#60A5FA] to-[#93C5FD] bg-clip-text text-transparent">
                       UNCOMPROMISED LUXURY & POWER.
                     </span>
                   </h2>
 
-                  <p className="text-xs sm:text-sm md:text-base text-[#94A3B8] leading-relaxed max-w-2xl">
+                  <p
+                    className={`text-xs sm:text-sm md:text-base text-[#94A3B8] leading-relaxed max-w-2xl transition-all duration-700 delay-300 ease-out transform ${
+                      currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    }`}
+                  >
                     Premier Auto Motors redefines luxury vehicle ownership with verified provenance, bespoke international sourcing, zero-demurrage terminal logistics, and private showroom viewings across Lagos and Abuja.
                   </p>
 
                   {/* 4 Feature Value Highlights */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2">
+                  <div
+                    className={`grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2 transition-all duration-700 delay-450 ease-out transform ${
+                      currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    }`}
+                  >
                     <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
                       <div className="text-base sm:text-lg font-black text-[#38BDF8]">150-Point</div>
                       <div className="text-[10px] sm:text-xs text-[#CBD5E1]">Diagnostics Seal</div>
@@ -531,13 +555,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Quick Filter Component Bar */}
-          <div className="max-w-7xl mx-auto w-full mt-6 sm:mt-8 z-30 relative overflow-visible">
-            <FilterBar onSearch={handleFilterSearch} />
-          </div>
-
           {/* 4 Value Proposition Badges */}
-          <div className="max-w-7xl mx-auto w-full mt-5 sm:mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="max-w-7xl mx-auto w-full mt-4 sm:mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="flex items-center gap-3.5 bg-[#FFFFFF] border border-[#E2E8F0] hover:border-[#2563EB] rounded-md p-3.5 sm:p-4 shadow-xs hover:shadow-md transition-all">
               <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-md bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center shrink-0">
                 <FaCar className="w-5 h-5 text-[#2563EB]" />
@@ -580,7 +599,7 @@ export default function App() {
           </div>
 
           {/* Brand Logo Showcase Strip */}
-          <div className="max-w-7xl mx-auto w-full mt-3 sm:mt-3.5 bg-[#FFFFFF] rounded-md py-2.5 px-3 sm:px-4 flex items-center justify-between text-[#0F172A] shadow-xs border border-[#CBD5E1]">
+          <div className="max-w-7xl mx-auto w-full mt-2.5 sm:mt-3 bg-[#FFFFFF] rounded-md py-2.5 px-3 sm:px-4 flex items-center justify-between text-[#0F172A] shadow-xs border border-[#CBD5E1]">
             <button
               type="button"
               onClick={() => scrollBrands("left")}
@@ -642,6 +661,11 @@ export default function App() {
               <FiChevronRight className="w-4 h-4" />
             </button>
           </div>
+
+          {/* Quick Filter Component Bar */}
+          <div className="max-w-7xl mx-auto w-full mt-2.5 sm:mt-3 z-30 relative overflow-visible">
+            <FilterBar onSearch={handleFilterSearch} />
+          </div>
         </section>
 
         {/* 3. VEHICLE INVENTORY SHOWCASE (Cards bottom side in #0F172A) */}
@@ -664,30 +688,6 @@ export default function App() {
               </div>
 
               <div className="flex items-center gap-3">
-                {/* Currency Switcher */}
-                <div className="flex items-center gap-1 bg-[#FFFFFF] p-1 rounded-md border border-[#CBD5E1] shadow-xs">
-                  <button
-                    onClick={() => setCurrency("USD")}
-                    className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
-                      currency === "USD"
-                        ? "bg-[#0F172A] text-[#FFFFFF] shadow-xs"
-                        : "text-[#64748B] hover:text-[#0F172A]"
-                    }`}
-                  >
-                    $ USD
-                  </button>
-                  <button
-                    onClick={() => setCurrency("NGN")}
-                    className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
-                      currency === "NGN"
-                        ? "bg-[#0F172A] text-[#FFFFFF] shadow-xs"
-                        : "text-[#64748B] hover:text-[#0F172A]"
-                    }`}
-                  >
-                    ₦ NGN
-                  </button>
-                </div>
-
                 <Link href="/inventory">
                   <button className="flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-bold bg-[#0F172A] hover:bg-[#1E293B] text-[#FFFFFF] transition-all shadow-md shadow-[#0F172A]/25 border border-[#0F172A] cursor-pointer">
                     <span>VIEW ALL INVENTORY</span>
@@ -810,6 +810,7 @@ export default function App() {
       <Modal
         isOpen={isTestDriveOpen}
         onClose={() => setIsTestDriveOpen(false)}
+        size="lg"
         title={
           <div className="flex items-center gap-2">
             <FaCar className="w-5 h-5 text-[#2563EB]" />
@@ -819,7 +820,12 @@ export default function App() {
         description={`Experience the performance and comfort of the ${selectedVehicle?.make} ${selectedVehicle?.model}.`}
         footer={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsTestDriveOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsTestDriveOpen(false)}
+              leftIcon={<FiX className="w-3.5 h-3.5 text-[#64748B]" />}
+            >
               Cancel
             </Button>
             <Button
@@ -829,6 +835,7 @@ export default function App() {
                 alert(`VIP Test Drive scheduled for ${selectedVehicle?.make} ${selectedVehicle?.model} on ${testDriveDate} at ${testDriveLocation}. Our concierge will contact you.`);
                 setIsTestDriveOpen(false);
               }}
+              leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
             >
               Confirm VIP Booking
             </Button>
@@ -837,24 +844,24 @@ export default function App() {
       >
         <div className="space-y-4">
           {selectedVehicle && (
-            <div className="p-3 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] flex items-center gap-3.5">
-              <div className="relative w-20 h-14 rounded-md overflow-hidden shrink-0 bg-[#0F172A]">
+            <div className="p-3.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] flex items-center gap-3.5">
+              <div className="relative w-24 h-16 rounded-md overflow-hidden shrink-0 bg-[#0F172A] border border-[#CBD5E1]">
                 <Image src={selectedVehicle.image} alt={selectedVehicle.model} fill className="object-cover" />
               </div>
               <div>
                 <span className="text-[10px] font-mono text-[#2563EB] font-bold">{selectedVehicle.stockId}</span>
                 <h4 className="text-sm font-bold text-[#0F172A]">{selectedVehicle.make} {selectedVehicle.model}</h4>
-                <span className="text-xs font-mono font-bold text-[#1D4ED8]">${selectedVehicle.priceUSD.toLocaleString()}</span>
+                <span className="text-xs font-mono font-bold text-[#1D4ED8]">${selectedVehicle.priceUSD.toLocaleString()} USD</span>
               </div>
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <Input label="Full Name" placeholder="e.g. Chief Alexander Vance" required />
             <Input label="Phone Number" placeholder="+234 (0) 803 000 0000" required />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-[#0F172A]">Preferred Date</label>
               <input
@@ -892,9 +899,14 @@ export default function App() {
           </div>
         }
         description="Exclusive 4K dynamic motion footage of our premier high-performance exotic vehicles."
-        size="xl"
+        size="2xl"
         footer={
-          <Button variant="primary" size="sm" onClick={() => setIsVideoModalOpen(false)}>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsVideoModalOpen(false)}
+            leftIcon={<FiX className="w-3.5 h-3.5 text-white" />}
+          >
             Close Theater
           </Button>
         }

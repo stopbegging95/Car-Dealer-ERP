@@ -11,6 +11,8 @@ import {
   FiCalendar,
   FiZap,
   FiCompass,
+  FiX,
+  FiCheck,
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -353,6 +355,7 @@ export default function AICarMatchPage() {
       <Modal
         isOpen={isLeadModalOpen}
         onClose={() => setIsLeadModalOpen(false)}
+        size="lg"
         title={
           selectedMatchCar ? (
             <span>
@@ -365,7 +368,12 @@ export default function AICarMatchPage() {
         description="A premier sales concierge will reach out via WhatsApp with complete vehicle video walk-around and private viewing access."
         footer={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsLeadModalOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsLeadModalOpen(false)}
+              leftIcon={<FiX className="w-3.5 h-3.5" />}
+            >
               Cancel
             </Button>
             <Button
@@ -375,6 +383,7 @@ export default function AICarMatchPage() {
                 alert("Consultation booked! A concierge will message you shortly.");
                 setIsLeadModalOpen(false);
               }}
+              leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
             >
               Submit Consultation Request
             </Button>

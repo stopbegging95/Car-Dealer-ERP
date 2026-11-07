@@ -48,8 +48,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           max={maxDate}
           disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full rounded-xl bg-[#FFFFFF] text-[#0F172A] placeholder-[#94A3B8] border transition-all duration-200 outline-none
-            text-xs sm:text-sm py-2 sm:py-2.5 pl-10 pr-3.5 [color-scheme:light] shadow-xs
+          className={`w-full rounded-md bg-[#FFFFFF] text-[#0F172A] placeholder-[#94A3B8] border transition-all duration-200 outline-none
+            text-xs sm:text-sm py-1.5 sm:py-2 pl-10 pr-3 [color-scheme:light] shadow-xs
             ${
               error
                 ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"

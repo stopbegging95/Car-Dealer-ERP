@@ -6,6 +6,8 @@ import {
   FiPieChart,
   FiCheckCircle,
   FiFileText,
+  FiX,
+  FiCheck,
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -325,17 +327,17 @@ export default function LoanCalculatorPage() {
             </span>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto scrollbar-thin">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-[#F8FAFC] text-[10px] uppercase font-bold text-[#64748B] border-b border-[#E2E8F0]">
+                <tr className="bg-[#F8FAFC] text-[10px] uppercase font-bold text-[#64748B] border-b border-[#E2E8F0] whitespace-nowrap">
                   <th className="py-2.5 px-3">Period</th>
                   <th className="py-2.5 px-3">Principal Paid</th>
                   <th className="py-2.5 px-3">Interest Paid</th>
                   <th className="py-2.5 px-3 text-right">Remaining Balance</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F1F5F9] font-mono text-xs">
+              <tbody className="divide-y divide-[#F1F5F9] font-mono text-xs whitespace-nowrap">
                 {amortizationSchedule.map((row, idx) => (
                   <tr key={idx} className="hover:bg-[#EFF6FF] transition-colors">
                     <td className="py-2.5 px-3 font-semibold text-[#0F172A]">{row.year}</td>
@@ -354,11 +356,17 @@ export default function LoanCalculatorPage() {
       <Modal
         isOpen={isPreQualModalOpen}
         onClose={() => setIsPreQualModalOpen(false)}
+        size="lg"
         title="Submit Pre-Qualification Application"
         description="Our finance team will verify your eligibility with our banking partners (Zenith, Access, Stanbic IBTC)."
         footer={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsPreQualModalOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsPreQualModalOpen(false)}
+              leftIcon={<FiX className="w-3.5 h-3.5" />}
+            >
               Cancel
             </Button>
             <Button
@@ -368,6 +376,7 @@ export default function LoanCalculatorPage() {
                 alert("Pre-qualification application submitted successfully!");
                 setIsPreQualModalOpen(false);
               }}
+              leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
             >
               Submit Application
             </Button>

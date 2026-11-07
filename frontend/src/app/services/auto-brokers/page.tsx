@@ -6,6 +6,7 @@ import {
   FiGlobe,
   FiCheckCircle,
   FiFileText,
+  FiCheck,
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa6";
 import { Navbar } from "@/components/Navbar";
@@ -198,11 +199,17 @@ export default function AutoBrokersPage() {
       <Modal
         isOpen={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
+        size="md"
         title="Sourcing Request Registered"
         description="Your vehicle brief has been received by our head of international acquisitions."
         footer={
-          <Button variant="primary" size="sm" onClick={() => setIsSuccessModalOpen(false)}>
-            Done
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsSuccessModalOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Done
           </Button>
         }
       >

@@ -8,6 +8,7 @@ import {
   FiCalendar,
   FiArrowRight,
   FiEye,
+  FiX,
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -188,15 +189,25 @@ export default function NewsPage() {
           onClose={() => setActiveArticleModal(null)}
           title={activeArticleModal.title}
           description={`Published on ${activeArticleModal.date} • ${activeArticleModal.readTime}`}
+          size="lg"
           footer={
             <div className="flex items-center justify-between w-full">
               <Link href={`/news/${activeArticleModal.slug}`}>
-                <Button variant="primary" size="sm">
-                  Full Page View &rarr;
+                <Button
+                  variant="primary"
+                  size="sm"
+                  rightIcon={<FiArrowRight className="w-3.5 h-3.5 text-white" />}
+                >
+                  Full Page View
                 </Button>
               </Link>
-              <Button variant="outline" size="sm" onClick={() => setActiveArticleModal(null)}>
-                Close
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setActiveArticleModal(null)}
+                leftIcon={<FiX className="w-3.5 h-3.5" />}
+              >
+                Close Preview
               </Button>
             </div>
           }
