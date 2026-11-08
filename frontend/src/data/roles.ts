@@ -37,6 +37,7 @@ export const DEALERSHIP_ROLES: RoleDefinition[] = [
       "CRM Pipeline & 360",
       "Accounting & Finance",
       "HR & Recruitment",
+      "Department Portals & Accounts",
       "Roles & RBAC",
       "Document Vault",
       "CMS Manager",
@@ -428,5 +429,8 @@ export function getRoleById(roleId: string): RoleDefinition {
 
 export function isModuleAllowedForRole(roleId: string, moduleName: string): boolean {
   const role = getRoleById(roleId);
+  if (role.id === "admin") return true;
+  if (moduleName === "Department Portals & Accounts" && role.allowedModules.includes("Roles & RBAC")) return true;
+  if (moduleName === "Roles & RBAC" && role.allowedModules.includes("Department Portals & Accounts")) return true;
   return role.allowedModules.includes(moduleName);
 }

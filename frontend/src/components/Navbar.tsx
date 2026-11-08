@@ -17,6 +17,7 @@ import {
   FiTruck,
   FiRepeat,
   FiShoppingCart,
+  FiDollarSign,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import { Button } from "./ui";
@@ -346,6 +347,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                       icon: <FiTruck className="w-3.5 h-3.5 text-[#2563EB]" />,
                     },
                     {
+                      name: "Accounting & Finance",
+                      href: "/erp/accounting",
+                      dept: "Landed Margins & Treasury",
+                      icon: <FiDollarSign className="w-3.5 h-3.5 text-[#2563EB]" />,
+                    },
+                    {
                       name: "Trade-In & Swap",
                       href: "/erp/trade-ins",
                       dept: "Valuations & Equity",
@@ -454,6 +461,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                 { name: "Finance & Insurance", href: "/erp/financing" },
                 { name: "Detailing & Recon", href: "/erp/recon" },
                 { name: "Import Logistics", href: "/erp/imports" },
+                { name: "Accounting & Finance", href: "/erp/accounting" },
                 { name: "Trade-In & Swap", href: "/erp/trade-ins" },
               ].map((d) => (
                 <Link
