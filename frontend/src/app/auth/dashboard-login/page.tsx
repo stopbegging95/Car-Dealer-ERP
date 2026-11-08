@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -162,7 +162,7 @@ const DEPARTMENT_CREDENTIALS: Record<
   },
 };
 
-export default function DashboardLoginPage() {
+function DashboardLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedRole = searchParams?.get("dept") || searchParams?.get("role") || "admin";
@@ -456,6 +456,25 @@ export default function DashboardLoginPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function DashboardLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0F172A] flex items-center justify-center text-[#94A3B8]">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-[#3B82F6] animate-ping" />
+            <span className="text-xs font-mono uppercase tracking-widest text-[#94A3B8]">
+              Loading Secure RBAC Terminal...
+            </span>
+          </div>
+        </div>
+      }
+    >
+      <DashboardLoginContent />
+    </Suspense>
   );
 }
 
