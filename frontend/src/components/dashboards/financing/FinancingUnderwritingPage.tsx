@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
 
 export interface FinanceDealItem {
   app: string;
@@ -70,7 +70,57 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
         </Button>
       </div>
 
-      {/* Modal for New Finance Application */}
+      {/* Section 11 F&I Deal Flow Pipeline Strip */}
+      <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg">
+        <div className="flex items-center justify-between pb-1.5 border-b border-[#BFDBFE] text-[10px] font-mono uppercase text-[#2563EB] font-bold">
+          <span>Standard F&I Auto Loan Underwriting & Chattel Mortgage Protocol</span>
+          <span className="text-[#1D4ED8]">Tier-1 Banking Partner Syndicate</span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-2 text-[10px] font-semibold text-[#1E3A8A]">
+          <div className="p-1.5 rounded bg-white border border-[#DBEAFE] text-center">1. Credit App Intake</div>
+          <div className="p-1.5 rounded bg-white border border-[#DBEAFE] text-center">2. Bank Bureau Verification</div>
+          <div className="p-1.5 rounded bg-white border border-[#DBEAFE] text-center">3. Underwriting Term Sheet</div>
+          <div className="p-1.5 rounded bg-white border border-[#DBEAFE] text-center">4. Chattel Mortgage Sign</div>
+          <div className="p-1.5 rounded bg-white border border-[#DBEAFE] text-center">5. Insurance Cover Bound</div>
+          <div className="p-1.5 rounded bg-white border border-[#DBEAFE] text-center">6. Bank Wire Funded</div>
+        </div>
+      </div>
+
+      {/* F&I Value-Add Products & Insurance Cover Strip */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <div className="p-2.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] space-y-1">
+          <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#2563EB]">
+            <span>Extended Warranty</span>
+            <span>+$4,500</span>
+          </div>
+          <div className="text-xs font-bold text-[#0F172A]">2-Year Factory Bumper-to-Bumper</div>
+          <div className="text-[10px] text-[#64748B]">Zero deductible drivetrain coverage</div>
+        </div>
+        <div className="p-2.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] space-y-1">
+          <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#2563EB]">
+            <span>Paint Protection (PPF)</span>
+            <span>+$2,800</span>
+          </div>
+          <div className="text-xs font-bold text-[#0F172A]">Self-Healing Ceramic Armor</div>
+          <div className="text-[10px] text-[#64748B]">Full frontal bumper & hood PPF</div>
+        </div>
+        <div className="p-2.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] space-y-1">
+          <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#2563EB]">
+            <span>Comprehensive Cover</span>
+            <span>2.8% p.a.</span>
+          </div>
+          <div className="text-xs font-bold text-[#0F172A]">Leadway & AXA Mansard Luxury</div>
+          <div className="text-[10px] text-[#64748B]">Full market replacement value</div>
+        </div>
+        <div className="p-2.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] space-y-1">
+          <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#2563EB]">
+            <span>Telematics & GPS</span>
+            <span>+$1,200</span>
+          </div>
+          <div className="text-xs font-bold text-[#0F172A]">Real-Time Satellite Recovery</div>
+          <div className="text-[10px] text-[#64748B]">Remote engine immobilizer active</div>
+        </div>
+      </div>
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -149,27 +199,70 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
         </form>
       </Modal>
 
-      <div className="space-y-2 text-xs">
-        {deals.map((fin, fi) => (
-          <div key={fi} className="flex sm:flex-row flex-col justify-between sm:items-center gap-2.5 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-[#2563EB]">{fin.app}</span>
-                <span className="font-bold text-[#0F172A]">{fin.client}</span>
+      <Table
+        data={deals}
+        keyExtractor={(fin) => fin.app}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "app",
+            header: "Facility ID",
+            sortable: true,
+            render: (fin) => (
+              <span className="font-mono font-bold text-[#2563EB]">{fin.app}</span>
+            ),
+          },
+          {
+            key: "client",
+            header: "Applicant / Corporate Entity",
+            sortable: true,
+            render: (fin) => <span className="font-bold text-[#0F172A]">{fin.client}</span>,
+          },
+          {
+            key: "car",
+            header: "Acquisition Vehicle",
+            sortable: true,
+            render: (fin) => <span className="text-xs text-[#475569]">{fin.car}</span>,
+          },
+          {
+            key: "bank",
+            header: "Partner Bank & Tenor",
+            sortable: true,
+            render: (fin) => (
+              <div>
+                <span className="font-semibold text-xs text-[#0F172A]">{fin.bank}</span>
+                <span className="block text-[10px] text-[#64748B]">{fin.tenor}</span>
               </div>
-              <span className="block mt-0.5 text-[#64748B] text-[11px]">
-                {fin.car} &bull; <strong className="text-[#0F172A]">{fin.bank}</strong> ({fin.tenor})
-              </span>
-            </div>
-            <div className="flex items-center self-end sm:self-auto gap-3">
-              <span className="font-mono font-bold text-[#0F172A] text-sm">{fin.loan}</span>
-              <Badge variant={fin.status.includes("Approved") || fin.status.includes("Issued") ? "gold" : "charcoal"} size="sm">
+            ),
+          },
+          {
+            key: "loan",
+            header: "Principal Amount",
+            sortable: true,
+            render: (fin) => (
+              <span className="font-mono font-bold text-[#1D4ED8]">{fin.loan}</span>
+            ),
+          },
+          {
+            key: "status",
+            header: "Underwriting Stage",
+            align: "right",
+            render: (fin) => (
+              <Badge
+                variant={
+                  fin.status.includes("Approved") || fin.status.includes("Issued")
+                    ? "gold"
+                    : "charcoal"
+                }
+                size="sm"
+              >
                 {fin.status}
               </Badge>
-            </div>
-          </div>
-        ))}
-      </div>
+            ),
+          },
+        ]}
+      />
     </Card>
   );
 };

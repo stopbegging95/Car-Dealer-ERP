@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
 
 export interface PayableItem {
   id: string;
@@ -143,41 +143,79 @@ export const PayablesPage: React.FC<PayablesPageProps> = ({
         </form>
       </Modal>
 
-      <div className="space-y-2.5 text-xs">
-        {list.map((item) => (
-          <div
-            key={item.id}
-            className="flex sm:flex-row flex-col justify-between sm:items-center gap-3 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md"
-          >
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-[#2563EB]">{item.id}</span>
+      <Table
+        data={list}
+        keyExtractor={(item) => item.id}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "id",
+            header: "Voucher ID",
+            sortable: true,
+            render: (item) => (
+              <span className="font-mono font-bold text-[#2563EB]">{item.id}</span>
+            ),
+          },
+          {
+            key: "vendor",
+            header: "Vendor / Payee Entity",
+            sortable: true,
+            render: (item) => (
+              <div>
                 <span className="font-bold text-[#0F172A]">{item.vendor}</span>
-                <Badge variant={item.status === "Settled via Wire" ? "gold" : "charcoal"} size="sm">
-                  {item.status}
-                </Badge>
+                <span className="block text-[10px] text-[#64748B]">{item.type}</span>
               </div>
-              <span className="block mt-0.5 text-[#64748B] text-[11px]">
-                {item.type} &bull; Ref: <span className="font-mono">{item.ref}</span> &bull; Due Date: {item.dueDate}
-              </span>
-            </div>
-
-            <div className="flex items-center self-end sm:self-auto gap-3">
-              <span className="font-mono font-bold text-[#0F172A] text-sm">{item.amount}</span>
-              {item.status !== "Settled via Wire" && (
+            ),
+          },
+          {
+            key: "ref",
+            header: "Assessment Ref",
+            render: (item) => <span className="font-mono text-[#64748B] text-xs">{item.ref}</span>,
+          },
+          {
+            key: "amount",
+            header: "Disbursement Amount",
+            sortable: true,
+            render: (item) => (
+              <span className="font-mono font-bold text-[#0F172A]">{item.amount}</span>
+            ),
+          },
+          {
+            key: "dueDate",
+            header: "Payment Due Date",
+            sortable: true,
+            render: (item) => <span className="text-[#475569] whitespace-nowrap">{item.dueDate}</span>,
+          },
+          {
+            key: "status",
+            header: "Status",
+            render: (item) => (
+              <Badge variant={item.status === "Settled via Wire" ? "gold" : "charcoal"} size="sm">
+                {item.status}
+              </Badge>
+            ),
+          },
+          {
+            key: "action",
+            header: "Disbursement Action",
+            align: "right",
+            render: (item) =>
+              item.status !== "Settled via Wire" ? (
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={() => onDisburse(item.id)}
                   className="text-xs"
                 >
-                  Authorize Wire Disbursement
+                  Authorize Wire
                 </Button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+              ) : (
+                <span className="font-mono text-emerald-600 font-semibold text-xs">Wire Settled</span>
+              ),
+          },
+        ]}
+      />
     </Card>
   );
 };

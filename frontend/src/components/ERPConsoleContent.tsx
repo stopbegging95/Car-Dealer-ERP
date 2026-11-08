@@ -28,6 +28,7 @@ import {
   FiX,
   FiUserPlus,
   FiKey,
+  FiTrendingUp,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import {
@@ -69,6 +70,12 @@ import {
   SettingsDashboard,
   ProfileDashboard,
   SessionsDashboard,
+  ProcurementDashboard,
+  InvoicesPaymentsDashboard,
+  FinancialReportsDashboard,
+  ReportsAnalyticsDashboard,
+  InspectionQADashboard,
+  PersonalStaffDashboard,
   OrderItem,
 } from "@/components/dashboards";
 
@@ -382,15 +389,19 @@ export function ERPConsoleContent({
       { name: "Dashboard", icon: <FiLayers className="w-4 h-4 shrink-0" /> },
       { name: "Car Management", icon: <FaCar className="w-4 h-4 shrink-0" />, badge: `${filteredStock.length}` },
       { name: "Orders & Sales", icon: <FiShoppingCart className="w-4 h-4 shrink-0" />, badge: "8" },
+      { name: "Procurement", icon: <FiBox className="w-4 h-4 shrink-0" />, badge: "18 POs" },
+      { name: "Import Logistics", icon: <FiTruck className="w-4 h-4 shrink-0" />, badge: "3 Vessels" },
       { name: "Service & Workshop", icon: <FiTool className="w-4 h-4 shrink-0" />, badge: "6 Bays" },
-      { name: "Parts & Inventory", icon: <FiBox className="w-4 h-4 shrink-0" />, badge: "4 Low" },
+      { name: "Parts & Inventory", icon: <FiLayers className="w-4 h-4 shrink-0" />, badge: "4 Low" },
       { name: "Finance", icon: <FiActivity className="w-4 h-4 shrink-0" />, badge: "6 Pending" },
+      { name: "Inspection & Quality", icon: <FiCheckCircle className="w-4 h-4 shrink-0" />, badge: "5 PDI" },
       { name: "Detailing & Recon", icon: <FiCheckSquare className="w-4 h-4 shrink-0" />, badge: "4 Ready" },
       { name: "Branch Transfers", icon: <FiNavigation className="w-4 h-4 shrink-0" />, badge: "2 Active" },
-      { name: "Import Logistics", icon: <FiTruck className="w-4 h-4 shrink-0" />, badge: "3 Vessels" },
       { name: "Trade-In & Swap", icon: <FiRepeat className="w-4 h-4 shrink-0" />, badge: "3" },
       { name: "CRM Pipeline & 360", icon: <FiMessageSquare className="w-4 h-4 shrink-0" />, badge: "14" },
       { name: "Accounting", icon: <FiDollarSign className="w-4 h-4 shrink-0" /> },
+      { name: "Invoices & Payments", icon: <FiFileText className="w-4 h-4 shrink-0" />, badge: "12 Open" },
+      { name: "Financial Reports", icon: <FiTrendingUp className="w-4 h-4 shrink-0" /> },
       { name: "HR & Recruitment", icon: <FiBriefcase className="w-4 h-4 shrink-0" />, badge: "5 Apps" },
     ],
     [filteredStock.length]
@@ -399,22 +410,23 @@ export function ERPConsoleContent({
   const systemMenuItems = useMemo(
     () => [
       { name: "Department Portals & Accounts", icon: <FiUserPlus className="w-4 h-4 shrink-0" />, badge: "Admin" },
-      { name: "Roles & RBAC", icon: <FiShield className="w-4 h-4 shrink-0" /> },
+      { name: "Reports & Analytics", icon: <FiTrendingUp className="w-4 h-4 shrink-0" /> },
       { name: "Document Vault", icon: <FiFileText className="w-4 h-4 shrink-0" /> },
       { name: "CMS Manager", icon: <FiEdit3 className="w-4 h-4 shrink-0" /> },
+      { name: "Roles & RBAC", icon: <FiShield className="w-4 h-4 shrink-0" /> },
       { name: "Settings", icon: <FiSettings className="w-4 h-4 shrink-0" /> },
     ],
     []
   );
 
-  // Filter menu items strictly according to role permissions
+  // Filter menu items strictly according to role permissions and aliases
   const filteredMainMenuItems = useMemo(() => {
-    return mainMenuItems.filter((item) => activeRole.allowedModules.includes(item.name));
-  }, [mainMenuItems, activeRole.allowedModules]);
+    return mainMenuItems.filter((item) => isModuleAllowedForRole(activeRole.id, item.name));
+  }, [mainMenuItems, activeRole.id]);
 
   const filteredSystemMenuItems = useMemo(() => {
-    return systemMenuItems.filter((item) => activeRole.allowedModules.includes(item.name));
-  }, [systemMenuItems, activeRole.allowedModules]);
+    return systemMenuItems.filter((item) => isModuleAllowedForRole(activeRole.id, item.name));
+  }, [systemMenuItems, activeRole.id]);
 
   return (
     <DashboardLayout
@@ -486,12 +498,11 @@ export function ERPConsoleContent({
 
           {activeModule === "Dashboard" && (
             <AdminDashboard
-              onNavigateModule={setActiveModule}
               onOpenCreatePortalAccount={() => setIsCreateAccountModalOpen(true)}
             />
           )}
 
-          {(activeModule === "Department Portals & Accounts" || activeModule === "Roles & RBAC") && (
+          {(activeModule === "Department Portals & Accounts" || activeModule === "Roles & RBAC" || activeModule === "Users & Permissions") && (
             <DepartmentPortalsDashboard
               staffAccounts={staffAccounts}
               onOpenCreateModal={() => setIsCreateAccountModalOpen(true)}
@@ -504,7 +515,7 @@ export function ERPConsoleContent({
             />
           )}
 
-          {activeModule === "Car Management" && (
+          {(activeModule === "Car Management" || activeModule === "Vehicles & Inventory") && (
             <InventoryDashboard
               vehicles={filteredStock}
               onOpenAddVehicle={() => setIsAddVehicleOpen(true)}
@@ -512,7 +523,7 @@ export function ERPConsoleContent({
             />
           )}
 
-          {activeModule === "Orders & Sales" && (
+          {(activeModule === "Orders & Sales" || activeModule === "Sales & Orders") && (
             <SalesDashboard
               orders={SALES_ORDERS}
               onPreviewOrder={(order) => setSelectedOrderForPreview(order)}
@@ -521,11 +532,15 @@ export function ERPConsoleContent({
             />
           )}
 
-          {activeModule === "Service & Workshop" && (
+          {(activeModule === "Procurement" || activeModule === "Procurement & Purchasing") && (
+            <ProcurementDashboard showToast={showToast} />
+          )}
+
+          {(activeModule === "Service & Workshop" || activeModule === "Service & Maintenance") && (
             <ServiceDashboard showToast={showToast} />
           )}
 
-          {activeModule === "Parts & Inventory" && (
+          {(activeModule === "Parts & Inventory" || activeModule === "Parts & Accessories") && (
             <PartsDashboard showToast={showToast} />
           )}
 
@@ -533,25 +548,39 @@ export function ERPConsoleContent({
             <FinancingDashboard showToast={showToast} />
           )}
 
+          {activeModule === "Inspection & Quality" && (
+            <InspectionQADashboard showToast={showToast} />
+          )}
+
           {activeModule === "Detailing & Recon" && (
             <ReconDashboard showToast={showToast} />
           )}
 
-          {activeModule === "Branch Transfers" && (
+          {(activeModule === "Branch Transfers" || activeModule === "Branches & Operations") && (
             <TransfersDashboard onOpenTransferModal={() => setIsTransferModalOpen(true)} />
           )}
 
-          {activeModule === "Import Logistics" && (
+          {(activeModule === "Import Logistics" || activeModule === "Importation & Logistics") && (
             <ImportsDashboard showToast={showToast} />
           )}
 
-          {activeModule === "Trade-In & Swap" && (
+          {(activeModule === "Trade-In & Swap" || activeModule === "Trade-In & Valuation") && (
             <TradeInsDashboard
-              onInspectTradeIn={(item) => setSelectedTradeInForInspection(item)}
+              onInspectTradeIn={(item) =>
+                setSelectedTradeInForInspection({
+                  id: item.id,
+                  client: item.client,
+                  carOffered: item.carOffered,
+                  target: item.target,
+                  valuation: `$${item.valuationUSD.toLocaleString()}`,
+                  diff: `$${item.payableDiffUSD.toLocaleString()}`,
+                  status: item.status,
+                })
+              }
             />
           )}
 
-          {activeModule === "CRM Pipeline & 360" && (
+          {(activeModule === "CRM Pipeline & 360" || activeModule === "Customers & CRM" || activeModule === "CRM & Client 360") && (
             <CRMDashboard showToast={showToast} />
           )}
 
@@ -589,11 +618,23 @@ export function ERPConsoleContent({
             />
           )}
 
-          {activeModule === "HR & Recruitment" && (
+          {activeModule === "Invoices & Payments" && (
+            <InvoicesPaymentsDashboard showToast={showToast} />
+          )}
+
+          {activeModule === "Financial Reports" && (
+            <FinancialReportsDashboard showToast={showToast} />
+          )}
+
+          {activeModule === "Reports & Analytics" && (
+            <ReportsAnalyticsDashboard showToast={showToast} />
+          )}
+
+          {(activeModule === "HR & Recruitment" || activeModule === "HR & Employees" || activeModule === "HR & Staffing") && (
             <HRDashboard showToast={showToast} />
           )}
 
-          {activeModule === "Document Vault" && (
+          {(activeModule === "Document Vault" || activeModule === "Legal & Compliance") && (
             <DocumentVaultDashboard
               onDownloadDoc={(doc) => {
                 downloadVaultDocumentPdf({
@@ -609,7 +650,7 @@ export function ERPConsoleContent({
             />
           )}
 
-          {activeModule === "CMS Manager" && (
+          {(activeModule === "CMS Manager" || activeModule === "Marketing & Media") && (
             <CMSDashboard showToast={showToast} />
           )}
 
@@ -617,10 +658,13 @@ export function ERPConsoleContent({
             <SettingsDashboard showToast={showToast} />
           )}
 
+          {activeModule === "Personal Staff Dashboard" && (
+            <PersonalStaffDashboard showToast={showToast} />
+          )}
+
           {activeModule === "My Profile" && (
             <ProfileDashboard
               activeRole={activeRole}
-              onNavigateSessionHistory={() => setActiveModule("Session History")}
             />
           )}
 

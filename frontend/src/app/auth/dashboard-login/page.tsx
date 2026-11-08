@@ -120,6 +120,46 @@ const DEPARTMENT_CREDENTIALS: Record<
     defaultPath: "/erp/hr",
     department: "Human Resources & Talent Acquisition",
   },
+  procurement: {
+    roleId: "procurement",
+    label: "Procurement & Sourcing Department",
+    email: "procurement.lead@luxauto.dealers.com",
+    name: "Head of International Sourcing",
+    defaultPath: "/erp/procurement",
+    department: "Procurement & International Sourcing",
+  },
+  invoices: {
+    roleId: "accounting",
+    label: "Invoices & Payments Control",
+    email: "invoices.payments@luxauto.dealers.com",
+    name: "Commercial Billing Officer",
+    defaultPath: "/erp/invoices",
+    department: "Accounting & Commercial Billing",
+  },
+  analytics: {
+    roleId: "admin",
+    label: "Reports & Performance Analytics",
+    email: "analytics.lead@luxauto.dealers.com",
+    name: "BI & Performance Analyst",
+    defaultPath: "/erp/analytics",
+    department: "Executive Strategy & Analytics",
+  },
+  transfers: {
+    roleId: "parts",
+    label: "Branch Transfers & Yard Operations",
+    email: "transfers.yard@luxauto.dealers.com",
+    name: "Yard & Logistics Controller",
+    defaultPath: "/erp/transfers",
+    department: "Multi-Location Inventory Operations",
+  },
+  documents: {
+    roleId: "admin",
+    label: "Legal, Risk & Document Vault",
+    email: "legal.registry@luxauto.dealers.com",
+    name: "Legal Registry Officer",
+    defaultPath: "/erp/documents",
+    department: "Legal & Regulatory Compliance",
+  },
 };
 
 export default function DashboardLoginPage() {

@@ -8,20 +8,19 @@ import {
   FiLock,
   FiUserPlus,
 } from "react-icons/fi";
-import { Button, Badge, KPICard, Card } from "@/components/ui";
+import { Button, Badge, KPICard, Card, Table } from "@/components/ui";
 import { StaffAccount } from "@/data/roles";
 
 export interface DepartmentPortalsPageProps {
   staffAccounts: StaffAccount[];
   onOpenCreateModal: () => void;
-  onOpenDashboard: (account: StaffAccount) => void;
+  onOpenDashboard?: (account: StaffAccount) => void;
   onToggleStatus: (accountId: string) => void;
 }
 
 export const DepartmentPortalsPage: React.FC<DepartmentPortalsPageProps> = ({
   staffAccounts,
   onOpenCreateModal,
-  onOpenDashboard,
   onToggleStatus,
 }) => {
   return (
@@ -108,79 +107,94 @@ export const DepartmentPortalsPage: React.FC<DepartmentPortalsPageProps> = ({
             <h4 className="font-bold text-[#0F172A] text-xs uppercase tracking-wider">
               Active Department Desks & Provisioned Staff ({staffAccounts.length})
             </h4>
-            <span className="text-[10px] text-[#64748B]">Click &apos;Open Dashboard&apos; to switch into any department workspace</span>
+            <span className="text-[10px] text-[#64748B]">Super Admin identity & RBAC authorization directory</span>
           </div>
 
-          <div className="border border-[#E2E8F0] rounded-md overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] font-bold text-[#64748B] text-[10px] uppercase">
-                <tr>
-                  <th className="px-3 py-2.5">Staff Account</th>
-                  <th className="px-3 py-2.5">Department Workspace</th>
-                  <th className="px-3 py-2.5">Branch Allocation</th>
-                  <th className="px-3 py-2.5">Clearance Tier</th>
-                  <th className="px-3 py-2.5">Status</th>
-                  <th className="px-3 py-2.5">Last Activity</th>
-                  <th className="px-3 py-2.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E2E8F0]">
-                {staffAccounts.map((account) => (
-                  <tr key={account.id} className="hover:bg-[#F8FAFC] transition-colors">
-                    <td className="px-3 py-3">
-                      <div className="font-bold text-[#0F172A]">{account.name}</div>
-                      <span className="font-mono text-[#64748B] text-[10px]">{account.email}</span>
-                      <div className="font-mono text-[#2563EB] text-[9px]">{account.id}</div>
-                    </td>
-                    <td className="px-3 py-3">
-                      <span className="font-bold text-[#1D4ED8]">{account.departmentName}</span>
-                      <span className="block text-[10px] text-[#64748B]">
-                        Module: <strong>{account.dashboardModule}</strong>
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 text-[11px] text-[#475569]">
-                      {account.branch}
-                    </td>
-                    <td className="px-3 py-3">
-                      <Badge variant="charcoal" size="sm">
-                        {account.accessLevel}
-                      </Badge>
-                    </td>
-                    <td className="px-3 py-3">
-                      <Badge
-                        variant={account.status === "Active" ? "gold" : "charcoal"}
-                        size="sm"
-                        dot
-                      >
-                        {account.status}
-                      </Badge>
-                    </td>
-                    <td className="px-3 py-3 font-mono text-[10px] text-[#64748B]">
-                      {account.lastLogin}
-                    </td>
-                    <td className="space-x-1.5 px-3 py-3 text-right whitespace-nowrap">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => onOpenDashboard(account)}
-                        className="px-2 py-0.5 text-[11px]"
-                      >
-                        Open Dashboard
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onToggleStatus(account.id)}
-                        className="px-2 py-0.5 text-[11px]"
-                      >
-                        {account.status === "Active" ? "Suspend" : "Activate"}
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            data={staffAccounts}
+            keyExtractor={(account) => account.id}
+            pageSize={15}
+            showSerialNumber={true}
+            columns={[
+              {
+                key: "name",
+                header: "Staff Account",
+                sortable: true,
+                render: (account) => (
+                  <div>
+                    <div className="font-bold text-[#0F172A]">{account.name}</div>
+                    <span className="font-mono text-[#64748B] text-[10px]">{account.email}</span>
+                    <div className="font-mono text-[#2563EB] text-[9px]">{account.id}</div>
+                  </div>
+                ),
+              },
+              {
+                key: "departmentName",
+                header: "Department Workspace",
+                sortable: true,
+                render: (account) => (
+                  <div>
+                    <span className="font-bold text-[#1D4ED8]">{account.departmentName}</span>
+                    <span className="block text-[10px] text-[#64748B]">
+                      Module: <strong>{account.dashboardModule}</strong>
+                    </span>
+                  </div>
+                ),
+              },
+              {
+                key: "branch",
+                header: "Branch Allocation",
+                sortable: true,
+                render: (account) => <span className="text-[11px] text-[#475569]">{account.branch}</span>,
+              },
+              {
+                key: "accessLevel",
+                header: "Clearance Tier",
+                sortable: true,
+                render: (account) => (
+                  <Badge variant="charcoal" size="sm">
+                    {account.accessLevel}
+                  </Badge>
+                ),
+              },
+              {
+                key: "status",
+                header: "Status",
+                sortable: true,
+                render: (account) => (
+                  <Badge
+                    variant={account.status === "Active" ? "gold" : "charcoal"}
+                    size="sm"
+                    dot
+                  >
+                    {account.status}
+                  </Badge>
+                ),
+              },
+              {
+                key: "lastLogin",
+                header: "Last Activity",
+                render: (account) => (
+                  <span className="font-mono text-[10px] text-[#64748B]">{account.lastLogin}</span>
+                ),
+              },
+              {
+                key: "action",
+                header: "Actions",
+                align: "right",
+                render: (account) => (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onToggleStatus(account.id)}
+                    className="px-2.5 py-1 text-[11px]"
+                  >
+                    {account.status === "Active" ? "Suspend Access" : "Activate Access"}
+                  </Button>
+                ),
+              },
+            ]}
+          />
         </div>
       </Card>
     </div>

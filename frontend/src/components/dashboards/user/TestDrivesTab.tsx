@@ -1,17 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
   FiCalendar,
   FiMapPin,
   FiPhone,
   FiPlus,
-  FiCheck,
   FiClock,
   FiCheckCircle,
 } from "react-icons/fi";
-import { Button, Badge, Modal, Input, Dropdown } from "@/components/ui";
+import { Button, Badge, Modal, Input, Dropdown, Table, Card } from "@/components/ui";
 import { VEHICLES } from "@/data/vehicles";
 
 export interface TestDriveItem {
@@ -110,7 +108,7 @@ export const TestDrivesTab: React.FC<TestDrivesTabProps> = ({ testDriveBookings:
         </div>
       )}
 
-      <div className="space-y-3 bg-[#FFFFFF] shadow-sm p-4 sm:p-5 border border-[#E2E8F0] rounded-2xl">
+      <Card className="shadow-xs p-4 sm:p-5">
         <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3">
           <div>
             <h3 className="font-bold text-[#0F172A] text-base uppercase tracking-tight">
@@ -130,59 +128,86 @@ export const TestDrivesTab: React.FC<TestDrivesTabProps> = ({ testDriveBookings:
             + Schedule VIP Test Drive
           </Button>
         </div>
+      </Card>
 
-        <div className="space-y-3 pt-1">
-          {bookings.map((td) => (
-            <div
-              key={td.id}
-              className="flex md:flex-row flex-col justify-between md:items-center gap-4 bg-[#F8FAFC] p-4 border border-[#CBD5E1] rounded-xl hover:border-[#94A3B8] transition-colors"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-[#2563EB] text-xs">{td.id}</span>
-                  <span className="text-[#CBD5E1]">&bull;</span>
-                  <h4 className="font-bold text-[#0F172A] text-sm">{td.vehicle}</h4>
-                  <Badge variant="gold" size="sm">{td.status}</Badge>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-4 pt-1 text-[#475569] text-xs">
-                  <span className="flex items-center gap-1 font-semibold text-[#0F172A]">
-                    <FiCalendar className="w-3.5 h-3.5 text-[#2563EB]" />
-                    {td.date}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <FiMapPin className="w-3.5 h-3.5 text-[#2563EB]" />
-                    {td.showroom}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <FiPhone className="w-3.5 h-3.5 text-[#2563EB]" />
-                    {td.liaison} ({td.phone})
-                  </span>
-                </div>
+      <Table
+        data={bookings}
+        keyExtractor={(item) => item.id}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "id",
+            header: "Ref ID",
+            sortable: true,
+            render: (td) => <span className="font-mono font-bold text-[#2563EB] text-xs">{td.id}</span>,
+          },
+          {
+            key: "vehicle",
+            header: "Vehicle & Stock ID",
+            sortable: true,
+            render: (td) => (
+              <div>
+                <span className="font-bold text-[#0F172A] text-xs">{td.vehicle}</span>
+                <span className="block font-mono text-[#64748B] text-[10px]">{td.stockId}</span>
               </div>
-
-              <div className="flex items-center self-start md:self-auto gap-2">
-                <Link href={`/inventory/${td.stockId}`}>
-                  <Button variant="outline" size="sm">
-                    Car Specs
-                  </Button>
-                </Link>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedBooking(td);
-                    setIsRescheduleModalOpen(true);
-                  }}
-                  leftIcon={<FiClock className="w-3.5 h-3.5" />}
-                >
-                  Reschedule
-                </Button>
+            ),
+          },
+          {
+            key: "date",
+            header: "Scheduled Date & Time",
+            sortable: true,
+            render: (td) => (
+              <span className="flex items-center gap-1 font-semibold text-[#0F172A] text-xs">
+                <FiCalendar className="w-3.5 h-3.5 text-[#2563EB]" />
+                {td.date}
+              </span>
+            ),
+          },
+          {
+            key: "showroom",
+            header: "Showroom Hub",
+            render: (td) => (
+              <span className="flex items-center gap-1 text-[#475569] text-xs">
+                <FiMapPin className="w-3.5 h-3.5 text-[#2563EB]" />
+                {td.showroom}
+              </span>
+            ),
+          },
+          {
+            key: "liaison",
+            header: "Assigned Liaison",
+            render: (td) => (
+              <div>
+                <span className="font-medium text-[#0F172A] text-xs">{td.liaison}</span>
+                <span className="block text-[#64748B] text-[10px]">{td.phone}</span>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ),
+          },
+          {
+            key: "status",
+            header: "Status",
+            render: (td) => <Badge variant="gold" size="sm">{td.status}</Badge>,
+          },
+          {
+            key: "actions",
+            header: "Action",
+            render: (td) => (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSelectedBooking(td);
+                  setIsRescheduleModalOpen(true);
+                }}
+                leftIcon={<FiClock className="w-3.5 h-3.5 text-[#2563EB]" />}
+              >
+                Reschedule
+              </Button>
+            ),
+          },
+        ]}
+      />
 
       {/* Book New Test Drive Modal */}
       <Modal
@@ -203,26 +228,16 @@ export const TestDrivesTab: React.FC<TestDrivesTabProps> = ({ testDriveBookings:
             }))}
           />
 
-          <Dropdown
-            label="Preferred Showroom Hub"
-            value={selectedHub}
-            onChange={(val) => setSelectedHub(String(val))}
-            options={[
-              { label: "Victoria Island Flagship Showroom, Lagos", value: "Victoria Island Flagship Showroom, Lagos" },
-              { label: "Maitama Diplomatic Zone Suite, Abuja", value: "Maitama Diplomatic Zone Suite, Abuja" },
-            ]}
-          />
-
           <div className="gap-3 grid grid-cols-1 sm:grid-cols-2">
             <Input
-              label="Preferred Viewing Date"
+              label="Preferred Date"
               type="date"
               value={bookingDate}
               onChange={(e) => setBookingDate(e.target.value)}
               required
             />
             <Input
-              label="Preferred Time Slot"
+              label="Preferred Time"
               type="time"
               value={bookingTime}
               onChange={(e) => setBookingTime(e.target.value)}
@@ -230,20 +245,32 @@ export const TestDrivesTab: React.FC<TestDrivesTabProps> = ({ testDriveBookings:
             />
           </div>
 
-          <Input
-            label="Driver's License / Diplomatic ID"
-            value={licenseNumber}
-            onChange={(e) => setLicenseNumber(e.target.value)}
-            placeholder="DL-882910-NG"
-            required
+          <Dropdown
+            label="Showroom Location Hub"
+            value={selectedHub}
+            onChange={(val) => setSelectedHub(String(val))}
+            options={[
+              { label: "Victoria Island Flagship Showroom, Lagos", value: "Victoria Island Flagship Showroom, Lagos" },
+              { label: "Ikoyi Private Client VIP Lounge, Lagos", value: "Ikoyi Private Client VIP Lounge, Lagos" },
+              { label: "Maitama Diplomatic Zone Suite, Abuja", value: "Maitama Diplomatic Zone Suite, Abuja" },
+              { label: "Lekki Phase 1 Performance Center, Lagos", value: "Lekki Phase 1 Performance Center, Lagos" },
+            ]}
           />
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0]">
-            <Button variant="ghost" size="sm" type="button" onClick={() => setIsBookModalOpen(false)}>
+          <Input
+            label="Driver's License / Diplomatic ID Number"
+            value={licenseNumber}
+            onChange={(e) => setLicenseNumber(e.target.value)}
+            required
+            helperText="Required for test drive insurance validation and vehicle gate clearance."
+          />
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="outline" size="sm" type="button" onClick={() => setIsBookModalOpen(false)}>
               Cancel
             </Button>
-            <Button variant="primary" size="sm" type="submit" leftIcon={<FiCheck className="w-3.5 h-3.5" />}>
-              Confirm VIP Reservation
+            <Button variant="primary" size="sm" type="submit">
+              Confirm VIP Booking
             </Button>
           </div>
         </form>
@@ -254,39 +281,31 @@ export const TestDrivesTab: React.FC<TestDrivesTabProps> = ({ testDriveBookings:
         isOpen={isRescheduleModalOpen}
         onClose={() => setIsRescheduleModalOpen(false)}
         size="md"
-        title="Reschedule Test Drive Appointment"
-        description={`Select a new convenient time slot for ${selectedBooking?.vehicle || "your viewing"}.`}
+        title={`Reschedule Test Drive: ${selectedBooking?.id}`}
+        description={`Modify viewing appointment for ${selectedBooking?.vehicle}.`}
       >
         <form onSubmit={handleRescheduleSubmit} className="space-y-4">
-          <div className="bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0] text-xs space-y-1">
-            <div><span className="text-[#64748B]">Booking Ref:</span> <strong className="text-[#2563EB]">{selectedBooking?.id}</strong></div>
-            <div><span className="text-[#64748B]">Current Slot:</span> {selectedBooking?.date}</div>
-            <div><span className="text-[#64748B]">Showroom:</span> {selectedBooking?.showroom}</div>
-          </div>
+          <Input
+            label="New Date"
+            type="date"
+            value={rescheduleDate}
+            onChange={(e) => setRescheduleDate(e.target.value)}
+            required
+          />
+          <Input
+            label="New Time"
+            type="time"
+            value={rescheduleTime}
+            onChange={(e) => setRescheduleTime(e.target.value)}
+            required
+          />
 
-          <div className="gap-3 grid grid-cols-1 sm:grid-cols-2">
-            <Input
-              label="New Date"
-              type="date"
-              value={rescheduleDate}
-              onChange={(e) => setRescheduleDate(e.target.value)}
-              required
-            />
-            <Input
-              label="New Time"
-              type="time"
-              value={rescheduleTime}
-              onChange={(e) => setRescheduleTime(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0]">
-            <Button variant="ghost" size="sm" type="button" onClick={() => setIsRescheduleModalOpen(false)}>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="outline" size="sm" type="button" onClick={() => setIsRescheduleModalOpen(false)}>
               Cancel
             </Button>
-            <Button variant="primary" size="sm" type="submit" leftIcon={<FiCheck className="w-3.5 h-3.5" />}>
-              Save New Slot
+            <Button variant="primary" size="sm" type="submit">
+              Update Appointment
             </Button>
           </div>
         </form>

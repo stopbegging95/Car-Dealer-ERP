@@ -1,7 +1,40 @@
+export type VehicleCategory =
+  | "Executive Class"
+  | "Sport & Performance"
+  | "Premium SUVs"
+  | "Electric Vehicles"
+  | "Hybrid Vehicles"
+  | "Luxury Sedans"
+  | "Commercial Vehicles"
+  | "Trucks & Heavy Vehicles"
+  | "Classic & Vintage Cars"
+  | "Economy Vehicles"
+  | "Exotic & Supercars"
+  | "Buses & Minivans"
+  | "Power Bikes"
+  | "Executive Buses";
+
+export type VehicleStatus =
+  | "Draft"
+  | "Awaiting Approval"
+  | "Purchased"
+  | "In Transit"
+  | "Customs Clearance"
+  | "Awaiting Inspection"
+  | "Under Repair"
+  | "Available"
+  | "Reserved"
+  | "Sold"
+  | "Delivered"
+  | "Returned"
+  | "Written Off"
+  | "Inspection"
+  | "Clearance";
+
 export interface Vehicle {
   stockId: string;
   vin: string;
-  category: "Executive Class" | "Sport & Performance" | "Premium SUVs" | "Electric Vehicles" | "Power Bikes" | "Executive Buses";
+  category: VehicleCategory;
   make: string;
   model: string;
   trim: string;
@@ -16,7 +49,7 @@ export interface Vehicle {
   landedCost: number; // USD
   priceUSD: number;
   priceNGN: number;
-  status: "Available" | "Reserved" | "In Transit" | "Inspection" | "Clearance" | "Sold";
+  status: VehicleStatus;
   location: "Lagos Showroom" | "Abuja Showroom" | "Port Transit" | "Central Warehouse";
   image: string;
   gallery: string[];
@@ -25,6 +58,11 @@ export interface Vehicle {
   engine: string;
   description: string;
   featured?: boolean;
+  daysInStock?: number;
+  inspectionApproved?: boolean;
+  conditionRating?: "Grade A (Pristine)" | "Grade B (Minor Wear)" | "Grade C (Recon Req)" | "Grade D (Major Repair)";
+  assignedInspector?: string;
+  videoUrl?: string;
 }
 
 export const VEHICLES: Vehicle[] = [

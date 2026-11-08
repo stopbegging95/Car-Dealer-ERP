@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
 
 export interface ServiceJobItem {
   bay: string;
@@ -140,27 +140,57 @@ export const ServiceWorkshopPage: React.FC<ServiceWorkshopPageProps> = ({ showTo
         </form>
       </Modal>
 
-      <div className="space-y-2 text-xs">
-        {jobs.map((job, idx) => (
-          <div key={idx} className="flex sm:flex-row flex-col justify-between sm:items-center gap-2.5 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-[#2563EB]">{job.bay}</span>
-                <span className="font-bold text-[#0F172A]">{job.car}</span>
-              </div>
-              <span className="block mt-0.5 text-[#64748B] text-[11px]">
-                {job.task} &bull; Lead Tech: <strong className="text-[#0F172A]">{job.tech}</strong>
-              </span>
-            </div>
-            <div className="flex items-center self-end sm:self-auto gap-2.5">
-              <span className="font-mono text-[#64748B] text-xs">ETA: {job.eta}</span>
+      <Table
+        data={jobs}
+        keyExtractor={(job) => job.bay}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "bay",
+            header: "Workshop Bay",
+            sortable: true,
+            render: (job) => (
+              <span className="font-mono font-bold text-[#2563EB]">{job.bay}</span>
+            ),
+          },
+          {
+            key: "car",
+            header: "Vehicle Model",
+            sortable: true,
+            render: (job) => <span className="font-bold text-[#0F172A]">{job.car}</span>,
+          },
+          {
+            key: "task",
+            header: "PDI & Mechanical Scope",
+            render: (job) => <span className="text-[#475569] text-xs">{job.task}</span>,
+          },
+          {
+            key: "tech",
+            header: "Lead Technician",
+            sortable: true,
+            render: (job) => (
+              <span className="font-semibold text-xs text-[#0F172A]">{job.tech}</span>
+            ),
+          },
+          {
+            key: "eta",
+            header: "Estimated ETA",
+            sortable: true,
+            render: (job) => <span className="font-mono text-xs text-[#64748B]">{job.eta}</span>,
+          },
+          {
+            key: "status",
+            header: "Status",
+            align: "right",
+            render: (job) => (
               <Badge variant={job.status.includes("Complete") ? "gold" : "charcoal"} size="sm">
                 {job.status}
               </Badge>
-            </div>
-          </div>
-        ))}
-      </div>
+            ),
+          },
+        ]}
+      />
     </Card>
   );
 };

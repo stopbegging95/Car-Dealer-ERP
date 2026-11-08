@@ -66,6 +66,64 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [activeCurrency, setActiveCurrency] = useState<"USD" | "NGN">("USD");
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: "NOTIF-01",
+      title: "Discount Ceiling Approval Required",
+      type: "Rule 4 Authorization",
+      detail: "Order ORD-9914 (2024 Mercedes-Maybach S580) discount 4.5% exceeds 3% ceiling. Rep: Chukwudi N.",
+      priority: "High",
+      time: "8 mins ago",
+      read: false,
+    },
+    {
+      id: "NOTIF-02",
+      title: "High-Value Acquisition Gate",
+      type: "Rule 5 PO Sign-off",
+      detail: "PO-2026-092 for 2x Range Rover SV ($240,000 / ₦372,000,000) requires Executive Management clearance.",
+      priority: "Critical",
+      time: "24 mins ago",
+      read: false,
+    },
+    {
+      id: "NOTIF-03",
+      title: "Vehicle Reservation Expiration",
+      type: "Rule 3 Countdown",
+      detail: "Stock LX-2024-001 (2024 Porsche 911 Turbo S) reservation expires in 14 hours. Deposit pending.",
+      priority: "Medium",
+      time: "1 hour ago",
+      read: false,
+    },
+    {
+      id: "NOTIF-04",
+      title: "Port Demurrage Free-Time Alert",
+      type: "Demurrage Radar",
+      detail: "Vessel MSC Positano (B/L MSC-TIN-88912) free-time ends in 3 days at Tin Can Island Terminal.",
+      priority: "High",
+      time: "2 hours ago",
+      read: false,
+    },
+    {
+      id: "NOTIF-05",
+      title: "Stock Aging Warning (90+ Days)",
+      type: "Inventory Alert",
+      detail: "Stock LX-2023-089 (2023 Bentley Flying Spur) in stock for 92 days. Holding cost: $4,600.",
+      priority: "Medium",
+      time: "Yesterday",
+      read: true,
+    },
+    {
+      id: "NOTIF-06",
+      title: "Statutory License Renewal",
+      type: "Compliance Notice",
+      detail: "Expatriate Quota & CERPAC cards renewal due in 28 days. Document vault docket active.",
+      priority: "Low",
+      time: "2 days ago",
+      read: true,
+    },
+  ]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -191,6 +249,24 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <nav className="space-y-1">
               <button
                 type="button"
+                onClick={() => onSelectModule("Personal Staff Dashboard")}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  activeModule === "Personal Staff Dashboard"
+                    ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/25"
+                    : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#2563EB]"
+                }`}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <FiCheckCircle className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Staff Work Desk</span>
+                </div>
+                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-[#EFF6FF] text-[#1D4ED8] font-bold shrink-0">
+                  L3
+                </span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => onSelectModule("My Profile")}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                   activeModule === "My Profile"
@@ -278,16 +354,135 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </Button>
             </div>
 
-            {/* Notification Bell */}
-            <Button
-              variant="outline"
-              size="icon"
-              aria-label="Notifications"
-              className="relative rounded-full w-8 h-8 text-[#64748B] hover:text-[#2563EB]"
-            >
-              <FiBell className="w-3.5 h-3.5" />
-              <span className="top-1.5 right-1.5 absolute bg-[#2563EB] rounded-full w-1.5 h-1.5" />
-            </Button>
+            {/* Multi-Currency Header Switcher (USD / NGN) */}
+            <div className="flex items-center bg-[#F8FAFC] border border-[#CBD5E1] rounded-md p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => setActiveCurrency("USD")}
+                className={`px-2 py-0.5 sm:py-1 rounded font-bold text-[11px] transition-colors cursor-pointer ${
+                  activeCurrency === "USD"
+                    ? "bg-[#2563EB] text-white shadow-xs"
+                    : "text-[#64748B] hover:text-[#0F172A]"
+                }`}
+                title="Switch active currency to US Dollars ($)"
+              >
+                USD ($)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveCurrency("NGN")}
+                className={`px-2 py-0.5 sm:py-1 rounded font-bold text-[11px] transition-colors cursor-pointer ${
+                  activeCurrency === "NGN"
+                    ? "bg-[#2563EB] text-white shadow-xs"
+                    : "text-[#64748B] hover:text-[#0F172A]"
+                }`}
+                title="Switch active currency to Nigerian Naira (₦)"
+              >
+                NGN (₦)
+              </button>
+              <span className="hidden lg:inline px-1.5 py-0.5 text-[9px] font-mono text-[#2563EB] font-bold border-l border-[#CBD5E1] ml-0.5">
+                ₦1,550/$
+              </span>
+            </div>
+
+            {/* Notification Bell & Interactive Drawer */}
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Notifications"
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="relative rounded-full w-8 h-8 text-[#64748B] hover:text-[#2563EB]"
+              >
+                <FiBell className="w-3.5 h-3.5" />
+                {notifications.filter((n) => !n.read).length > 0 && (
+                  <span className="top-1 right-1 absolute bg-red-500 rounded-full w-2 h-2 animate-pulse" />
+                )}
+              </Button>
+
+              {/* CENTRAL NOTIFICATIONS DRAWER */}
+              {isNotificationsOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-[#FFFFFF] border border-[#CBD5E1] rounded-md shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#E2E8F0]">
+                    <div className="flex items-center gap-1.5">
+                      <FiBell className="w-4 h-4 text-[#2563EB]" />
+                      <span className="font-bold text-xs text-[#0F172A]">Central Notifications</span>
+                      <span className="text-[10px] font-mono bg-[#EFF6FF] text-[#2563EB] font-bold px-1.5 rounded">
+                        {notifications.filter((n) => !n.read).length} new
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+                      }
+                      className="text-[10px] text-[#2563EB] hover:underline font-semibold cursor-pointer"
+                    >
+                      Mark all read
+                    </button>
+                  </div>
+
+                  <div className="max-h-80 overflow-y-auto divide-y divide-[#E2E8F0] my-1">
+                    {notifications.map((item) => (
+                      <div
+                        key={item.id}
+                        className={`p-2.5 transition-colors text-xs ${
+                          item.read ? "bg-white opacity-70" : "bg-[#F8FAFC]"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <span className="font-bold text-[#0F172A] truncate">{item.title}</span>
+                          <span
+                            className={`text-[9px] px-1.5 py-0.2 rounded font-bold shrink-0 ${
+                              item.priority === "Critical"
+                                ? "bg-red-100 text-red-700"
+                                : item.priority === "High"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-slate-100 text-slate-700"
+                            }`}
+                          >
+                            {item.priority}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[#475569] leading-snug mb-1.5">
+                          {item.detail}
+                        </p>
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="text-[#94A3B8] font-mono">{item.time}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-[9px] text-[#2563EB] font-semibold bg-[#EFF6FF] px-1 rounded border border-[#BFDBFE]">
+                              {item.type}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setNotifications((prev) =>
+                                  prev.filter((n) => n.id !== item.id)
+                                );
+                              }}
+                              className="text-[#64748B] hover:text-[#0F172A] cursor-pointer"
+                              title="Dismiss notification"
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-2 border-t border-[#E2E8F0] text-center">
+                    <button
+                      type="button"
+                      onClick={() => setIsNotificationsOpen(false)}
+                      className="text-xs text-[#64748B] hover:text-[#0F172A] font-semibold cursor-pointer"
+                    >
+                      Close Drawer
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Profile Avatar Pill & Dropdown (Email, Name, Profile, Logout) */}
             <div className="relative">

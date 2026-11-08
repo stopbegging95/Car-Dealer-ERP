@@ -12,12 +12,10 @@ import { RoleDefinition } from "@/data/roles";
 
 export interface ProfilePageProps {
   activeRole: RoleDefinition;
-  onNavigateSessionHistory: () => void;
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({
   activeRole,
-  onNavigateSessionHistory,
 }) => {
   return (
     <div className="space-y-4">
@@ -49,14 +47,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </div>
 
           <div className="flex items-center self-end sm:self-auto gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onNavigateSessionHistory}
-              leftIcon={<FiClock className="w-3.5 h-3.5" />}
-            >
-              View WORM Session Audit Trail
-            </Button>
+            <Badge variant="gold" size="sm">
+              Session WORM Audit Active
+            </Badge>
           </div>
         </div>
       </Card>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
 
 export interface ReceivableItem {
   id: string;
@@ -144,28 +144,67 @@ export const ReceivablesPage: React.FC<ReceivablesPageProps> = ({
         </form>
       </Modal>
 
-      <div className="space-y-2.5 text-xs">
-        {list.map((rec) => (
-          <div
-            key={rec.id}
-            className="flex sm:flex-row flex-col justify-between sm:items-center gap-3 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md"
-          >
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold font-mono text-[#2563EB]">{rec.id}</span>
+      <Table
+        data={list}
+        keyExtractor={(rec) => rec.id}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "id",
+            header: "Receivable ID",
+            sortable: true,
+            render: (rec) => (
+              <span className="font-mono font-bold text-[#2563EB]">{rec.id}</span>
+            ),
+          },
+          {
+            key: "client",
+            header: "Client & Vehicle",
+            sortable: true,
+            render: (rec) => (
+              <div>
                 <span className="font-bold text-[#0F172A]">{rec.client}</span>
-                <Badge variant={rec.status === "Verified & Reconciled to GL" ? "gold" : "charcoal"} size="sm">
-                  {rec.status}
-                </Badge>
+                <span className="block text-[10px] text-[#64748B]">{rec.car}</span>
               </div>
-              <span className="block mt-0.5 text-[#64748B] text-[11px]">
-                Vehicle: {rec.car} &bull; Bank: {rec.bank} &bull; Wire Ref: <span className="font-bold font-mono">{rec.wireRef}</span>
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 self-end sm:self-auto">
-              <span className="font-bold font-mono text-[#1D4ED8] text-sm">{rec.balance}</span>
-              {rec.status !== "Verified & Reconciled to GL" && (
+            ),
+          },
+          {
+            key: "bank",
+            header: "Receiving Escrow Bank",
+            sortable: true,
+            render: (rec) => <span className="text-xs text-[#475569]">{rec.bank}</span>,
+          },
+          {
+            key: "wireRef",
+            header: "Bank Wire Ref",
+            render: (rec) => (
+              <span className="font-mono font-bold text-[#2563EB] text-xs">{rec.wireRef}</span>
+            ),
+          },
+          {
+            key: "balance",
+            header: "Remittance Balance",
+            sortable: true,
+            render: (rec) => (
+              <span className="font-mono font-bold text-[#1D4ED8]">{rec.balance}</span>
+            ),
+          },
+          {
+            key: "status",
+            header: "Status",
+            render: (rec) => (
+              <Badge variant={rec.status === "Verified & Reconciled to GL" ? "gold" : "charcoal"} size="sm">
+                {rec.status}
+              </Badge>
+            ),
+          },
+          {
+            key: "action",
+            header: "Verification",
+            align: "right",
+            render: (rec) =>
+              rec.status !== "Verified & Reconciled to GL" ? (
                 <Button
                   variant="primary"
                   size="sm"
@@ -174,11 +213,12 @@ export const ReceivablesPage: React.FC<ReceivablesPageProps> = ({
                 >
                   Verify Bank Wire
                 </Button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+              ) : (
+                <span className="font-mono text-emerald-600 font-semibold text-xs">Reconciled to GL</span>
+              ),
+          },
+        ]}
+      />
     </Card>
   );
 };

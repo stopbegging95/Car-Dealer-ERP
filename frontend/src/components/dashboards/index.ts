@@ -1,5 +1,6 @@
 export * from "./admin";
 export * from "./accounting";
+export * from "./procurement";
 export * from "./sales";
 export * from "./service";
 export * from "./parts";
@@ -10,6 +11,8 @@ export * from "./trade-ins";
 export * from "./crm";
 export * from "./hr";
 export * from "./user";
+export * from "./inspection/InspectionQADashboard";
+export * from "./staff/PersonalStaffDashboard";
 
 // Backward-compatible aliases
 export { DepartmentPortalsPage as DepartmentPortalsDashboard } from "./admin";
@@ -20,3 +23,6 @@ export { CMSPage as CMSDashboard } from "./admin";
 export { SettingsPage as SettingsDashboard } from "./admin";
 export { ProfilePage as ProfileDashboard } from "./admin";
 export { SessionsPage as SessionsDashboard } from "./admin";
+export { ReportsAnalyticsPage as ReportsAnalyticsDashboard } from "./admin";
+export { InvoicesPaymentsPage as InvoicesPaymentsDashboard } from "./accounting";
+export { FinancialReportsPage as FinancialReportsDashboard } from "./accounting";

@@ -2,15 +2,15 @@
 
 import React from "react";
 import { FiShield } from "react-icons/fi";
-import { Button, Badge } from "@/components/ui";
+import { Badge, Card } from "@/components/ui";
 
 export interface SecuritySettingsTabProps {
-  onReturnToOverview: () => void;
+  onReturnToOverview?: () => void;
 }
 
-export const SecuritySettingsTab: React.FC<SecuritySettingsTabProps> = ({ onReturnToOverview }) => {
+export const SecuritySettingsTab: React.FC<SecuritySettingsTabProps> = () => {
   return (
-    <div className="space-y-6 bg-[#FFFFFF] shadow-sm p-6 sm:p-8 border border-[#E2E8F0] rounded-2xl">
+    <Card className="space-y-6 shadow-sm p-6 sm:p-8">
       <div className="flex items-center gap-3.5 pb-4 border-b border-[#E2E8F0]">
         <div className="flex justify-center items-center bg-[#EFF6FF] border border-[#BFDBFE] rounded-full w-12 h-12 text-[#2563EB]">
           <FiShield className="w-6 h-6" />
@@ -46,13 +46,6 @@ export const SecuritySettingsTab: React.FC<SecuritySettingsTabProps> = ({ onRetu
           </div>
         </div>
       </div>
-
-      <div className="pt-2">
-        <Button variant="primary" size="sm" onClick={onReturnToOverview}>
-          Return to Garage Overview
-        </Button>
-      </div>
-    </div>
+    </Card>
   );
 };
-

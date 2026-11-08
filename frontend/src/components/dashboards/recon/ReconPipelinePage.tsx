@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
 
 export interface ReconOrderItem {
   stock: string;
@@ -152,27 +152,56 @@ export const ReconPipelinePage: React.FC<ReconPipelinePageProps> = ({ showToast 
         </div>
       </div>
 
-      <div className="space-y-2 pt-2 text-xs">
-        {reconList.map((car, ci) => (
-          <div key={ci} className="flex sm:flex-row flex-col justify-between sm:items-center gap-2.5 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-[#2563EB]">{car.stock}</span>
-                <span className="font-bold text-[#0F172A]">{car.car}</span>
-              </div>
-              <span className="block mt-0.5 text-[#64748B] text-[11px]">
-                {car.currentStage} &bull; Specialist: <strong className="text-[#0F172A]">{car.tech}</strong>
-              </span>
-            </div>
-            <div className="flex items-center self-end sm:self-auto gap-3">
-              <span className="font-mono text-[#64748B] text-xs">{car.finish}</span>
+      <Table
+        data={reconList}
+        keyExtractor={(car) => car.stock}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "stock",
+            header: "Stock ID",
+            sortable: true,
+            render: (car) => (
+              <span className="font-mono font-bold text-[#2563EB]">{car.stock}</span>
+            ),
+          },
+          {
+            key: "car",
+            header: "Vehicle Model",
+            sortable: true,
+            render: (car) => <span className="font-bold text-[#0F172A]">{car.car}</span>,
+          },
+          {
+            key: "currentStage",
+            header: "Active Recon Stage",
+            sortable: true,
+            render: (car) => (
+              <span className="font-semibold text-xs text-[#2563EB]">{car.currentStage}</span>
+            ),
+          },
+          {
+            key: "tech",
+            header: "Assigned Specialist",
+            render: (car) => <span className="text-xs text-[#475569]">{car.tech}</span>,
+          },
+          {
+            key: "finish",
+            header: "Finish & Cure Status",
+            render: (car) => <span className="font-mono text-xs text-[#64748B]">{car.finish}</span>,
+          },
+          {
+            key: "status",
+            header: "Readiness",
+            align: "right",
+            render: (car) => (
               <Badge variant={car.status.includes("Ready") ? "gold" : "charcoal"} size="sm">
                 {car.status}
               </Badge>
-            </div>
-          </div>
-        ))}
-      </div>
+            ),
+          },
+        ]}
+      />
     </Card>
   );
 };

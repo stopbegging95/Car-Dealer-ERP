@@ -18,6 +18,7 @@ import {
 import { Button, Badge, Modal, Input, Dropdown } from "@/components/ui";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
+import { downloadVaultDocumentPdf } from "@/utils/pdfGenerator";
 import { OverviewTab, ActiveRequestItem } from "./OverviewTab";
 import { GarageTab } from "./GarageTab";
 import { TestDrivesTab, TestDriveItem } from "./TestDrivesTab";
@@ -32,10 +33,23 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [isNewBriefModalOpen, setIsNewBriefModalOpen] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<"USD" | "NGN">("USD");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Sourcing Brief Form State
+  const [briefTargetModel, setBriefTargetModel] = useState("");
+  const [briefYearRange, setBriefYearRange] = useState("2023 - 2025");
+  const [briefMaxBudget, setBriefMaxBudget] = useState("350,000");
+  const [briefMarket, setBriefMarket] = useState("Germany (Stuttgart / Munich)");
+  const [briefColors, setBriefColors] = useState("");
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   const savedVehicles: Vehicle[] = VEHICLES.slice(0, 3);
 
-  const activeRequests: ActiveRequestItem[] = [
+  const [activeRequests, setActiveRequests] = useState<ActiveRequestItem[]>([
     {
       id: "REQ-7782",
       type: "Auto Broker Sourcing",
@@ -58,7 +72,7 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
       budget: "$132,500 Balance",
       broker: "Emeka O. (VIP Sales)",
     },
-  ];
+  ]);
 
   const testDriveBookings: TestDriveItem[] = [
     {
@@ -236,7 +250,6 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
             activeRequests={activeRequests}
             documentsCount={documents.length}
             onOpenNewBriefModal={() => setIsNewBriefModalOpen(true)}
-            onNavigateTab={setActiveTab}
           />
         )}
 
@@ -268,15 +281,31 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
             customerInvoices={customerInvoices}
             selectedCurrency={selectedCurrency}
             onSelectCurrency={setSelectedCurrency}
+            onDownloadReceipt={(inv) => {
+              showToast(`Generating official receipt PDF for ${inv.id} (${inv.vehicle})...`);
+            }}
           />
         )}
 
         {activeTab === "Document Vault" && (
-          <DocumentVaultTab documents={documents} />
+          <DocumentVaultTab
+            documents={documents}
+            onDownloadDoc={(doc) => {
+              downloadVaultDocumentPdf({
+                title: doc.name,
+                reference: "Customer Vault Archive",
+                classification: doc.type,
+                date: doc.date,
+                details: `File size: ${doc.size}. Encrypted client copy for registration and customs clearance records.`,
+                author: "Dealership Legal Registrar",
+              });
+              showToast(`Downloading certified PDF for ${doc.name}...`);
+            }}
+          />
         )}
 
         {["KYC & Verification", "Security & Settings"].includes(activeTab) && (
-          <SecuritySettingsTab onReturnToOverview={() => setActiveTab("Overview")} />
+          <SecuritySettingsTab />
         )}
       </div>
 
@@ -301,8 +330,26 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
               variant="primary"
               size="sm"
               onClick={() => {
-                alert("Sourcing brief submitted! Your assigned broker will contact you within 4 hours.");
+                if (!briefTargetModel.trim()) {
+                  showToast("Please provide the target make and model.");
+                  return;
+                }
+                const newReq: ActiveRequestItem = {
+                  id: `REQ-${Math.floor(1000 + Math.random() * 9000)}`,
+                  type: "Auto Broker Sourcing",
+                  vehicle: `${briefTargetModel} (${briefYearRange})`,
+                  stage: "Auction Catalog Review & Intake",
+                  status: "In Progress",
+                  date: "Nov 08, 2026",
+                  market: briefMarket,
+                  budget: `$${briefMaxBudget}`,
+                  broker: "Marcus V. (Antwerp Desk)",
+                };
+                setActiveRequests([newReq, ...activeRequests]);
                 setIsNewBriefModalOpen(false);
+                showToast(`Sourcing brief submitted for ${briefTargetModel}! Your assigned broker has received the dossier.`);
+                setBriefTargetModel("");
+                setBriefColors("");
               }}
               leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
@@ -312,22 +359,46 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
         }
       >
         <div className="space-y-3">
-          <Input label="Target Make & Model" placeholder="e.g. Ferrari Purosangue or Porsche 911 Dakar" required />
+          <Input
+            label="Target Make & Model"
+            placeholder="e.g. Ferrari Purosangue or Porsche 911 Dakar"
+            value={briefTargetModel}
+            onChange={(e) => setBriefTargetModel(e.target.value)}
+            required
+          />
           <div className="gap-3 grid grid-cols-1 sm:grid-cols-2">
-            <Input label="Year Range" placeholder="2023 - 2025" required />
-            <Input label="Maximum Budget ($ USD)" placeholder="$350,000" required />
+            <Input
+              label="Year Range"
+              placeholder="2023 - 2025"
+              value={briefYearRange}
+              onChange={(e) => setBriefYearRange(e.target.value)}
+              required
+            />
+            <Input
+              label="Maximum Budget ($ USD)"
+              placeholder="350,000"
+              value={briefMaxBudget}
+              onChange={(e) => setBriefMaxBudget(e.target.value)}
+              required
+            />
           </div>
           <Dropdown
             label="Preferred Sourcing Market"
+            value={briefMarket}
             options={[
-              { label: "Germany (Stuttgart / Munich)", value: "Germany" },
-              { label: "United States (California / Florida)", value: "USA" },
-              { label: "United Arab Emirates (Dubai)", value: "UAE" },
-              { label: "United Kingdom (London)", value: "UK" },
+              { label: "Germany (Stuttgart / Munich)", value: "Germany (Stuttgart / Munich)" },
+              { label: "United States (California / Florida)", value: "United States (California / Florida)" },
+              { label: "United Arab Emirates (Dubai)", value: "United Arab Emirates (Dubai)" },
+              { label: "United Kingdom (London)", value: "United Kingdom (London)" },
             ]}
-            onChange={() => {}}
+            onChange={(val) => setBriefMarket(String(val))}
           />
-          <Input label="Special Exterior / Interior Color Preferences" placeholder="e.g. British Racing Green / Tan Leather" />
+          <Input
+            label="Special Exterior / Interior Color Preferences"
+            placeholder="e.g. British Racing Green / Tan Leather"
+            value={briefColors}
+            onChange={(e) => setBriefColors(e.target.value)}
+          />
         </div>
       </Modal>
     </DashboardLayout>

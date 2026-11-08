@@ -7,5 +7,5 @@ export * from "./CMSPage";
 export * from "./SettingsPage";
 export * from "./ProfilePage";
 export * from "./SessionsPage";
+export * from "./ReportsAnalyticsPage";
 export * from "./AdminDashboard";
-

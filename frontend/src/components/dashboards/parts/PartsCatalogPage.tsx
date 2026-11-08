@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
 
 export interface PartCatalogItem {
   sku: string;
@@ -131,27 +131,69 @@ export const PartsCatalogPage: React.FC<PartsCatalogPageProps> = ({ showToast })
         </form>
       </Modal>
 
-      <div className="space-y-2 text-xs">
-        {parts.map((part, pi) => (
-          <div key={pi} className="flex sm:flex-row flex-col justify-between sm:items-center gap-2.5 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-[#2563EB]">{part.sku}</span>
-                <span className="font-bold text-[#0F172A]">{part.name}</span>
-              </div>
-              <span className="block mt-0.5 text-[#64748B] text-[11px]">
-                {part.oem} &bull; <strong className="text-[#0F172A]">{part.qty}</strong>
-              </span>
-            </div>
-            <div className="flex items-center self-end sm:self-auto gap-3">
-              <span className="font-mono font-bold text-[#0F172A] text-sm">{part.price}</span>
-              <Badge variant={part.status === "In Stock" ? "gold" : "charcoal"} size="sm">
+      <Table
+        data={parts}
+        keyExtractor={(part) => part.sku}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "sku",
+            header: "SKU / Part Code",
+            sortable: true,
+            render: (part) => (
+              <span className="font-mono font-bold text-[#2563EB]">{part.sku}</span>
+            ),
+          },
+          {
+            key: "name",
+            header: "Part Description & Spec",
+            sortable: true,
+            render: (part) => <span className="font-bold text-[#0F172A]">{part.name}</span>,
+          },
+          {
+            key: "oem",
+            header: "OEM Manufacturer",
+            sortable: true,
+            render: (part) => <span className="text-xs text-[#475569]">{part.oem}</span>,
+          },
+          {
+            key: "qty",
+            header: "Warehouse Stock",
+            sortable: true,
+            render: (part) => (
+              <span className="font-mono text-xs font-semibold text-[#0F172A]">{part.qty}</span>
+            ),
+          },
+          {
+            key: "price",
+            header: "Retail Price",
+            sortable: true,
+            render: (part) => (
+              <span className="font-mono font-bold text-[#1D4ED8]">{part.price}</span>
+            ),
+          },
+          {
+            key: "status",
+            header: "Inventory Status",
+            align: "right",
+            render: (part) => (
+              <Badge
+                variant={
+                  part.status === "In Stock"
+                    ? "gold"
+                    : part.status.includes("Low")
+                    ? "charcoal"
+                    : "warmGold"
+                }
+                size="sm"
+              >
                 {part.status}
               </Badge>
-            </div>
-          </div>
-        ))}
-      </div>
+            ),
+          },
+        ]}
+      />
     </Card>
   );
 };

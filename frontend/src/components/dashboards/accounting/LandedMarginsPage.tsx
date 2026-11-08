@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, Badge, Card } from "@/components/ui";
+import { Button, Badge, Card, Table } from "@/components/ui";
 
 export interface LandedMarginVoucher {
   stockId: string;
@@ -99,54 +99,90 @@ export const LandedMarginsPage: React.FC<LandedMarginsPageProps> = ({ onAuditVou
         <Badge variant="gold" size="sm">Audited by Chief Accountant</Badge>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs text-left">
-          <thead className="bg-[#F8FAFC] border-[#E2E8F0] border-b font-bold text-[#64748B] text-[10px] uppercase">
-            <tr>
-              <th className="px-3 py-2.5">Stock & Model</th>
-              <th className="px-3 py-2.5">FOB Purchase</th>
-              <th className="px-3 py-2.5">Sea Freight</th>
-              <th className="px-3 py-2.5">Customs (35%)</th>
-              <th className="px-3 py-2.5">Recon Prep</th>
-              <th className="px-3 py-2.5 font-bold text-[#0F172A]">Landed Cost</th>
-              <th className="px-3 py-2.5 font-bold text-[#1D4ED8]">Sold Price</th>
-              <th className="px-3 py-2.5 font-bold text-emerald-700">Net Margin</th>
-              <th className="px-3 py-2.5 text-right">Audit</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#E2E8F0]">
-            {marginRows.map((row) => (
-              <tr key={row.stockId} className="hover:bg-[#F8FAFC] transition-colors">
-                <td className="px-3 py-3">
-                  <div className="font-bold text-[#0F172A]">{row.model}</div>
-                  <span className="font-mono text-[#2563EB] text-[10px]">{row.stockId}</span>
-                </td>
-                <td className="px-3 py-3 font-mono">{row.fob}</td>
-                <td className="px-3 py-3 font-mono">{row.freight}</td>
-                <td className="px-3 py-3 font-mono">{row.duty}</td>
-                <td className="px-3 py-3 font-mono">{row.recon}</td>
-                <td className="px-3 py-3 font-mono font-bold text-[#0F172A]">{row.landedCost}</td>
-                <td className="px-3 py-3 font-mono font-bold text-[#1D4ED8]">{row.soldPrice}</td>
-                <td className="px-3 py-3">
-                  <span className="bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded font-mono font-bold text-emerald-700">
-                    {row.netMargin} ({row.marginPct})
-                  </span>
-                </td>
-                <td className="px-3 py-3 text-right">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onAuditVoucher(row)}
-                    className="px-2.5 py-0.5 text-[11px]"
-                  >
-                    Audit Voucher
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        data={marginRows}
+        keyExtractor={(row) => row.stockId}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "model",
+            header: "Stock & Model",
+            sortable: true,
+            render: (row) => (
+              <div>
+                <div className="font-bold text-[#0F172A]">{row.model}</div>
+                <span className="font-mono text-[#2563EB] text-[10px]">{row.stockId}</span>
+              </div>
+            ),
+          },
+          {
+            key: "fob",
+            header: "FOB Purchase",
+            sortable: true,
+            render: (row) => <span className="font-mono">{row.fob}</span>,
+          },
+          {
+            key: "freight",
+            header: "Sea Freight",
+            sortable: true,
+            render: (row) => <span className="font-mono">{row.freight}</span>,
+          },
+          {
+            key: "duty",
+            header: "Customs (35%)",
+            sortable: true,
+            render: (row) => <span className="font-mono">{row.duty}</span>,
+          },
+          {
+            key: "recon",
+            header: "Recon Prep",
+            sortable: true,
+            render: (row) => <span className="font-mono">{row.recon}</span>,
+          },
+          {
+            key: "landedCost",
+            header: "Landed Cost",
+            sortable: true,
+            render: (row) => (
+              <span className="font-mono font-bold text-[#0F172A]">{row.landedCost}</span>
+            ),
+          },
+          {
+            key: "soldPrice",
+            header: "Sold Price",
+            sortable: true,
+            render: (row) => (
+              <span className="font-mono font-bold text-[#1D4ED8]">{row.soldPrice}</span>
+            ),
+          },
+          {
+            key: "netMargin",
+            header: "Net Margin",
+            sortable: true,
+            render: (row) => (
+              <span className="bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded font-mono font-bold text-emerald-700">
+                {row.netMargin} ({row.marginPct})
+              </span>
+            ),
+          },
+          {
+            key: "action",
+            header: "Audit",
+            align: "right",
+            render: (row) => (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onAuditVoucher(row)}
+                className="px-2.5 py-0.5 text-[11px]"
+              >
+                Audit Voucher
+              </Button>
+            ),
+          },
+        ]}
+      />
     </Card>
   );
 };

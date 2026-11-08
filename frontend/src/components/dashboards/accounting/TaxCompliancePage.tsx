@@ -2,13 +2,20 @@
 
 import React from "react";
 import { FiDownload } from "react-icons/fi";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, Badge, Table } from "@/components/ui";
 
 export interface TaxCompliancePageProps {
   showToast: (msg: string) => void;
 }
 
 export const TaxCompliancePage: React.FC<TaxCompliancePageProps> = ({ showToast }) => {
+  const taxFilings = [
+    { period: "October 2026", output: "$256,500", input: "$62,400", net: "$194,100", dueDate: "2026-11-21", ref: "FIRS-VAT-2026-10", status: "Audit Cleared" },
+    { period: "September 2026", output: "$284,000", input: "$71,200", net: "$212,800", dueDate: "2026-10-21", ref: "FIRS-VAT-2026-09", status: "Remitted & Verified" },
+    { period: "August 2026", output: "$210,500", input: "$54,000", net: "$156,500", dueDate: "2026-09-21", ref: "FIRS-VAT-2026-08", status: "Remitted & Verified" },
+    { period: "July 2026", output: "$310,000", input: "$88,500", net: "$221,500", dueDate: "2026-08-21", ref: "FIRS-VAT-2026-07", status: "Remitted & Verified" },
+  ];
+
   return (
     <Card className="space-y-4 shadow-xs p-4 sm:p-5">
       <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2 pb-2.5 border-[#E2E8F0] border-b">
@@ -45,6 +52,60 @@ export const TaxCompliancePage: React.FC<TaxCompliancePageProps> = ({ showToast 
           <span className="block text-[#1D4ED8] text-[10px]">Due: 21st of November, 2026</span>
         </div>
       </div>
+
+      <Table
+        data={taxFilings}
+        keyExtractor={(item) => item.period}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "period",
+            header: "Assessment Period",
+            sortable: true,
+            render: (item) => <span className="font-bold text-[#0F172A]">{item.period}</span>,
+          },
+          {
+            key: "ref",
+            header: "FIRS Filing Ref",
+            render: (item) => <span className="font-mono text-[#2563EB] text-xs">{item.ref}</span>,
+          },
+          {
+            key: "output",
+            header: "Output VAT (7.5%)",
+            sortable: true,
+            render: (item) => <span className="font-mono font-bold text-[#0F172A]">{item.output}</span>,
+          },
+          {
+            key: "input",
+            header: "Input Credit (Port)",
+            sortable: true,
+            render: (item) => <span className="font-mono text-emerald-600 font-semibold">{item.input}</span>,
+          },
+          {
+            key: "net",
+            header: "Net Payable",
+            sortable: true,
+            render: (item) => <span className="font-mono font-bold text-[#1D4ED8]">{item.net}</span>,
+          },
+          {
+            key: "dueDate",
+            header: "Filing Deadline",
+            sortable: true,
+            render: (item) => <span className="text-[#475569] text-xs">{item.dueDate}</span>,
+          },
+          {
+            key: "status",
+            header: "Compliance Status",
+            align: "right",
+            render: (item) => (
+              <Badge variant={item.status === "Audit Cleared" ? "gold" : "charcoal"} size="sm">
+                {item.status}
+              </Badge>
+            ),
+          },
+        ]}
+      />
     </Card>
   );
 };

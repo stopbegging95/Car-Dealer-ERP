@@ -26,21 +26,37 @@ export const DEALERSHIP_ROLES: RoleDefinition[] = [
     allowedModules: [
       "Dashboard",
       "Car Management",
+      "Vehicles & Inventory",
       "Orders & Sales",
-      "Service & Workshop",
-      "Parts & Inventory",
-      "Finance",
-      "Detailing & Recon",
-      "Branch Transfers",
-      "Import Logistics",
+      "Sales & Orders",
       "Trade-In & Swap",
       "CRM Pipeline & 360",
+      "Customers & CRM",
+      "Procurement",
+      "Procurement & Purchasing",
+      "Import Logistics",
+      "Importation & Logistics",
+      "Detailing & Recon",
+      "Inspection & Quality",
+      "Service & Workshop",
+      "Service & Maintenance",
+      "Parts & Inventory",
+      "Finance",
       "Accounting",
+      "Invoices & Payments",
+      "Financial Reports",
       "HR & Recruitment",
-      "Department Portals & Accounts",
-      "Roles & RBAC",
-      "Document Vault",
+      "HR & Employees",
+      "Branch Transfers",
+      "Branches & Operations",
       "CMS Manager",
+      "Marketing & Media",
+      "Document Vault",
+      "Legal & Compliance",
+      "Reports & Analytics",
+      "Department Portals & Accounts",
+      "Users & Permissions",
+      "Roles & RBAC",
       "Settings",
       "My Profile",
       "Session History",
@@ -206,7 +222,10 @@ export const DEALERSHIP_ROLES: RoleDefinition[] = [
     description: "Restricted strictly to general ledger, landed cost margins, vendor payables (AP), client receivables (AR), and FIRS tax compliance.",
     allowedModules: [
       "Accounting",
+      "Invoices & Payments",
+      "Financial Reports",
       "Document Vault",
+      "Legal & Compliance",
       "My Profile",
       "Session History",
     ],
@@ -224,7 +243,10 @@ export const DEALERSHIP_ROLES: RoleDefinition[] = [
     description: "Restricted strictly to general ledger, landed cost margins, vendor payables (AP), client receivables (AR), and FIRS tax compliance.",
     allowedModules: [
       "Accounting",
+      "Invoices & Payments",
+      "Financial Reports",
       "Document Vault",
+      "Legal & Compliance",
       "My Profile",
       "Session History",
     ],
@@ -265,6 +287,27 @@ export const DEALERSHIP_ROLES: RoleDefinition[] = [
       "Session History",
     ],
     defaultModule: "CMS Manager",
+  },
+  {
+    id: "procurement",
+    name: "Procurement & Sourcing Director",
+    department: "Procurement & International Sourcing",
+    badge: "Procurement Lead",
+    userName: "Head of International Sourcing",
+    email: "procurement.lead@luxauto.dealers.com",
+    userInitials: "PL",
+    branchName: "Global Sourcing Hub (Antwerp / Dubai / Lagos)",
+    description: "Restricted to international auction sourcing, supplier directory, purchase orders (POs), and vehicle intake orders.",
+    allowedModules: [
+      "Procurement",
+      "Procurement & Purchasing",
+      "Import Logistics",
+      "Importation & Logistics",
+      "Document Vault",
+      "My Profile",
+      "Session History",
+    ],
+    defaultModule: "Procurement",
   },
 ];
 
@@ -439,6 +482,19 @@ export const INITIAL_STAFF_ACCOUNTS: StaffAccount[] = [
     createdAt: "2026-03-10",
     lastLogin: "4 days ago",
   },
+  {
+    id: "USR-013",
+    name: "Head of International Sourcing",
+    email: "procurement.lead@luxauto.dealers.com",
+    departmentId: "procurement",
+    departmentName: "Procurement & International Sourcing",
+    dashboardModule: "Procurement",
+    branch: "Global Sourcing Hub (Antwerp / Dubai / Lagos)",
+    accessLevel: "Department Head / Director",
+    status: "Active",
+    createdAt: "2026-03-12",
+    lastLogin: "5 mins ago",
+  },
 ];
 
 export function getRoleById(roleId: string): RoleDefinition {
@@ -446,9 +502,52 @@ export function getRoleById(roleId: string): RoleDefinition {
 }
 
 export function isModuleAllowedForRole(roleId: string, moduleName: string): boolean {
+  if (
+    moduleName === "Personal Staff Dashboard" ||
+    moduleName === "My Profile" ||
+    moduleName === "Session History"
+  ) {
+    return true;
+  }
+
   const role = getRoleById(roleId);
   if (role.id === "admin") return true;
-  if (moduleName === "Department Portals & Accounts" && role.allowedModules.includes("Roles & RBAC")) return true;
-  if (moduleName === "Roles & RBAC" && role.allowedModules.includes("Department Portals & Accounts")) return true;
-  return role.allowedModules.includes(moduleName);
+
+  // Canonical Section 21 aliases mapping
+  const moduleAliases: Record<string, string[]> = {
+    "Car Management": ["Vehicles & Inventory"],
+    "Vehicles & Inventory": ["Car Management"],
+    "Orders & Sales": ["Sales & Orders"],
+    "Sales & Orders": ["Orders & Sales"],
+    "Service & Workshop": ["Service & Maintenance"],
+    "Service & Maintenance": ["Service & Workshop"],
+    "Detailing & Recon": ["Inspection & Quality"],
+    "Inspection & Quality": ["Detailing & Recon"],
+    "Import Logistics": ["Importation & Logistics"],
+    "Importation & Logistics": ["Import Logistics"],
+    "Branch Transfers": ["Branches & Operations"],
+    "Branches & Operations": ["Branch Transfers"],
+    "CMS Manager": ["Marketing & Media"],
+    "Marketing & Media": ["CMS Manager"],
+    "Document Vault": ["Legal & Compliance"],
+    "Legal & Compliance": ["Document Vault"],
+    "Department Portals & Accounts": ["Users & Permissions", "Roles & RBAC"],
+    "Roles & RBAC": ["Department Portals & Accounts", "Users & Permissions"],
+    "Users & Permissions": ["Department Portals & Accounts", "Roles & RBAC"],
+    "Procurement": ["Procurement & Purchasing"],
+    "Procurement & Purchasing": ["Procurement"],
+    "Trade-In & Swap": ["Trade-In & Valuation"],
+    "Trade-In & Valuation": ["Trade-In & Swap"],
+    "HR & Recruitment": ["HR & Employees", "HR & Staffing"],
+    "HR & Employees": ["HR & Recruitment", "HR & Staffing"],
+    "HR & Staffing": ["HR & Recruitment", "HR & Employees"],
+    "CRM Pipeline & 360": ["Customers & CRM", "CRM & Client 360"],
+    "Customers & CRM": ["CRM Pipeline & 360", "CRM & Client 360"],
+    "CRM & Client 360": ["CRM Pipeline & 360", "Customers & CRM"],
+  };
+
+  if (role.allowedModules.includes(moduleName)) return true;
+
+  const aliases = moduleAliases[moduleName] || [];
+  return aliases.some((alias) => role.allowedModules.includes(alias));
 }

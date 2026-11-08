@@ -18,6 +18,13 @@ import {
   FiRepeat,
   FiShoppingCart,
   FiDollarSign,
+  FiPackage,
+  FiFileText,
+  FiTrendingUp,
+  FiBriefcase,
+  FiUsers,
+  FiUserPlus,
+  FiNavigation,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import { Button } from "./ui";
@@ -52,6 +59,111 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
     { title: "News & Events", href: "/news", desc: "Latest arrivals, automotive exhibitions and press" },
     { title: "Careers", href: "/careers", desc: "Join our executive sales and logistics team" },
     { title: "Contact Us", href: "/contact", desc: "Showroom directory, WhatsApp chat and enquiries" },
+  ];
+
+  const departmentDesks = [
+    {
+      name: "Sales & Orders",
+      href: "/erp/sales",
+      dept: "Showroom Deals & Quotes",
+      icon: <FiShoppingCart className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Procurement & Sourcing",
+      href: "/erp/procurement",
+      dept: "Global Auctions & POs",
+      icon: <FiPackage className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Service & Workshop",
+      href: "/erp/service",
+      dept: "150-Point PDI & Bays",
+      icon: <FiTool className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Parts & Accessories",
+      href: "/erp/parts",
+      dept: "OEM Spares & Depot",
+      icon: <FiBox className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Finance (F&I)",
+      href: "/erp/financing",
+      dept: "Auto Loans & Mortgages",
+      icon: <FiActivity className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Detailing & Recon",
+      href: "/erp/recon",
+      dept: "9H Ceramic & PDI Quality",
+      icon: <FiCheckSquare className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Import Logistics",
+      href: "/erp/imports",
+      dept: "Port Clearing & Shipping",
+      icon: <FiTruck className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Accounting",
+      href: "/erp/accounting",
+      dept: "Landed Margins & GL Ledger",
+      icon: <FiDollarSign className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Invoices & Payments",
+      href: "/erp/invoices",
+      dept: "Commercial Invoices & Wires",
+      icon: <FiFileText className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Financial Reports",
+      href: "/erp/financial-reports",
+      dept: "Audited Income Statements",
+      icon: <FiTrendingUp className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Trade-In & Swap",
+      href: "/erp/trade-ins",
+      dept: "150-Point Appraisals & Equity",
+      icon: <FiRepeat className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "CRM Pipeline & 360",
+      href: "/erp/crm",
+      dept: "VIP Concierge & Leads",
+      icon: <FiUsers className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Branch Transfers & Yard",
+      href: "/erp/transfers",
+      dept: "Multi-Showroom Transfers",
+      icon: <FiNavigation className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "HR & Recruitment",
+      href: "/erp/hr",
+      dept: "People Ops & Staff Roster",
+      icon: <FiBriefcase className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Reports & Analytics",
+      href: "/erp/analytics",
+      dept: "Turnover, Velocity & Ratios",
+      icon: <FiTrendingUp className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Legal & Document Vault",
+      href: "/erp/documents",
+      dept: "Title Deeds & Customs SGDs",
+      icon: <FiShield className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Department Portals & Accounts",
+      href: "/erp/accounts",
+      dept: "Staff Access & Clearances",
+      icon: <FiUserPlus className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
   ];
 
   return (
@@ -300,56 +412,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
-                  {[
-                    {
-                      name: "Sales & Orders",
-                      href: "/erp/sales",
-                      dept: "Showroom Sales & Quotes",
-                      icon: <FiShoppingCart className="w-3.5 h-3.5 text-[#2563EB]" />,
-                    },
-                    {
-                      name: "Service & Workshop",
-                      href: "/erp/service",
-                      dept: "150-Point PDI & Diagnostics",
-                      icon: <FiTool className="w-3.5 h-3.5 text-[#2563EB]" />,
-                    },
-                    {
-                      name: "Parts & Inventory",
-                      href: "/erp/parts",
-                      dept: "OEM Parts & Styling",
-                      icon: <FiBox className="w-3.5 h-3.5 text-[#2563EB]" />,
-                    },
-                    {
-                      name: "Finance",
-                      href: "/erp/financing",
-                      dept: "Auto Loans & Underwriting",
-                      icon: <FiActivity className="w-3.5 h-3.5 text-[#2563EB]" />,
-                    },
-                    {
-                      name: "Detailing & Recon",
-                      href: "/erp/recon",
-                      dept: "9H Ceramic & Handover",
-                      icon: <FiCheckSquare className="w-3.5 h-3.5 text-[#2563EB]" />,
-                    },
-                    {
-                      name: "Import Logistics",
-                      href: "/erp/imports",
-                      dept: "Port Clearing & SGDs",
-                      icon: <FiTruck className="w-3.5 h-3.5 text-[#2563EB]" />,
-                    },
-                    {
-                      name: "Accounting",
-                      href: "/erp/accounting",
-                      dept: "Landed Margins & GL",
-                      icon: <FiDollarSign className="w-3.5 h-3.5 text-[#2563EB]" />,
-                    },
-                    {
-                      name: "Trade-In & Swap",
-                      href: "/erp/trade-ins",
-                      dept: "Valuations & Equity",
-                      icon: <FiRepeat className="w-3.5 h-3.5 text-[#2563EB]" />,
-                    },
-                  ].map((dept) => (
+                  {departmentDesks.map((dept) => (
                     <Link
                       key={dept.name}
                       href={dept.href}
@@ -464,16 +527,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
               Dealership Department Desks
             </span>
             <div className="grid grid-cols-2 gap-1 px-1">
-              {[
-                { name: "Sales & Orders", href: "/erp/sales" },
-                { name: "Service & Workshop", href: "/erp/service" },
-                { name: "Parts & Inventory", href: "/erp/parts" },
-                { name: "Finance", href: "/erp/financing" },
-                { name: "Detailing & Recon", href: "/erp/recon" },
-                { name: "Import Logistics", href: "/erp/imports" },
-                { name: "Accounting", href: "/erp/accounting" },
-                { name: "Trade-In & Swap", href: "/erp/trade-ins" },
-              ].map((d) => (
+              {departmentDesks.map((d) => (
                 <Link
                   key={d.name}
                   href={d.href}

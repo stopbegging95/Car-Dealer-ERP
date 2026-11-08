@@ -12,7 +12,7 @@ import {
   FiMapPin,
   FiEye,
 } from "react-icons/fi";
-import { KPICard, Card } from "@/components/ui";
+import { KPICard, Card, Table, Button } from "@/components/ui";
 
 export interface SessionRecord {
   id: string;
@@ -139,86 +139,117 @@ export const SessionsPage: React.FC<SessionsPageProps> = ({
       </div>
 
       {/* Session Ledger Table */}
-      <div className="bg-[#FFFFFF] shadow-xs border border-[#E2E8F0] rounded-md overflow-hidden">
-        <div className="w-full overflow-x-auto scrollbar-thin">
-          <table className="border-collapse min-w-full text-xs text-left">
-            <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] font-bold text-[#64748B] text-[10px] sm:text-xs uppercase tracking-wider">
-              <tr>
-                <th className="px-4 py-3.5 whitespace-nowrap">Session & SHA-256</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">Staff User & Role</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">Network IP & Location</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">Device & Browser</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">Login / Logout</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">Duration</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">MFA Status</th>
-                <th className="px-4 py-3.5 text-right whitespace-nowrap">Telemetry</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E2E8F0]">
-              {sessions.map((session) => (
-                <tr key={session.id} className="hover:bg-[#F8FAFC] transition-colors">
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="font-bold font-mono text-[#2563EB]">{session.id}</div>
-                    <div className="font-mono text-[#94A3B8] text-[9px] max-w-[130px] truncate" title={session.checksum}>
-                      {session.checksum.substring(0, 16)}...
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="font-bold text-[#0F172A]">{session.userName}</div>
-                    <div className="font-mono text-[#64748B] text-[10px]">{session.email}</div>
-                    <div className="mt-0.5 font-bold font-mono text-[#1D4ED8] text-[9px]">{session.role}</div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="flex items-center gap-1 font-mono font-semibold text-[#0F172A]">
-                      <FiMapPin className="w-3 h-3 text-[#2563EB] shrink-0" />
-                      <span>{session.ipAddress}</span>
-                    </div>
-                    <div className="text-[#64748B] text-[10px]">{session.location}</div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="font-semibold text-[#0F172A]">{session.device}</div>
-                    <div className="text-[#64748B] text-[10px]">{session.browser}</div>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-[11px] whitespace-nowrap">
-                    <div className="text-[#0F172A]">In: {session.loginTime}</div>
-                    {session.logoutTime ? (
-                      <div className="text-[#64748B]">Out: {session.logoutTime}</div>
-                    ) : (
-                      <div className="flex items-center gap-1 mt-0.5 font-bold text-emerald-600">
-                        <span className="bg-emerald-500 rounded-full w-1.5 h-1.5 animate-pulse" />
-                        Active Session
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 font-bold font-mono text-[#475569] text-[11px] whitespace-nowrap">
-                    {session.duration}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    {session.mfaMethod ? (
-                      <span className="inline-flex items-center gap-1 bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded font-bold text-[10px] text-emerald-700" title={session.mfaMethod}>
-                        <FiCheckCircle className="w-3 h-3 text-emerald-600 shrink-0" />
-                        FIDO2 Verified
-                      </span>
-                    ) : (
-                      <span className="text-[#94A3B8] text-[10px]">Standard</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right whitespace-nowrap">
-                    <button
-                      type="button"
-                      onClick={() => onInspectSession(session)}
-                      className="inline-flex items-center gap-1 bg-[#EFF6FF] hover:bg-[#2563EB] px-2.5 py-1 border border-[#BFDBFE] rounded-md font-semibold text-[#1D4ED8] text-xs hover:text-[#FFFFFF] transition-colors cursor-pointer"
-                    >
-                      <FiEye className="w-3.5 h-3.5" />
-                      <span>Telemetry</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <Table
+        data={sessions}
+        keyExtractor={(session) => session.id}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "id",
+            header: "Session & Checksum",
+            sortable: true,
+            render: (session) => (
+              <div>
+                <div className="font-bold font-mono text-[#2563EB]">{session.id}</div>
+                <div className="font-mono text-[#94A3B8] text-[9px] max-w-[130px] truncate" title={session.checksum}>
+                  {session.checksum.substring(0, 16)}...
+                </div>
+              </div>
+            ),
+          },
+          {
+            key: "userName",
+            header: "Staff User & Role",
+            sortable: true,
+            render: (session) => (
+              <div>
+                <div className="font-bold text-[#0F172A]">{session.userName}</div>
+                <div className="font-mono text-[#64748B] text-[10px]">{session.email}</div>
+                <div className="mt-0.5 font-bold font-mono text-[#1D4ED8] text-[9px]">{session.role}</div>
+              </div>
+            ),
+          },
+          {
+            key: "ipAddress",
+            header: "Network IP & Location",
+            sortable: true,
+            render: (session) => (
+              <div>
+                <div className="flex items-center gap-1 font-mono font-semibold text-[#0F172A]">
+                  <FiMapPin className="w-3 h-3 text-[#2563EB] shrink-0" />
+                  <span>{session.ipAddress}</span>
+                </div>
+                <div className="text-[#64748B] text-[10px]">{session.location}</div>
+              </div>
+            ),
+          },
+          {
+            key: "device",
+            header: "Device & Browser",
+            render: (session) => (
+              <div>
+                <div className="font-semibold text-[#0F172A]">{session.device}</div>
+                <div className="text-[#64748B] text-[10px]">{session.browser}</div>
+              </div>
+            ),
+          },
+          {
+            key: "loginTime",
+            header: "Login / Logout",
+            sortable: true,
+            render: (session) => (
+              <div className="font-mono text-[11px]">
+                <div className="text-[#0F172A]">In: {session.loginTime}</div>
+                {session.logoutTime ? (
+                  <div className="text-[#64748B]">Out: {session.logoutTime}</div>
+                ) : (
+                  <div className="flex items-center gap-1 mt-0.5 font-bold text-emerald-600">
+                    <span className="bg-emerald-500 rounded-full w-1.5 h-1.5 animate-pulse" />
+                    Active Session
+                  </div>
+                )}
+              </div>
+            ),
+          },
+          {
+            key: "duration",
+            header: "Duration",
+            render: (session) => (
+              <span className="font-bold font-mono text-[#475569] text-[11px]">{session.duration}</span>
+            ),
+          },
+          {
+            key: "mfaMethod",
+            header: "MFA Status",
+            render: (session) =>
+              session.mfaMethod ? (
+                <span className="inline-flex items-center gap-1 bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded font-bold text-[10px] text-emerald-700" title={session.mfaMethod}>
+                  <FiCheckCircle className="w-3 h-3 text-emerald-600 shrink-0" />
+                  FIDO2 Verified
+                </span>
+              ) : (
+                <span className="text-[#94A3B8] text-[10px]">Standard</span>
+              ),
+          },
+          {
+            key: "action",
+            header: "Telemetry",
+            align: "right",
+            render: (session) => (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onInspectSession(session)}
+                className="px-2.5 py-1 text-xs"
+                leftIcon={<FiEye className="w-3.5 h-3.5 text-[#2563EB]" />}
+              >
+                Inspect
+              </Button>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 };

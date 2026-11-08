@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FiDownload } from "react-icons/fi";
-import { Button, Badge } from "@/components/ui";
+import { Button, Badge, Table } from "@/components/ui";
 
 export interface CustomerInvoice {
   id: string;
@@ -19,12 +19,14 @@ export interface InvoicesTabProps {
   customerInvoices: CustomerInvoice[];
   selectedCurrency: "USD" | "NGN";
   onSelectCurrency: (curr: "USD" | "NGN") => void;
+  onDownloadReceipt?: (inv: CustomerInvoice) => void;
 }
 
 export const InvoicesTab: React.FC<InvoicesTabProps> = ({
   customerInvoices,
   selectedCurrency,
   onSelectCurrency,
+  onDownloadReceipt,
 }) => {
   return (
     <div className="space-y-4 bg-[#FFFFFF] shadow-sm p-4 sm:p-5 border border-[#E2E8F0] rounded-2xl">
@@ -56,46 +58,77 @@ export const InvoicesTab: React.FC<InvoicesTabProps> = ({
         </div>
       </div>
 
-      <div className="space-y-2.5">
-        {customerInvoices.map((inv) => (
-          <div
-            key={inv.id}
-            className="flex sm:flex-row flex-col justify-between sm:items-center gap-3 bg-[#F8FAFC] p-3.5 border border-[#E2E8F0] rounded-xl"
-          >
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-[#2563EB] text-xs">{inv.id}</span>
-                <span className="text-[#CBD5E1]">&bull;</span>
-                <h4 className="font-bold text-[#0F172A] text-xs sm:text-sm">{inv.description}</h4>
+      <Table
+        data={customerInvoices}
+        keyExtractor={(inv) => inv.id}
+        pageSize={15}
+        showSerialNumber={true}
+        columns={[
+          {
+            key: "id",
+            header: "Invoice Ref",
+            sortable: true,
+            render: (inv) => <span className="font-mono font-bold text-[#2563EB] text-xs">{inv.id}</span>,
+          },
+          {
+            key: "description",
+            header: "Invoice Description",
+            sortable: true,
+            render: (inv) => (
+              <div>
+                <span className="font-bold text-[#0F172A] text-xs">{inv.description}</span>
+                <span className="block text-[#64748B] text-[10px]">{inv.vehicle}</span>
               </div>
-              <span className="block text-[#64748B] text-[11px]">
-                Vehicle: {inv.vehicle} &bull; Method: {inv.method} &bull; Date: {inv.date}
+            ),
+          },
+          {
+            key: "method",
+            header: "Payment Channel",
+            render: (inv) => <span className="text-[#475569] text-xs">{inv.method}</span>,
+          },
+          {
+            key: "date",
+            header: "Issue Date",
+            sortable: true,
+            render: (inv) => <span className="font-mono text-xs text-[#64748B]">{inv.date}</span>,
+          },
+          {
+            key: "amount",
+            header: "Amount",
+            sortable: true,
+            render: (inv) => (
+              <span className="font-mono font-bold text-[#1D4ED8] text-xs">
+                {selectedCurrency === "USD"
+                  ? `$${inv.amountUSD.toLocaleString()}`
+                  : `₦${inv.amountNGN.toLocaleString()}`}
               </span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <div className="font-mono font-bold text-[#1D4ED8] text-sm">
-                  {selectedCurrency === "USD"
-                    ? `$${inv.amountUSD.toLocaleString()}`
-                    : `₦${inv.amountNGN.toLocaleString()}`}
-                </div>
-                <Badge variant="gold" size="sm">{inv.status}</Badge>
-              </div>
-
+            ),
+          },
+          {
+            key: "status",
+            header: "Receipt Status",
+            render: (inv) => <Badge variant="gold" size="sm">{inv.status}</Badge>,
+          },
+          {
+            key: "action",
+            header: "PDF",
+            align: "right",
+            render: (inv) => (
               <Button
                 variant="outline"
-                size="icon"
-                onClick={() => alert(`Downloading official PDF tax receipt for ${inv.id}...`)}
-                title="Download PDF Receipt"
-                className="p-2"
+                size="sm"
+                onClick={() => {
+                  if (onDownloadReceipt) onDownloadReceipt(inv);
+                }}
+                className="px-2.5 py-1 text-xs"
+                leftIcon={<FiDownload className="w-3 h-3 text-[#2563EB]" />}
               >
-                <FiDownload className="w-4 h-4 text-[#2563EB]" />
+                Receipt
               </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 };
