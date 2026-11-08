@@ -22,7 +22,7 @@ export default function SellOrSwapPage() {
   const [tradeInModel, setTradeInModel] = useState<string>("E-Class E350");
   const [tradeInYear, setTradeInYear] = useState<string>("2020");
   const [tradeInMileage, setTradeInMileage] = useState<string>("55000");
-  const [tradeInEstimatedValueUSD, setTradeInEstimatedValueUSD] = useState<number>(45000);
+  const [tradeInEstimatedValueNGN, setTradeInEstimatedValueNGN] = useState<number>(65000000);
   const [isBookedModalOpen, setIsBookedModalOpen] = useState<boolean>(false);
 
   const targetVehicle: Vehicle = useMemo(() => {
@@ -30,10 +30,12 @@ export default function SellOrSwapPage() {
   }, [selectedTargetStockId]);
 
   // Swap balance calculation:
-  // Target Car Price - Trade In Valuation + Doc & Processing Fee ($2,500)
-  const processingFeeUSD = 2500;
-  const balancePayableUSD =
-    targetVehicle.priceUSD - tradeInEstimatedValueUSD + processingFeeUSD;
+  // Target Car Price - Trade In Valuation + Doc & Processing Fee (₦3,750,000)
+  const processingFeeNGN = 3750000;
+  const balancePayableNGN = Math.max(
+    0,
+    targetVehicle.priceNGN - tradeInEstimatedValueNGN + processingFeeNGN
+  );
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
@@ -105,7 +107,7 @@ export default function SellOrSwapPage() {
                   value={selectedTargetStockId}
                   onChange={(val) => setSelectedTargetStockId(String(val))}
                   options={VEHICLES.map((v) => ({
-                    label: `${v.year} ${v.make} ${v.model} ($${v.priceUSD.toLocaleString()})`,
+                    label: `${v.year} ${v.make} ${v.model} (₦${v.priceNGN.toLocaleString()})`,
                     value: v.stockId,
                   }))}
                 />
@@ -121,7 +123,7 @@ export default function SellOrSwapPage() {
                     </h4>
                     <span className="text-[11px] text-[#64748B] block">{targetVehicle.trim}</span>
                     <span className="text-xs font-extrabold font-mono text-[#1D4ED8]">
-                      ${targetVehicle.priceUSD.toLocaleString()}
+                      ₦{targetVehicle.priceNGN.toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -162,10 +164,10 @@ export default function SellOrSwapPage() {
                     onChange={(e) => setTradeInMileage(e.target.value)}
                   />
                   <Input
-                    label="Est. Value ($ USD)"
+                    label="Est. Value (₦ NGN)"
                     type="number"
-                    value={tradeInEstimatedValueUSD}
-                    onChange={(e) => setTradeInEstimatedValueUSD(Number(e.target.value))}
+                    value={tradeInEstimatedValueNGN}
+                    onChange={(e) => setTradeInEstimatedValueNGN(Number(e.target.value))}
                   />
                 </div>
 
@@ -194,31 +196,28 @@ export default function SellOrSwapPage() {
                 <div className="flex justify-between text-[#475569]">
                   <span>Target Vehicle Price:</span>
                   <span className="font-mono text-[#0F172A] font-bold">
-                    +${targetVehicle.priceUSD.toLocaleString()}
+                    +₦{targetVehicle.priceNGN.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-[#475569]">
                   <span>Less: Trade-In Valuation:</span>
                   <span className="font-mono text-[#2563EB] font-bold">
-                    -${tradeInEstimatedValueUSD.toLocaleString()}
+                    -₦{tradeInEstimatedValueNGN.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-[#475569]">
                   <span>Documentation & Title Transfer:</span>
                   <span className="font-mono text-[#0F172A]">
-                    +${processingFeeUSD.toLocaleString()}
+                    +₦{processingFeeNGN.toLocaleString()}
                   </span>
                 </div>
 
                 <div className="pt-3 border-t border-[#E2E8F0] flex justify-between items-center text-sm font-bold">
                   <span className="text-[#0F172A]">Net Settlement Payable:</span>
                   <span className="font-mono text-[#1D4ED8] text-xl">
-                    ${balancePayableUSD.toLocaleString()}
+                    ₦{balancePayableNGN.toLocaleString()}
                   </span>
                 </div>
-                <span className="text-[10px] text-[#64748B] block text-right font-mono">
-                  (Approx. ₦{(balancePayableUSD * 1500).toLocaleString()} NGN)
-                </span>
               </div>
 
               <div className="bg-[#EFF6FF] p-3 rounded-xl border border-[#BFDBFE] text-xs text-[#1E40AF] flex items-start gap-2">
@@ -262,7 +261,7 @@ export default function SellOrSwapPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Input label="Year" type="number" placeholder="2023" />
                 <Input label="Mileage (KM)" type="number" placeholder="24000" />
-                <Input label="Asking Price ($ USD)" type="number" placeholder="130000" />
+                <Input label="Asking Price (₦ NGN)" type="number" placeholder="195000000" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

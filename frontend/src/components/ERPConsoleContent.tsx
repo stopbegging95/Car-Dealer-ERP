@@ -29,6 +29,7 @@ import {
   FiUserPlus,
   FiKey,
   FiTrendingUp,
+  FiDatabase,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import {
@@ -37,6 +38,7 @@ import {
   Modal,
   Input,
   Dropdown,
+  MasterDropdown,
 } from "@/components/ui";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
@@ -78,58 +80,59 @@ import {
   PersonalStaffDashboard,
   OrderItem,
 } from "@/components/dashboards";
+import { MasterDataPage } from "@/components/dashboards/admin/MasterDataPage";
 
 const SALES_ORDERS: OrderItem[] = [
   {
     id: "ORD-9912",
     client: "Alhaji Bello & Sons Ltd",
     car: "2024 Mercedes-Maybach S580 (Dual-Tone)",
-    amount: "$165,000",
+    amount: "₦255,750,000",
     status: "Delivery Inspection",
     stage: "Ready for Handover",
     rep: "Emeka O.",
     vin: "WDD223...001",
-    deposit: "$100,000",
-    balance: "$65,000",
+    deposit: "₦155,000,000",
+    balance: "₦100,750,000",
     deliveryDate: "2026-11-12",
   },
   {
     id: "ORD-9910",
     client: "Dr. K. Somoye",
     car: "2024 Porsche 911 Turbo S (Guards Red)",
-    amount: "$225,000",
+    amount: "₦348,750,000",
     status: "Payment Confirmed",
     stage: "Registration & Armor",
     rep: "Aisha M.",
     vin: "WP0AD2...002",
-    deposit: "$225,000",
-    balance: "$0 (Paid in Full)",
+    deposit: "₦348,750,000",
+    balance: "₦0 (Paid in Full)",
     deliveryDate: "2026-11-15",
   },
   {
     id: "ORD-9908",
     client: "Zenith Capital Partners",
     car: "2023 Range Rover Autobiography LWB",
-    amount: "$195,000",
+    amount: "₦302,250,000",
     status: "Customs Clearance",
     stage: "Tin Can Discharge",
     rep: "Tariq K.",
     vin: "SALWR2...003",
-    deposit: "$80,000",
-    balance: "$115,000",
+    deposit: "₦124,000,000",
+    balance: "₦178,250,000",
     deliveryDate: "2026-11-20",
   },
   {
     id: "ORD-9904",
     client: "Senator Godswill O.",
     car: "2024 Mercedes-AMG G63 Magno Black",
-    amount: "$240,000",
+    amount: "₦372,000,000",
     status: "Quotation Approved",
     stage: "Bank Wire Verification",
     rep: "Emeka O.",
     vin: "W1N9G8...007",
-    deposit: "$120,000",
-    balance: "$120,000",
+    deposit: "₦186,000,000",
+    balance: "₦186,000,000",
     deliveryDate: "2026-11-25",
   },
 ];
@@ -162,9 +165,12 @@ export function ERPConsoleContent({
   const [newVehModel, setNewVehModel] = useState<string>("");
   const [newVehYear, setNewVehYear] = useState<string>("2026");
   const [newVehVin, setNewVehVin] = useState<string>("");
-  const [newVehPriceUSD, setNewVehPriceUSD] = useState<string>("");
-  const [newVehLocation, setNewVehLocation] = useState<"Lagos Showroom" | "Abuja Showroom" | "Port Transit" | "Central Warehouse">("Lagos Showroom");
+  const [newVehPriceNGN, setNewVehPriceNGN] = useState<string>("");
+  const [newVehLocation, setNewVehLocation] = useState<string>("Lagos Showroom");
   const [isTransferModalOpen, setIsTransferModalOpen] = useState<boolean>(false);
+  const [transferSource, setTransferSource] = useState<string>("Lagos Showroom");
+  const [transferDest, setTransferDest] = useState<string>("Abuja Showroom");
+  const [transferCarrier, setTransferCarrier] = useState<string>("Swift Luxury Flatbed Logistics");
   const [tableSearch, setTableSearch] = useState<string>("");
 
   // Modals for Sales, Car Management, and Inspections
@@ -233,7 +239,7 @@ export function ERPConsoleContent({
       vendor: "Grimaldi Deep Sea Shipping Lines",
       type: "Container Ro-Ro Sea Freight (4 Vehicles)",
       ref: "GRI-SEA-88102",
-      amount: "$34,800",
+      amount: "₦53,940,000",
       dueDate: "2026-11-12",
       status: "Pending Wire Authorization",
     },
@@ -242,7 +248,7 @@ export function ERPConsoleContent({
       vendor: "Nigeria Customs Service (Tin Can Area Command)",
       type: "SGD Duty & Port Inspection Levies",
       ref: "NCS-SGD-99410",
-      amount: "$51,200",
+      amount: "₦79,360,000",
       dueDate: "2026-11-10",
       status: "Approved for Wire Transfer",
     },
@@ -251,7 +257,7 @@ export function ERPConsoleContent({
       vendor: "Mercedes-Benz Central Parts AG",
       type: "OEM Ceramic Rotors & Consumable Spares",
       ref: "MB-GER-33411",
-      amount: "$26,400",
+      amount: "₦40,920,000",
       dueDate: "2026-11-15",
       status: "Pending Wire Authorization",
     },
@@ -260,7 +266,7 @@ export function ERPConsoleContent({
       vendor: "Ceramic Pro Middle East FZE",
       type: "9H Diamond Nanotech Coating Stock",
       ref: "CP-DXB-55219",
-      amount: "$14,800",
+      amount: "₦22,940,000",
       dueDate: "2026-11-18",
       status: "Pending Wire Authorization",
     },
@@ -272,7 +278,7 @@ export function ERPConsoleContent({
       id: "AR-2026-041",
       client: "Chief Alexander Vance",
       car: "2024 Mercedes-Maybach S580",
-      balance: "$120,000",
+      balance: "₦186,000,000",
       bank: "GTBank Plc",
       wireRef: "GTB-WIR-99120",
       status: "Wire Received - Verification Required",
@@ -281,7 +287,7 @@ export function ERPConsoleContent({
       id: "AR-2026-042",
       client: "Dr. K. Somoye",
       car: "2024 S580 Maybach (Trade-In Settlement)",
-      balance: "$97,000",
+      balance: "₦150,350,000",
       bank: "Zenith Bank Plc",
       wireRef: "ZEN-TX-44021",
       status: "Wire Received - Verification Required",
@@ -290,7 +296,7 @@ export function ERPConsoleContent({
       id: "AR-2026-043",
       client: "Senator B. Adeleke",
       car: "2024 Bentley Continental GT",
-      balance: "$165,000",
+      balance: "₦255,750,000",
       bank: "First Bank of Nigeria",
       wireRef: "FBN-WIRE-88194",
       status: "Escrow Pending Clearance",
@@ -414,6 +420,7 @@ export function ERPConsoleContent({
       { name: "Document Vault", icon: <FiFileText className="w-4 h-4 shrink-0" /> },
       { name: "CMS Manager", icon: <FiEdit3 className="w-4 h-4 shrink-0" /> },
       { name: "Roles & RBAC", icon: <FiShield className="w-4 h-4 shrink-0" /> },
+      { name: "Master Data & Dropdowns", icon: <FiDatabase className="w-4 h-4 shrink-0" /> },
       { name: "Settings", icon: <FiSettings className="w-4 h-4 shrink-0" /> },
     ],
     []
@@ -572,8 +579,8 @@ export function ERPConsoleContent({
                   client: item.client,
                   carOffered: item.carOffered,
                   target: item.target,
-                  valuation: `$${item.valuationUSD.toLocaleString()}`,
-                  diff: `$${item.payableDiffUSD.toLocaleString()}`,
+                  valuation: `₦${(((item as any).valuationNGN ?? item.valuationUSD ?? 0)).toLocaleString()}`,
+                  diff: `₦${(((item as any).payableDiffNGN ?? item.payableDiffUSD ?? 0)).toLocaleString()}`,
                   status: item.status,
                 })
               }
@@ -658,6 +665,10 @@ export function ERPConsoleContent({
             <SettingsDashboard showToast={showToast} />
           )}
 
+          {(activeModule === "Master Data & Dropdowns" || activeModule === "Master Data" || activeModule === "Master Data & Taxonomies") && (
+            <MasterDataPage showToast={showToast} />
+          )}
+
           {activeModule === "Personal Staff Dashboard" && (
             <PersonalStaffDashboard showToast={showToast} />
           )}
@@ -708,7 +719,7 @@ export function ERPConsoleContent({
                   return;
                 }
                 const newStockId = `STK-2026-${String(stockList.length + 1).padStart(3, "0")}`;
-                const price = Number(newVehPriceUSD.replace(/[^0-9]/g, "") || 165000);
+                const priceNGN = Number(newVehPriceNGN.replace(/[^0-9]/g, "") || 250000000);
                 const newVeh: Vehicle = {
                   stockId: newStockId,
                   vin: newVehVin || `WDD223${Date.now().toString().slice(-10)}`,
@@ -723,10 +734,10 @@ export function ERPConsoleContent({
                   fuel: "Petrol",
                   exteriorColor: "Obsidian Black",
                   interiorColor: "Nappa Leather Black",
-                  purchaseCost: Math.round(price * 0.78),
-                  landedCost: Math.round(price * 0.88),
-                  priceUSD: price,
-                  priceNGN: price * 1500,
+                  purchaseCost: Math.round(priceNGN * 0.78),
+                  landedCost: Math.round(priceNGN * 0.88),
+                  priceUSD: Math.round(priceNGN / 1550),
+                  priceNGN: priceNGN,
                   status: "Available",
                   location: newVehLocation,
                   image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80",
@@ -745,7 +756,7 @@ export function ERPConsoleContent({
                 setNewVehMake("");
                 setNewVehModel("");
                 setNewVehVin("");
-                setNewVehPriceUSD("");
+                setNewVehPriceNGN("");
               }}
               leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
@@ -756,11 +767,11 @@ export function ERPConsoleContent({
       >
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <Input
+            <MasterDropdown
+              category="makes"
               label="Make (Brand)"
-              placeholder="e.g. Mercedes-Benz"
               value={newVehMake}
-              onChange={(e) => setNewVehMake(e.target.value)}
+              onChange={(val) => setNewVehMake(String(val))}
               required
             />
             <Input
@@ -794,28 +805,24 @@ export function ERPConsoleContent({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <Input
-              label="FOB Purchase Price ($)"
-              placeholder="118,500"
-              defaultValue="118,500"
+              label="FOB Purchase Cost (₦)"
+              placeholder="185,000,000"
+              defaultValue="185,000,000"
             />
             <Input
-              label="Target Showroom Price ($)"
-              placeholder="165,000"
-              value={newVehPriceUSD}
-              onChange={(e) => setNewVehPriceUSD(e.target.value)}
+              label="Target Showroom Price (₦ NGN)"
+              placeholder="250,000,000"
+              value={newVehPriceNGN}
+              onChange={(e) => setNewVehPriceNGN(e.target.value)}
               required
             />
           </div>
-          <Dropdown
+          <MasterDropdown
+            category="hubs"
             label="Initial Allocation Hub"
-            options={[
-              { label: "Victoria Island Flagship Showroom (Lagos Showroom)", value: "Lagos Showroom" },
-              { label: "Maitama Diplomatic Zone Suite (Abuja Showroom)", value: "Abuja Showroom" },
-              { label: "Tin Can Port Transit Holding Bay (Port Transit)", value: "Port Transit" },
-              { label: "Central Distribution Warehouse (Central Warehouse)", value: "Central Warehouse" },
-            ]}
             value={newVehLocation}
-            onChange={(val) => setNewVehLocation(val as "Lagos Showroom" | "Abuja Showroom" | "Port Transit" | "Central Warehouse")}
+            onChange={(val) => setNewVehLocation(String(val))}
+            required
           />
         </div>
       </Modal>
@@ -858,24 +865,28 @@ export function ERPConsoleContent({
             onChange={() => {}}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Dropdown
+            <MasterDropdown
+              category="hubs"
               label="Source Showroom"
-              options={[
-                { label: "Lagos Victoria Island HQ", value: "Lagos" },
-                { label: "Abuja Maitama Diplomatic Suite", value: "Abuja" },
-              ]}
-              onChange={() => {}}
+              value={transferSource}
+              onChange={(val) => setTransferSource(String(val))}
+              required
             />
-            <Dropdown
+            <MasterDropdown
+              category="hubs"
               label="Destination Showroom"
-              options={[
-                { label: "Abuja Maitama Diplomatic Suite", value: "Abuja" },
-                { label: "Lagos Victoria Island HQ", value: "Lagos" },
-              ]}
-              onChange={() => {}}
+              value={transferDest}
+              onChange={(val) => setTransferDest(String(val))}
+              required
             />
           </div>
-          <Input label="Assigned Carrier / Hauler Service" placeholder="e.g. Swift Luxury Flatbed Logistics" required />
+          <MasterDropdown
+            category="carriers"
+            label="Assigned Carrier / Hauler Service"
+            value={transferCarrier}
+            onChange={(val) => setTransferCarrier(String(val))}
+            required
+          />
           <Input label="Driver Name & Contact Number" placeholder="e.g. Musa Danladi (+234 803 111 2222)" required />
         </div>
       </Modal>
@@ -961,11 +972,11 @@ export function ERPConsoleContent({
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-[#64748B]">Committed Escrow Deposit:</span>
-                  <span className="font-mono font-semibold text-[#0F172A]">{selectedOrderForPreview.deposit || "$50,000"}</span>
+                  <span className="font-mono font-semibold text-[#0F172A]">{selectedOrderForPreview.deposit || "₦77,500,000"}</span>
                 </div>
                 <div className="flex justify-between border-t border-[#E2E8F0] pt-1.5 text-xs">
                   <span className="text-[#64748B] font-semibold">Remaining Balance Due:</span>
-                  <span className="font-mono font-bold text-[#0F172A]">{selectedOrderForPreview.balance || "$0"}</span>
+                  <span className="font-mono font-bold text-[#0F172A]">{selectedOrderForPreview.balance || "₦0"}</span>
                 </div>
               </div>
             </div>
@@ -1096,7 +1107,7 @@ export function ERPConsoleContent({
                   </Badge>
                 </div>
                 <div className="absolute bottom-2.5 left-2.5 bg-[#0F172A]/90 backdrop-blur-xs text-[#FFFFFF] px-3 py-1.5 rounded text-xs font-mono font-bold">
-                  ${selectedVehicleForPreview.priceUSD.toLocaleString()} USD &bull; ₦{selectedVehicleForPreview.priceNGN.toLocaleString()} NGN
+                  ₦{selectedVehicleForPreview.priceNGN.toLocaleString()} NGN
                 </div>
               </div>
 
@@ -1410,17 +1421,12 @@ export function ERPConsoleContent({
                 onChange={(val) => setNewStaffDept(String(val))}
               />
 
-              <Dropdown
+              <MasterDropdown
+                category="hubs"
                 label="Showroom / Facility Node"
-                options={[
-                  { label: "Victoria Island Flagship Showroom", value: "Victoria Island Flagship Showroom" },
-                  { label: "Ikoyi Private Client Lounge", value: "Ikoyi Private Client Lounge" },
-                  { label: "Abuja Central Showroom & Hub", value: "Abuja Central Showroom & Hub" },
-                  { label: "Lekki Service Center & Recon Facility", value: "Lekki Service Center & Recon Facility" },
-                  { label: "Tin Can Port Logistics Depot", value: "Tin Can Port Logistics Depot" },
-                ]}
                 value={newStaffBranch}
                 onChange={(val) => setNewStaffBranch(String(val))}
+                required
               />
             </div>
 

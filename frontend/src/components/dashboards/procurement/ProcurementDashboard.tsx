@@ -13,7 +13,7 @@ import {
   FiAlertTriangle,
   FiSliders,
 } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown, KPICard, Table } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, KPICard, Table } from "@/components/ui";
 
 export interface PurchaseOrderItem {
   id: string;
@@ -194,8 +194,8 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
     if (!newVehicle) return;
 
     const newId = `PO-2026-${String(purchaseOrders.length + 905).padStart(3, "0")}`;
-    const priceNum = Number(newPrice.replace(/[^0-9]/g, "") || 165000);
-    const isHighValue = priceNum >= 100000; // Business Rule 5: >$100k requires executive sign-off
+    const priceNum = Number(newPrice.replace(/[^0-9]/g, "") || 250000000);
+    const isHighValue = priceNum >= 150000000; // Business Rule 5: >=₦150M requires executive sign-off
 
     const newPO: PurchaseOrderItem = {
       id: newId,
@@ -203,7 +203,7 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
       country: newCountry,
       vehicle: newVehicle,
       vin: newVin || `WDD${Date.now().toString().slice(-10)}`,
-      priceUSD: priceNum,
+      priceUSD: Math.round(priceNum / 1550),
       status: isHighValue ? "Pending Executive Review" : "Management Approved",
       date: "Nov 08, 2026",
       deliveryPort: newPort,
@@ -215,7 +215,7 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
     setIsCreateModalOpen(false);
 
     if (isHighValue) {
-      notify(`PO ${newId} ($${priceNum.toLocaleString()}) logged. Enforcing Business Rule 5: Dispatched to Executive Authorization Queue.`);
+      notify(`PO ${newId} (₦${priceNum.toLocaleString()}) logged. Enforcing Business Rule 5: Dispatched to Executive Authorization Queue.`);
     } else {
       notify(`Purchase Order ${newId} approved and issued successfully.`);
     }
@@ -271,7 +271,7 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
       <div className="gap-3 grid grid-cols-2 sm:grid-cols-4">
         <KPICard
           title="Total Acquisition Volume"
-          value="$34.2M"
+          value="₦53.0B"
           change="+14.2% YTD Volume"
           icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
         />
@@ -284,7 +284,7 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
         <KPICard
           title="Pending Rule 5 Approvals"
           value={`${purchaseOrders.filter((p) => !p.executiveApproved).length} Orders`}
-          change="Orders >$100,000 threshold"
+          change="Orders ≥₦150M threshold"
           icon={<FiClock className="w-5 h-5 text-[#D97706]" />}
         />
         <KPICard
@@ -341,7 +341,7 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
               Purchase Orders Pipeline & Rule 5 Executive Sign-Off
             </h4>
             <p className="text-[11px] text-[#64748B]">
-              Business Rule 5: Vehicle acquisitions &gt;$100,000 / ₦150,000,000 require formal Executive Management sign-off.
+              Business Rule 5: Vehicle acquisitions &ge;₦150,000,000 require formal Executive Management sign-off.
             </p>
           </div>
 
@@ -384,14 +384,14 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
               },
               {
                 key: "priceUSD",
-                header: "Acquisition Cost",
+                header: "Acquisition Cost (₦)",
                 sortable: true,
                 render: (po) => (
                   <div>
                     <span className="font-mono font-bold text-[#0F172A] text-xs">
-                      ${po.priceUSD.toLocaleString()}
+                      ₦{(po.priceUSD * 1550).toLocaleString()}
                     </span>
-                    {po.priceUSD >= 100000 && (
+                    {po.priceUSD * 1550 >= 150000000 && (
                       <span className="block text-[9px] font-bold text-amber-700">Rule 5 High-Value</span>
                     )}
                   </div>
@@ -470,11 +470,11 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
               <div className="pt-2 border-t border-[#E2E8F0] space-y-1 text-xs">
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">FOB Price:</span>
-                  <span className="font-mono font-bold text-[#0F172A]">$142,000</span>
+                  <span className="font-mono font-bold text-[#0F172A]">₦220,100,000</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">Export Paperwork:</span>
-                  <span className="font-mono text-[#0F172A]">$1,200</span>
+                  <span className="font-mono text-[#0F172A]">₦1,860,000</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">Transit to Lagos:</span>
@@ -493,11 +493,11 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
               <div className="pt-2 border-t border-[#E2E8F0] space-y-1 text-xs">
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">FOB Price:</span>
-                  <span className="font-mono font-bold text-[#0F172A]">$146,500</span>
+                  <span className="font-mono font-bold text-[#0F172A]">₦227,075,000</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">Auction Buyer Fee:</span>
-                  <span className="font-mono text-[#0F172A]">$7,325</span>
+                  <span className="font-mono text-[#0F172A]">₦11,353,750</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">Transit to Lagos:</span>
@@ -516,11 +516,11 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
               <div className="pt-2 border-t border-[#E2E8F0] space-y-1 text-xs">
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">FOB Price:</span>
-                  <span className="font-mono font-bold text-[#0F172A]">$144,000</span>
+                  <span className="font-mono font-bold text-[#0F172A]">₦223,200,000</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">Inspection Fee:</span>
-                  <span className="font-mono text-[#0F172A]">$1,500</span>
+                  <span className="font-mono text-[#0F172A]">₦2,325,000</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">Transit to Lagos:</span>
@@ -573,32 +573,32 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
               },
               {
                 key: "hammerPriceUSD",
-                header: "Hammer Price",
+                header: "Hammer Price (₦)",
                 sortable: true,
-                render: (log) => <span className="font-mono font-bold text-[#0F172A] text-xs">${log.hammerPriceUSD.toLocaleString()}</span>,
+                render: (log) => <span className="font-mono font-bold text-[#0F172A] text-xs">₦{(log.hammerPriceUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "buyersPremiumUSD",
                 header: "Buyer's Premium (5%)",
-                render: (log) => <span className="font-mono text-xs text-[#64748B]">${log.buyersPremiumUSD.toLocaleString()}</span>,
+                render: (log) => <span className="font-mono text-xs text-[#64748B]">₦{(log.buyersPremiumUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "inlandTowingUSD",
                 header: "Inland Towing",
-                render: (log) => <span className="font-mono text-xs text-[#64748B]">${log.inlandTowingUSD.toLocaleString()}</span>,
+                render: (log) => <span className="font-mono text-xs text-[#64748B]">₦{(log.inlandTowingUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "exportTitleUSD",
                 header: "Export Title Paperwork",
-                render: (log) => <span className="font-mono text-xs text-[#64748B]">${log.exportTitleUSD.toLocaleString()}</span>,
+                render: (log) => <span className="font-mono text-xs text-[#64748B]">₦{(log.exportTitleUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "totalLandedFOB",
-                header: "Total Landed FOB",
+                header: "Total Landed FOB (₦)",
                 sortable: true,
                 render: (log) => (
                   <span className="font-mono font-bold text-[#1D4ED8] text-xs">
-                    ${log.totalLandedFOB.toLocaleString()}
+                    ₦{(log.totalLandedFOB * 1550).toLocaleString()}
                   </span>
                 ),
               },
@@ -681,7 +681,7 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
         onClose={() => setIsCreateModalOpen(false)}
         size="lg"
         title="Create International Vehicle Purchase Order"
-        description="Initiate procurement. POs >=$100,000 / ₦150,000,000 automatically require Rule 5 Executive Authorization."
+        description="Initiate procurement. POs >=₦150,000,000 automatically require Rule 5 Executive Authorization."
       >
         <form onSubmit={handleCreatePO} className="space-y-4">
           <Input
@@ -700,38 +700,30 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
               onChange={(e) => setNewVin(e.target.value)}
             />
             <Input
-              label="Agreed Purchase Price ($ USD)"
-              placeholder="165,000"
+              label="Agreed Purchase Price (₦ NGN)"
+              placeholder="250,000,000"
               value={newPrice}
               onChange={(e) => setNewPrice(e.target.value)}
               required
-              helperText="Rule 5: >=$100k triggers Executive Sign-Off."
+              helperText="Rule 5: >=₦150,000,000 triggers Executive Sign-Off."
             />
           </div>
 
           <div className="gap-3 grid grid-cols-1 sm:grid-cols-2">
-            <Dropdown
+            <MasterDropdown
+              category="suppliers"
               label="Select Verified Supplier"
               value={newSupplier}
               onChange={(val) => setNewSupplier(String(val))}
-              options={[
-                { label: "Bavaria Auto Export GmbH (Germany)", value: "Bavaria Auto Export GmbH" },
-                { label: "Manheim Palm Beach Luxury Auctions (USA)", value: "Manheim Palm Beach Luxury Auctions" },
-                { label: "Al-Emirates Exotic Wholesale Ltd (Dubai)", value: "Al-Emirates Exotic Wholesale Ltd" },
-                { label: "Maranello European Direct (Italy)", value: "Maranello European Direct" },
-              ]}
+              required
             />
 
-            <Dropdown
+            <MasterDropdown
+              category="ports"
               label="Port of Departure / Loading"
               value={newPort}
               onChange={(val) => setNewPort(String(val))}
-              options={[
-                { label: "Antwerp, Belgium", value: "Antwerp, Belgium" },
-                { label: "Jacksonville Port (JAXPORT), FL, USA", value: "Jacksonville Port (JAXPORT), FL, USA" },
-                { label: "Jebel Ali Port, Dubai, UAE", value: "Jebel Ali Port, Dubai, UAE" },
-                { label: "Genoa Port, Italy", value: "Genoa Port, Italy" },
-              ]}
+              required
             />
           </div>
 

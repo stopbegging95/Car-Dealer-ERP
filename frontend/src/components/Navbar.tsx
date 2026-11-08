@@ -14,6 +14,7 @@ import {
   FiBox,
   FiActivity,
   FiCheckSquare,
+  FiCheckCircle,
   FiTruck,
   FiRepeat,
   FiShoppingCart,
@@ -91,6 +92,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
       href: "/erp/financing",
       dept: "Auto Loans & Mortgages",
       icon: <FiActivity className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Inspection & Quality",
+      href: "/erp/inspection",
+      dept: "150-Point QA Diagnostic",
+      icon: <FiCheckCircle className="w-3.5 h-3.5 text-[#2563EB]" />,
     },
     {
       name: "Detailing & Recon",

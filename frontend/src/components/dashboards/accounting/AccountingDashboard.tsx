@@ -47,25 +47,25 @@ export const AccountingDashboard: React.FC<AccountingDashboardProps> = ({
       <div className="gap-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Gross Landed Margin"
-          value="$111,500"
+          value="₦172,825,000"
           change="Average 13.8% Margin"
           icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Accounts Payable (AP)"
-          value="$127,200"
+          value="₦197,160,000"
           change="4 Due Wires Pending"
           icon={<FiClock className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Accounts Receivable (AR)"
-          value="$382,000"
+          value="₦592,100,000"
           change="3 Inbound Wires to Clear"
           icon={<FiCheckCircle className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Output VAT (7.5%)"
-          value="$194,100"
+          value="₦300,855,000"
           change="Net Due 21st Nov 2026"
           icon={<FiPercent className="w-5 h-5 text-[#2563EB]" />}
         />
@@ -84,7 +84,7 @@ export const AccountingDashboard: React.FC<AccountingDashboardProps> = ({
               </h3>
             </div>
             <p className="mt-0.5 text-[11px] text-[#64748B]">
-              Real-time liquidity across Nigerian Naira (Zenith / GTBank) and US Dollar offshore clearing accounts
+              Real-time liquidity across Nigerian Naira accounts (Zenith Bank, GTBank, First Bank)
             </p>
           </div>
 
@@ -111,8 +111,8 @@ export const AccountingDashboard: React.FC<AccountingDashboardProps> = ({
         {/* Bank Liquidity Grid */}
         <div className="gap-3 grid grid-cols-1 sm:grid-cols-3 pt-3 border-t border-[#E2E8F0] text-xs">
           <div className="space-y-1 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md">
-            <span className="block text-[10px] text-[#64748B] uppercase">USD Treasury Escrow (Antwerp / Dubai)</span>
-            <div className="font-bold font-mono text-[#0F172A] text-base">$3,842,500.00</div>
+            <span className="block text-[10px] text-[#64748B] uppercase">First Bank Corporate Treasury Escrow</span>
+            <div className="font-bold font-mono text-[#0F172A] text-base">₦5,955,875,000.00</div>
             <span className="block text-[10px] text-emerald-700 font-bold">Unencumbered Operating Cash</span>
           </div>
 

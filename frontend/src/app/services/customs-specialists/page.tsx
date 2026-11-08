@@ -14,38 +14,34 @@ import { Footer } from "@/components/Footer";
 import { Button, Input, Dropdown, Modal, PageBanner } from "@/components/ui";
 
 export default function CustomsSpecialistsPage() {
-  const [cifValueUSD, setCifValueUSD] = useState<number>(65000);
+  const [cifValueNGN, setCifValueNGN] = useState<number>(97500000);
   const [vehicleAgeYears, setVehicleAgeYears] = useState<string>("0-3");
   const [portDestination, setPortDestination] = useState<string>("Tin Can Island Port, Lagos");
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState<boolean>(false);
 
   // Customs calculations based on Nigeria Customs Service (NCS) Common External Tariff (CET)
-  // Assumption: 1 USD = 1,500 NGN
-  const fxRate = 1500;
   const dutyCalculation = useMemo(() => {
-    const cifNGN = cifValueUSD * fxRate;
     const dutyRate = vehicleAgeYears === "0-3" ? 0.35 : 0.35; // 35% Duty
     const levyRate = vehicleAgeYears === "0-3" ? 0.05 : 0.20; // 5% Levy for new, 20% for older
     const vatRate = 0.075; // 7.5% VAT
 
-    const importDuty = cifNGN * dutyRate;
-    const automotiveLevy = cifNGN * levyRate;
-    const vat = (cifNGN + importDuty + automotiveLevy) * vatRate;
+    const importDuty = cifValueNGN * dutyRate;
+    const automotiveLevy = cifValueNGN * levyRate;
+    const vat = (cifValueNGN + importDuty + automotiveLevy) * vatRate;
     const terminalAndHandling = 1250000; // ~NGN 1.25M port handling & demurrage bond
 
     const totalEstimatedClearanceNGN =
       importDuty + automotiveLevy + vat + terminalAndHandling;
 
     return {
-      cifNGN: Math.round(cifNGN),
+      cifNGN: Math.round(cifValueNGN),
       importDuty: Math.round(importDuty),
       automotiveLevy: Math.round(automotiveLevy),
       vat: Math.round(vat),
       terminalAndHandling: Math.round(terminalAndHandling),
       totalEstimatedClearanceNGN: Math.round(totalEstimatedClearanceNGN),
-      totalEstimatedUSD: Math.round(totalEstimatedClearanceNGN / fxRate),
     };
-  }, [cifValueUSD, vehicleAgeYears]);
+  }, [cifValueNGN, vehicleAgeYears]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
@@ -86,12 +82,12 @@ export default function CustomsSpecialistsPage() {
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <Input
-                  label="Estimated CIF Value (USD)"
+                  label="Estimated CIF Value (₦ NGN)"
                   type="number"
-                  value={cifValueUSD}
-                  onChange={(e) => setCifValueUSD(Math.max(5000, Number(e.target.value)))}
+                  value={cifValueNGN}
+                  onChange={(e) => setCifValueNGN(Math.max(5000000, Number(e.target.value)))}
                   className="font-mono"
-                  helperText={`Equivalent to approx. ₦${(cifValueUSD * fxRate).toLocaleString()}`}
+                  helperText="Nigeria Customs Service assessment CIF valuation in Nigerian Naira"
                 />
               </div>
 
@@ -145,9 +141,6 @@ export default function CustomsSpecialistsPage() {
                   ₦{dutyCalculation.totalEstimatedClearanceNGN.toLocaleString()}
                 </span>
               </div>
-              <span className="text-[10px] text-[#64748B] block text-right font-mono">
-                Approx. ${dutyCalculation.totalEstimatedUSD.toLocaleString()} USD
-              </span>
             </div>
           </div>
 

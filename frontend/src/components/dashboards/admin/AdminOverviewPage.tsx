@@ -67,7 +67,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       type: "High-Value Acquisition",
       title: "2024 Mercedes-Maybach S580 (Antwerp Direct Import)",
       department: "Procurement & Logistics",
-      amount: "$142,000",
+      amount: "₦220,100,000",
       requester: "Lead Sourcing Officer M. Vance",
       status: "Pending Executive Review",
       date: "Nov 08, 2026",
@@ -75,9 +75,9 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
     {
       id: "APP-8813",
       type: "Trade-In Valuation Exception",
-      title: "2020 Mercedes-Benz E350 AMG ($32,500 Approved Swap Credit)",
+      title: "2020 Mercedes-Benz E350 AMG (₦50,375,000 Approved Swap Credit)",
       department: "Trade-In & Vehicle Swap",
-      amount: "$32,500",
+      amount: "₦50,375,000",
       requester: "Lead Appraiser D. Adeleke",
       status: "Pending Executive Review",
       date: "Nov 08, 2026",
@@ -87,7 +87,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       type: "Diplomatic Fleet Rebate",
       title: "4.5% Diplomatic Mission Discount on 2 Armored Range Rover SVs",
       department: "Showroom Floor Sales",
-      amount: "$18,900",
+      amount: "₦29,295,000",
       requester: "Senior Sales Liaison Emeka O.",
       status: "Pending Executive Review",
       date: "Nov 07, 2026",
@@ -97,7 +97,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       type: "Emergency Workshop Overhaul",
       title: "OEM Dual-Clutch Gearbox & Transmission Assembly Rebuild",
       department: "Technical Service & Bays",
-      amount: "$14,200",
+      amount: "₦22,010,000",
       requester: "Workshop Supervisor Babatunde",
       status: "Pending Executive Review",
       date: "Nov 06, 2026",
@@ -129,7 +129,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       module: "Orders & Sales",
       icon: <FiShoppingCart className="w-4 h-4 text-[#2563EB]" />,
       kpi: "94% Target Achieved",
-      stat: "42 Deals Active ($6.3M)",
+      stat: "42 Deals Active (₦9.76B)",
       status: "On Target",
       statusVariant: "gold" as const,
       detail: "31.4% Lead-to-sale conversion rate across Lagos and Abuja nodes.",
@@ -139,7 +139,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       module: "Procurement",
       icon: <FiPackage className="w-4 h-4 text-[#D97706]" />,
       kpi: "18 Active Purchase Orders",
-      stat: "$4.8M Sourcing Pipeline",
+      stat: "₦7.44B Sourcing Pipeline",
       status: "Sourcing Active",
       statusVariant: "gold" as const,
       detail: "Antwerp, Bremerhaven, Dubai, Tokyo, and USA OEM direct procurement channels.",
@@ -149,7 +149,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       module: "Accounting",
       icon: <FiDollarSign className="w-4 h-4 text-[#16A34A]" />,
       kpi: "FIRS VAT Verified",
-      stat: "$1.2M Inbound Escrow",
+      stat: "₦1.86B Inbound Escrow",
       status: "Audit Clean",
       statusVariant: "gold" as const,
       detail: "Landed cost formulas reconciled; gross vehicle profit at 18.5%.",
@@ -159,7 +159,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       module: "Invoices & Payments",
       icon: <FiFileText className="w-4 h-4 text-[#2563EB]" />,
       kpi: "148 Invoices Issued",
-      stat: "$2.4M Collected (Nov)",
+      stat: "₦3.72B Collected (Nov)",
       status: "98% Reconciled",
       statusVariant: "gold" as const,
       detail: "Proforma quotes, commercial invoices, custom duty receipts, and bank wires.",
@@ -192,7 +192,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       stat: "3 Low-Stock Alerts",
       status: "Depot Restocked",
       statusVariant: "gold" as const,
-      detail: "$420,000 spares inventory value across OEM filters, brakes, and ECUs.",
+      detail: "₦651,000,000 spares inventory value across OEM filters, brakes, and ECUs.",
     },
     {
       name: "Detailing & Recon",
@@ -209,7 +209,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       module: "Import Logistics",
       icon: <FiTruck className="w-4 h-4 text-[#2563EB]" />,
       kpi: "14 Vessel Shipments",
-      stat: "$0 Demurrage Paid",
+      stat: "₦0 Demurrage Paid",
       status: "Port Berth Scheduled",
       statusVariant: "gold" as const,
       detail: "4 vessels in Atlantic transit; 2 berthing at TCIT & Apapa container terminals.",
@@ -219,7 +219,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       module: "Trade-In & Swap",
       icon: <FiRepeat className="w-4 h-4 text-[#059669]" />,
       kpi: "36 Swap Requests Active",
-      stat: "$1.85M Trade Equity",
+      stat: "₦2.86B Trade Equity",
       status: "6 Pending Appraisals",
       statusVariant: "gold" as const,
       detail: "Automatic trade-in differential calculation with 150-point inspection.",
@@ -229,7 +229,7 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       module: "CRM Pipeline & 360",
       icon: <FiUsers className="w-4 h-4 text-[#4338CA]" />,
       kpi: "142 HNI Collectors",
-      stat: "$12.8M Pipeline Value",
+      stat: "₦19.84B Pipeline Value",
       status: "VIP Tier Active",
       statusVariant: "gold" as const,
       detail: "29 foreign diplomatic missions and corporate executive fleet buyers.",
@@ -298,19 +298,19 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
           />
           <KPICard
             title="Total Sales Revenue (YTD)"
-            value="$48.2M"
+            value="₦74.7B"
             change="+21.0% vs last mo"
             icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
           />
           <KPICard
             title="Gross Profit / Net Margin"
-            value="$8.9M"
-            change="18.5% Margin ($5.4M Net)"
+            value="₦13.8B"
+            change="18.5% Margin (₦8.37B Net)"
             icon={<FiTrendingUp className="w-5 h-5 text-[#16A34A]" />}
           />
           <KPICard
             title="Outstanding Receivables"
-            value="$2.4M"
+            value="₦3.72B"
             change="18 customer wire balances"
             icon={<FiClock className="w-5 h-5 text-[#D97706]" />}
           />
@@ -542,18 +542,18 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
 
             <div className="flex items-end gap-2 sm:gap-3 px-1 pt-4 h-44 sm:h-48">
               {[
-                { month: "Jan", height: "45%", val: "$2.8M" },
-                { month: "Feb", height: "55%", val: "$3.4M" },
-                { month: "Mar", height: "50%", val: "$3.1M" },
-                { month: "Apr", height: "65%", val: "$4.1M" },
-                { month: "May", height: "60%", val: "$3.9M" },
-                { month: "Jun", height: "75%", val: "$4.8M" },
-                { month: "Jul", height: "70%", val: "$4.5M" },
-                { month: "Aug", height: "80%", val: "$5.2M" },
-                { month: "Sep", height: "68%", val: "$4.3M" },
-                { month: "Oct", height: "85%", val: "$5.8M" },
-                { month: "Nov", height: "92%", val: "$6.3M" },
-                { month: "Dec", height: "78%", val: "$5.0M" },
+                { month: "Jan", height: "45%", val: "₦4.3B" },
+                { month: "Feb", height: "55%", val: "₦5.3B" },
+                { month: "Mar", height: "50%", val: "₦4.8B" },
+                { month: "Apr", height: "65%", val: "₦6.4B" },
+                { month: "May", height: "60%", val: "₦6.0B" },
+                { month: "Jun", height: "75%", val: "₦7.4B" },
+                { month: "Jul", height: "70%", val: "₦7.0B" },
+                { month: "Aug", height: "80%", val: "₦8.1B" },
+                { month: "Sep", height: "68%", val: "₦6.7B" },
+                { month: "Oct", height: "85%", val: "₦9.0B" },
+                { month: "Nov", height: "92%", val: "₦9.8B" },
+                { month: "Dec", height: "78%", val: "₦7.7B" },
               ].map((col) => (
                 <div key={col.month} className="group relative flex flex-col flex-1 justify-end items-center h-full">
                   <div className="-top-8 absolute bg-[#0F172A] opacity-0 group-hover:opacity-100 px-1.5 py-0.5 rounded font-mono font-bold text-[9px] text-white transition-opacity pointer-events-none">
@@ -576,19 +576,19 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
                 <div className="bg-[#F8FAFC] p-2 rounded border border-[#E2E8F0]">
                   <span className="text-[#64748B] block text-[10px]">Vehicle Acquisition</span>
-                  <span className="font-mono font-bold text-[#0F172A]">71.0% ($34.2M)</span>
+                  <span className="font-mono font-bold text-[#0F172A]">71.0% (₦53.0B)</span>
                 </div>
                 <div className="bg-[#F8FAFC] p-2 rounded border border-[#E2E8F0]">
                   <span className="text-[#64748B] block text-[10px]">Freight & Port Duty</span>
-                  <span className="font-mono font-bold text-[#2563EB]">8.5% ($4.1M)</span>
+                  <span className="font-mono font-bold text-[#2563EB]">8.5% (₦6.35B)</span>
                 </div>
                 <div className="bg-[#F8FAFC] p-2 rounded border border-[#E2E8F0]">
                   <span className="text-[#64748B] block text-[10px]">Workshop PDI & Recon</span>
-                  <span className="font-mono font-bold text-[#D97706]">2.1% ($1.0M)</span>
+                  <span className="font-mono font-bold text-[#D97706]">2.1% (₦1.55B)</span>
                 </div>
                 <div className="bg-[#F8FAFC] p-2 rounded border border-[#E2E8F0]">
                   <span className="text-[#64748B] block text-[10px]">Net Dealership Profit</span>
-                  <span className="font-mono font-bold text-emerald-600">12.2% ($5.9M)</span>
+                  <span className="font-mono font-bold text-emerald-600">12.2% (₦9.15B)</span>
                 </div>
               </div>
             </div>

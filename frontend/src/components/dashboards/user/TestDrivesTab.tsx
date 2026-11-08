@@ -9,7 +9,7 @@ import {
   FiClock,
   FiCheckCircle,
 } from "react-icons/fi";
-import { Button, Badge, Modal, Input, Dropdown, Table, Card } from "@/components/ui";
+import { Button, Badge, Modal, Input, Dropdown, MasterDropdown, Table, Card } from "@/components/ui";
 import { VEHICLES } from "@/data/vehicles";
 
 export interface TestDriveItem {
@@ -223,7 +223,7 @@ export const TestDrivesTab: React.FC<TestDrivesTabProps> = ({ testDriveBookings:
             value={selectedStockId}
             onChange={(val) => setSelectedStockId(String(val))}
             options={VEHICLES.map((v) => ({
-              label: `${v.year} ${v.make} ${v.model} (${v.stockId}) - $${v.priceUSD.toLocaleString()}`,
+              label: `${v.year} ${v.make} ${v.model} (${v.stockId}) - ₦${v.priceNGN.toLocaleString()}`,
               value: v.stockId,
             }))}
           />
@@ -245,16 +245,12 @@ export const TestDrivesTab: React.FC<TestDrivesTabProps> = ({ testDriveBookings:
             />
           </div>
 
-          <Dropdown
+          <MasterDropdown
+            category="hubs"
             label="Showroom Location Hub"
             value={selectedHub}
             onChange={(val) => setSelectedHub(String(val))}
-            options={[
-              { label: "Victoria Island Flagship Showroom, Lagos", value: "Victoria Island Flagship Showroom, Lagos" },
-              { label: "Ikoyi Private Client VIP Lounge, Lagos", value: "Ikoyi Private Client VIP Lounge, Lagos" },
-              { label: "Maitama Diplomatic Zone Suite, Abuja", value: "Maitama Diplomatic Zone Suite, Abuja" },
-              { label: "Lekki Phase 1 Performance Center, Lagos", value: "Lekki Phase 1 Performance Center, Lagos" },
-            ]}
+            required
           />
 
           <Input

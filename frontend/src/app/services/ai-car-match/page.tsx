@@ -117,14 +117,14 @@ export default function AICarMatchPage() {
             <div className="space-y-4">
               <RadioGroup
                 name="budget"
-                label="Target Acquisition Budget (USD)"
+                label="Target Acquisition Budget (Naira)"
                 cardVariant
                 value={budgetRange}
                 onChange={(val) => setBudgetRange(String(val))}
                 options={[
-                  { label: "Under $100,000", value: "under-100k", description: "Entry Luxury & Premium Crossovers" },
-                  { label: "$100,000 - $200,000", value: "100k-200k", description: "Flagship Sedans & Performance SUVs" },
-                  { label: "$200,000+", value: "above-200k", description: "Exotic Supercars & Bespoke Coachbuilds" },
+                  { label: "Under ₦150,000,000", value: "under-100k", description: "Entry Luxury & Premium Crossovers" },
+                  { label: "₦150,000,000 - ₦300,000,000", value: "100k-200k", description: "Flagship Sedans & Performance SUVs" },
+                  { label: "₦300,000,000+", value: "above-200k", description: "Exotic Supercars & Bespoke Coachbuilds" },
                 ]}
               />
 
@@ -307,7 +307,7 @@ export default function AICarMatchPage() {
                           {car.make} {car.model}
                         </h4>
                         <div className="text-sm font-extrabold font-mono text-[#1D4ED8]">
-                          ${car.priceUSD.toLocaleString()}
+                          ₦{car.priceNGN.toLocaleString()}
                         </div>
                       </div>
 

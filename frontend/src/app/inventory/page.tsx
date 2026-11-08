@@ -12,7 +12,7 @@ export default function InventoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("price-desc");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const currency: "USD" | "NGN" = "USD";
+  const currency: "NGN" = "NGN";
 
   // Modal
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
@@ -32,8 +32,8 @@ export default function InventoryPage() {
       v.stockId.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesSearch;
   }).sort((a, b) => {
-    if (sortBy === "price-asc") return a.priceUSD - b.priceUSD;
-    if (sortBy === "price-desc") return b.priceUSD - a.priceUSD;
+    if (sortBy === "price-asc") return a.priceNGN - b.priceNGN;
+    if (sortBy === "price-desc") return b.priceNGN - a.priceNGN;
     if (sortBy === "year-desc") return b.year - a.year;
     if (sortBy === "mileage-asc") return a.mileage - b.mileage;
     return 0;

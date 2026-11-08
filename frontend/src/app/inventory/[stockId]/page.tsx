@@ -43,14 +43,14 @@ function VehicleDetailContent() {
   }, [stockId]);
 
   const [activePhoto, setActivePhoto] = useState<string>(vehicle.image);
-  const [currency, setCurrency] = useState<"USD" | "NGN">("USD");
+  const currency: "NGN" = "NGN";
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
   const [testDriveDate, setTestDriveDate] = useState("2026-11-15");
   const [testDriveLocation, setTestDriveLocation] = useState("Lagos Showroom");
   const [isCopied, setIsCopied] = useState(false);
 
   // Inline Financing Estimator state
-  const basePrice = currency === "USD" ? vehicle.priceUSD : vehicle.priceNGN;
+  const basePrice = vehicle.priceNGN;
   const [depositPct, setDepositPct] = useState<number>(20);
   const [loanTermMonths, setLoanTermMonths] = useState<number>(36);
   const interestRateAnnual = 0.085; // 8.5% APR
@@ -101,24 +101,9 @@ function VehicleDetailContent() {
               {isCopied ? "Link Copied!" : "Share Vehicle"}
             </Button>
 
-            {/* Currency Switcher */}
-            <div className="flex items-center bg-[#FFFFFF] p-0.5 rounded-md border border-[#CBD5E1] shadow-xs gap-1">
-              <Button
-                variant={currency === "USD" ? "primary" : "ghost"}
-                size="sm"
-                onClick={() => setCurrency("USD")}
-                className="px-2.5 py-1 text-xs font-mono font-bold"
-              >
-                $ USD
-              </Button>
-              <Button
-                variant={currency === "NGN" ? "primary" : "ghost"}
-                size="sm"
-                onClick={() => setCurrency("NGN")}
-                className="px-2.5 py-1 text-xs font-mono font-bold"
-              >
-                ₦ NGN
-              </Button>
+            {/* Currency Badge */}
+            <div className="flex items-center bg-[#EFF6FF] px-3 py-1.5 rounded-md border border-[#BFDBFE] text-xs font-mono font-bold text-[#2563EB]">
+              ₦ NGN (Naira)
             </div>
           </div>
         </div>
@@ -135,14 +120,14 @@ function VehicleDetailContent() {
             { label: `${vehicle.make} ${vehicle.model}` },
           ]}
           stats={[
-            { value: `$${vehicle.priceUSD.toLocaleString()}`, label: "Price USD" },
+            { value: `₦${vehicle.priceNGN.toLocaleString()}`, label: "Price (Naira)" },
             { value: `${vehicle.mileage.toLocaleString()} KM`, label: "Mileage" },
             { value: vehicle.status, label: "Status" },
           ]}
           ctaText="Book Private Test Drive"
           onCtaClick={() => setIsTestDriveOpen(true)}
           secondaryCtaText="Finance Estimator"
-          secondaryCtaHref={`/services/loan-calculator?price=${vehicle.priceUSD}`}
+          secondaryCtaHref={`/services/loan-calculator?price=${vehicle.priceNGN}`}
         />
 
         {/* Top Header Block: Make, Model, Status, and Price */}
@@ -175,9 +160,7 @@ function VehicleDetailContent() {
               Approved Dealership Price
             </span>
             <div className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-mono text-[#1D4ED8]">
-              {currency === "USD"
-                ? `$${vehicle.priceUSD.toLocaleString()}`
-                : `₦${vehicle.priceNGN.toLocaleString()}`}
+              ₦{vehicle.priceNGN.toLocaleString()}
             </div>
             <span className="text-[10px] text-[#64748B] mt-0.5">
               Includes customs documentation, pre-delivery inspection & warranty
@@ -406,9 +389,7 @@ function VehicleDetailContent() {
               <div className="flex justify-between text-xs">
                 <span className="text-[#475569]">Down Payment ({depositPct}%):</span>
                 <span className="font-mono font-bold text-[#1D4ED8]">
-                  {currency === "USD"
-                    ? `$${Math.round(basePrice * (depositPct / 100)).toLocaleString()}`
-                    : `₦${Math.round(basePrice * (depositPct / 100)).toLocaleString()}`}
+                  ₦{Math.round(basePrice * (depositPct / 100)).toLocaleString()}
                 </span>
               </div>
               <input
@@ -447,17 +428,15 @@ function VehicleDetailContent() {
                 Estimated Monthly Repayment
               </span>
               <div className="text-2xl sm:text-3xl font-extrabold font-mono text-[#1D4ED8]">
-                {currency === "USD"
-                  ? `$${estimatedMonthly.toLocaleString()}`
-                  : `₦${estimatedMonthly.toLocaleString()}`}{" "}
+                ₦{estimatedMonthly.toLocaleString()}{" "}
                 <span className="text-xs font-normal text-[#64748B]">/mo</span>
               </div>
               <span className="text-[10px] text-[#64748B] block">
-                Principal: {currency === "USD" ? `$${Math.round(loanPrincipal).toLocaleString()}` : `₦${Math.round(loanPrincipal).toLocaleString()}`}
+                Principal: ₦{Math.round(loanPrincipal).toLocaleString()}
               </span>
             </div>
 
-            <Link href={`/services/loan-calculator?price=${vehicle.priceUSD}&stockId=${vehicle.stockId}`}>
+            <Link href={`/services/loan-calculator?price=${vehicle.priceNGN}&stockId=${vehicle.stockId}`}>
               <Button variant="outline" size="sm" fullWidth leftIcon={<FiActivity className="w-3.5 h-3.5" />}>
                 Open Full Loan Amortization Schedule
               </Button>

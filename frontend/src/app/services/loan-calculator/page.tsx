@@ -11,19 +11,17 @@ import {
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Input, Modal, Dropdown, PageBanner } from "@/components/ui";
+import { Button, Input, Modal, Dropdown, PageBanner, Table } from "@/components/ui";
 
 export default function LoanCalculatorPage() {
-  const [currency, setCurrency] = useState<"USD" | "NGN">("USD");
-  const [vehiclePrice, setVehiclePrice] = useState<number>(165000);
+  const currency: "NGN" = "NGN";
+  const [vehiclePrice, setVehiclePrice] = useState<number>(245000000);
   const [downPaymentPct, setDownPaymentPct] = useState<number>(20);
   const [loanTermMonths, setLoanTermMonths] = useState<number>(48);
   const [annualInterestRate, setAnnualInterestRate] = useState<number>(8.5);
   const [isPreQualModalOpen, setIsPreQualModalOpen] = useState<boolean>(false);
 
-  // Conversion rate assumption: 1 USD = 1,500 NGN
-  const fxRate = 1500;
-  const currentPrice = currency === "USD" ? vehiclePrice : vehiclePrice * fxRate;
+  const currentPrice = vehiclePrice;
   const downPaymentAmount = (currentPrice * downPaymentPct) / 100;
   const principal = currentPrice - downPaymentAmount;
 
@@ -77,7 +75,7 @@ export default function LoanCalculatorPage() {
     return schedule;
   }, [principal, loanTermMonths, monthlyRate, calculation.monthlyPayment]);
 
-  const currencySymbol = currency === "USD" ? "$" : "₦";
+  const currencySymbol = "₦";
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
@@ -109,24 +107,8 @@ export default function LoanCalculatorPage() {
             <p className="text-xs text-[#64748B]">Adjust vehicle price, equity down payment, and preferred loan duration</p>
           </div>
 
-          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start sm:self-auto gap-1">
-            <span className="text-xs text-[#64748B] px-2 font-medium">Currency:</span>
-            <Button
-              variant={currency === "USD" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setCurrency("USD")}
-              className="font-mono text-xs px-3 py-1"
-            >
-              $ USD
-            </Button>
-            <Button
-              variant={currency === "NGN" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setCurrency("NGN")}
-              className="font-mono text-xs px-3 py-1"
-            >
-              ₦ NGN
-            </Button>
+          <div className="flex items-center bg-[#EFF6FF] px-3.5 py-1.5 rounded-xl border border-[#BFDBFE] text-xs font-mono font-bold text-[#2563EB]">
+            ₦ NGN (Nigerian Naira)
           </div>
         </div>
 
@@ -147,7 +129,7 @@ export default function LoanCalculatorPage() {
                 value={vehiclePrice}
                 onChange={(e) => setVehiclePrice(Math.max(10000, Number(e.target.value)))}
                 className="font-mono"
-                helperText={`Default: $165,000 (Mercedes-Benz S-Class S580 Executive) • Displayed: ${currencySymbol}${Math.round(currentPrice).toLocaleString()}`}
+                helperText={`Default: ₦245,000,000 (Mercedes-Benz S-Class S580 Executive) • Displayed: ${currencySymbol}${Math.round(currentPrice).toLocaleString()}`}
               />
             </div>
 
@@ -327,28 +309,42 @@ export default function LoanCalculatorPage() {
             </span>
           </div>
 
-          <div className="overflow-x-auto scrollbar-thin">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-[#F8FAFC] text-[10px] uppercase font-bold text-[#64748B] border-b border-[#E2E8F0] whitespace-nowrap">
-                  <th className="py-2.5 px-3">Period</th>
-                  <th className="py-2.5 px-3">Principal Paid</th>
-                  <th className="py-2.5 px-3">Interest Paid</th>
-                  <th className="py-2.5 px-3 text-right">Remaining Balance</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#F1F5F9] font-mono text-xs whitespace-nowrap">
-                {amortizationSchedule.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-[#EFF6FF] transition-colors">
-                    <td className="py-2.5 px-3 font-semibold text-[#0F172A]">{row.year}</td>
-                    <td className="py-2.5 px-3 text-[#334155]">{currencySymbol}{row.principalPaid.toLocaleString()}</td>
-                    <td className="py-2.5 px-3 text-[#2563EB] font-bold">{currencySymbol}{row.interestPaid.toLocaleString()}</td>
-                    <td className="py-2.5 px-3 text-right font-bold text-[#0F172A]">{currencySymbol}{row.remainingBalance.toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            title="Amortization Schedule"
+            data={amortizationSchedule}
+            keyExtractor={(_, idx) => idx}
+            pageSize={15}
+            showSerialNumber={true}
+            exportFileName="amortization_schedule"
+            filterPlaceholder="Filter schedule periods..."
+            columns={[
+              {
+                key: "year",
+                header: "Period",
+                sortable: true,
+                render: (row) => <span className="font-semibold text-[#0F172A]">{row.year}</span>,
+              },
+              {
+                key: "principalPaid",
+                header: "Principal Paid",
+                sortable: true,
+                render: (row) => <span>{currencySymbol}{row.principalPaid.toLocaleString()}</span>,
+              },
+              {
+                key: "interestPaid",
+                header: "Interest Paid",
+                sortable: true,
+                render: (row) => <span className="text-[#2563EB] font-bold">{currencySymbol}{row.interestPaid.toLocaleString()}</span>,
+              },
+              {
+                key: "remainingBalance",
+                header: "Remaining Balance",
+                align: "right",
+                sortable: true,
+                render: (row) => <span className="font-bold text-[#0F172A]">{currencySymbol}{row.remainingBalance.toLocaleString()}</span>,
+              },
+            ]}
+          />
         </div>
       </main>
 

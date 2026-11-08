@@ -28,6 +28,8 @@ COMPLETED MODULES & CAPABILITIES:
   * Universal CSV Export button for all filtered vehicle records.
   * QA Certification sign-off gate ("Approved for Sale" - Business Rule 2).
   * Reusable Table with automatic Serial Number (S/N) and 15 items per page pagination.
+  * Dedicated Action Button Decoupling: Separated 'Inspect' (QA Diagnostic Checklist & Lifecycle Status modal) 
+    and 'Dossier' (Vehicle Specification Dossier & Factory Features modal) so each button opens exactly one modal.
 
 
 [COMPLETED] 2. SALES & MARKETING DEPARTMENT (PDF Section 4)
@@ -235,6 +237,16 @@ COMPLETED MODULES & CAPABILITIES:
     - All tables across all 17 desks and portals strictly implement auto-calculated Serial Number (S/N) 
       and 15 items per page pagination.
     - All table actions use in-place modals with 0 inter-dashboard navigation buttons.
+    - Universal Real-Time Filter Functionality: Built-in search input in every table header filtering across 
+      all columns and properties dynamically, with filtered match counter, auto-reset to page 1, and clear button.
+    - Universal Table Section Toggle Functionality: Built-in 'Collapse Table' / 'Expand Table' accordion toggle 
+      on every table allowing users to collapse or expand the entire table section with animated chevron 
+      and compact summary pill.
+  * Portal-Based Unblockable Dropdowns Across Modals and Dashboards:
+    - Upgraded Dropdown component using React Portal (createPortal to document.body) with fixed viewport positioning 
+      (z-[99999]), auto collision detection (automatically opens upward when near modal bottom or screen edge), 
+      and dynamic scroll/resize tracking to guarantee dropdown menus are never clipped by modal overflow-hidden, 
+      overflow-y-auto, or card boundaries.
 
 
 [COMPLETED] 15. COMPLETE 12 BUSINESS RULES & SYSTEM POLICIES (PDF Section 18)
@@ -294,7 +306,111 @@ COMPLETED MODULES & CAPABILITIES:
   * Logistics & Supplier Predictive Analytics: Shipping lane lead times, port terminal congestion forecasts, 
     carrier reliability indices, and foreign exchange exposure hedging advisories.
 
+[COMPLETED] 17. COMPLETE NIGERIAN NAIRA (₦ / NGN) CURRENCY STANDARDIZATION
+- Files:
+  * Public Services:
+    - frontend/src/app/services/sell-or-swap/page.tsx
+    - frontend/src/app/services/loan-calculator/page.tsx
+    - frontend/src/app/services/auto-brokers/page.tsx
+    - frontend/src/app/services/customs-specialists/page.tsx
+    - frontend/src/app/services/ai-car-match/page.tsx
+    - frontend/src/app/services/compare/page.tsx
+    - frontend/src/app/inventory/page.tsx
+    - frontend/src/app/inventory/[stockId]/page.tsx
+    - frontend/src/app/auth/register/page.tsx
+    - frontend/src/app/careers/page.tsx
+    - frontend/src/components/ui/VehicleCard.tsx
+    - frontend/src/components/ui/FilterBar.tsx
+  * ERP Management & Executive Dashboards:
+    - frontend/src/components/DashboardLayout.tsx
+    - frontend/src/components/ERPConsoleContent.tsx
+    - frontend/src/components/dashboards/admin/AdminOverviewPage.tsx
+    - frontend/src/components/dashboards/admin/InventoryPage.tsx
+    - frontend/src/components/dashboards/admin/CMSPage.tsx
+    - frontend/src/components/dashboards/admin/ReportsAnalyticsPage.tsx
+    - frontend/src/components/dashboards/admin/SettingsPage.tsx
+    - frontend/src/components/dashboards/admin/TransfersPage.tsx
+    - frontend/src/components/dashboards/sales/SalesOrdersPage.tsx
+    - frontend/src/components/dashboards/sales/SalesDashboard.tsx
+    - frontend/src/components/dashboards/crm/CRMPipelinePage.tsx
+    - frontend/src/components/dashboards/financing/FinancingDashboard.tsx
+    - frontend/src/components/dashboards/financing/FinancingUnderwritingPage.tsx
+    - frontend/src/components/dashboards/hr/HRRecruitmentPage.tsx
+    - frontend/src/components/dashboards/imports/ImportsLogisticsPage.tsx
+    - frontend/src/components/dashboards/procurement/ProcurementDashboard.tsx
+    - frontend/src/components/dashboards/staff/PersonalStaffDashboard.tsx
+    - frontend/src/components/dashboards/trade-ins/TradeInsDashboard.tsx
+    - frontend/src/components/dashboards/trade-ins/TradeInsAppraisalsPage.tsx
+    - frontend/src/components/dashboards/parts/PartsDashboard.tsx
+    - frontend/src/components/dashboards/parts/PartsCatalogPage.tsx
+    - frontend/src/components/dashboards/accounting/AccountingDashboard.tsx
+    - frontend/src/components/dashboards/accounting/FinancialReportsPage.tsx
+    - frontend/src/components/dashboards/accounting/InvoicesPaymentsPage.tsx
+    - frontend/src/components/dashboards/accounting/LandedMarginsPage.tsx
+    - frontend/src/components/dashboards/accounting/PayablesPage.tsx
+    - frontend/src/components/dashboards/accounting/ReceivablesPage.tsx
+    - frontend/src/components/dashboards/accounting/TaxCompliancePage.tsx
+  * Customer / VIP Portal:
+    - frontend/src/components/dashboards/user/UserDashboard.tsx
+    - frontend/src/components/dashboards/user/OverviewTab.tsx
+    - frontend/src/components/dashboards/user/GarageTab.tsx
+    - frontend/src/components/dashboards/user/TestDrivesTab.tsx
+    - frontend/src/components/dashboards/user/TradeInsTab.tsx
+    - frontend/src/components/dashboards/user/InvoicesTab.tsx
+    - frontend/src/utils/pdfGenerator.ts
+- Implemented:
+  * 100% elimination of all foreign currency references ($, USD, US Dollars, dual-currency toggles, and switchers) across the entire application codebase.
+  * Standardized all valuations, asking prices, transaction ledgers, trade-in equities, bank balances, PO thresholds, and payroll strictly to Nigerian Naira (₦, NGN).
+  * Filter bars and range inputs updated to "Price Range (₦)" with Naira step values and defaults.
+  * Verified with automated AST-level and regex scanning scripts: 0 foreign currency occurrences in user-facing views.
+  * Verified 0 TypeScript compilation errors (`npx tsc --noEmit`).
+  * Verified Next.js production build (`npx next build --webpack`) cleanly prerendering all 30 routes with exit code 0.
+
+
+[COMPLETED] 20. CENTRAL DYNAMIC MASTER DATA & TAXONOMY MANAGEMENT ENGINE
+- File: frontend/src/context/MasterDataContext.tsx
+- File: frontend/src/components/ui/MasterDropdown.tsx
+- File: frontend/src/components/dashboards/admin/MasterDataPage.tsx
+- File: frontend/src/components/dashboards/admin/SettingsPage.tsx
+- File: frontend/src/components/ERPConsoleContent.tsx
+- File: frontend/src/app/layout.tsx
+- File: frontend/src/app/erp/[module]/page.tsx
+- File: frontend/src/components/dashboards/imports/ImportsLogisticsPage.tsx
+- File: frontend/src/components/dashboards/procurement/ProcurementDashboard.tsx
+- File: frontend/src/components/dashboards/trade-ins/TradeInsAppraisalsPage.tsx
+- File: frontend/src/components/dashboards/user/TradeInsTab.tsx
+- File: frontend/src/components/dashboards/user/TestDrivesTab.tsx
+- File: frontend/src/components/dashboards/user/UserDashboard.tsx
+- File: frontend/src/components/dashboards/hr/HRRecruitmentPage.tsx
+- File: frontend/src/components/dashboards/accounting/ReceivablesPage.tsx
+- File: frontend/src/components/dashboards/financing/FinancingUnderwritingPage.tsx
+- File: frontend/src/components/dashboards/parts/PartsCatalogPage.tsx
+- File: frontend/src/components/dashboards/sales/SalesOrdersPage.tsx
+- Implemented:
+  * Centralized Master Data Context (`MasterDataContext`) supporting 12 dynamic dealership data categories:
+    1. Showroom & Logistics Hubs (`hubs`)
+    2. Vehicle Classes & Categories (`categories`)
+    3. Automotive Makes & Brands (`makes`)
+    4. International Ports of Loading & Discharge (`ports`)
+    5. Ocean & Haulage Freight Carriers (`carriers`)
+    6. Verified Procurement Suppliers & Auction Desks (`suppliers`)
+    7. Escrow & Lending Banking Institutions (`banks`)
+    8. Payment Gateways & Settlement Channels (`payment_channels`)
+    9. Inspection & Diagnostic QA Centers (`inspection_centers`)
+    10. International Sourcing Origin Markets (`sourcing_markets`)
+    11. Dealership Functional Departments (`departments`)
+    12. CRM & Escalation Dispute Categories (`dispute_categories`).
+  * In-Place Creation Privilege via `MasterDropdown`: Every dropdown input in modal dialogs across all dashboards (e.g. Add Vehicle to Stock, Issue PO, Dispatch Carrier, Log Consignment, Register Trade-In, VIP Test Drive, Customer Sourcing Brief, Staff Enrollment, Sales Order) includes an inline `+ Add New` creation trigger that opens a quick modal, adds the custom option immediately to the master registry, and auto-selects it.
+  * Application-Wide Instant Sync: Any option created from ANY dashboard modal (such as an Initial Allocation Hub created while adding a vehicle to stock) is instantly synced to `localStorage` and made available application-wide to all other modules.
+  * Dedicated Master Data CRUD Management Suite (`MasterDataPage.tsx`):
+    - Category switcher tab bar across all 12 taxonomies.
+    - KPI Metrics Strip: Categories count, Active options count, Custom options count, Sync integrity.
+    - Reusable `Table` with auto Serial Number (S/N), 15 items per page pagination, search filter, and section collapse toggle.
+    - Full CRUD modals: "+ Create New Option", "Edit Option Details", and "Delete Option Confirmation" with factory reset to defaults.
+    - Embedded into `SettingsPage.tsx` as the "Master Data & Dropdown Registry" tab, rendered directly from the ERP sidebar ("Master Data & Dropdowns"), and mapped to the direct `/erp/master-data` route.
+  * Verified with full Next.js production build: 30/30 static and dynamic routes compiled cleanly with 0 errors.
+
 ================================================================================
-ALL 16 MODULES & 12 BUSINESS RULES IN Car_Dealership_ERP_Departments_and_Dashboards.pdf
+ALL 17 MODULES, 12 BUSINESS RULES, AND DYNAMIC MASTER DATA TAXONOMY ENGINE
 ARE 100% COMPLETED, VERIFIED, AND CATALOGED.
 ================================================================================

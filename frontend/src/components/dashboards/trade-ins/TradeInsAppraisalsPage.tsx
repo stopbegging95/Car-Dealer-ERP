@@ -12,7 +12,7 @@ import {
   FiCheckCircle,
   FiAlertTriangle,
 } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown, Table, KPICard } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
 
 export interface TradeInItem {
   id: string;
@@ -22,6 +22,9 @@ export interface TradeInItem {
   targetPriceUSD: number;
   valuationUSD: number;
   payableDiffUSD: number;
+  targetPriceNGN?: number;
+  valuationNGN?: number;
+  payableDiffNGN?: number;
   status: string;
   linkedStock?: string;
   inspectionSigned: boolean;
@@ -45,45 +48,45 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
       client: "Alhaji Bello & Sons Ltd",
       carOffered: "2021 Mercedes-Benz S500 4MATIC (42,000 KM)",
       target: "2024 Mercedes-Maybach S580 (Dual-Tone)",
-      targetPriceUSD: 165000,
-      valuationUSD: 45000,
-      payableDiffUSD: 120000,
+      targetPriceUSD: 255750000,
+      valuationUSD: 69750000,
+      payableDiffUSD: 186000000,
       status: "Physical Appraisal Complete",
       linkedStock: "STK-2026-001",
       inspectionSigned: true,
       intakeStatus: "Pending Intake",
-      projectedResaleUSD: 62000,
-      reconBudgetUSD: 3500,
+      projectedResaleUSD: 96100000,
+      reconBudgetUSD: 5425000,
     },
     {
       id: "TRD-2026-002",
       client: "Dr. K. Somoye",
       carOffered: "2020 Porsche Carrera 4S (31,000 KM)",
       target: "2024 Porsche 911 Turbo S",
-      targetPriceUSD: 225000,
-      valuationUSD: 76500,
-      payableDiffUSD: 148500,
+      targetPriceUSD: 348750000,
+      valuationUSD: 118575000,
+      payableDiffUSD: 230175000,
       status: "OBD Diagnostics Passed",
       linkedStock: "STK-2026-002",
       inspectionSigned: true,
       intakeStatus: "Pending Intake",
-      projectedResaleUSD: 98000,
-      reconBudgetUSD: 4200,
+      projectedResaleUSD: 151900000,
+      reconBudgetUSD: 6510000,
     },
     {
       id: "TRD-2026-003",
       client: "Senator Godswill O.",
       carOffered: "2019 Range Rover Vogue SE (68,000 KM)",
       target: "2024 Mercedes-AMG G63 Magno",
-      targetPriceUSD: 240000,
-      valuationUSD: 38000,
-      payableDiffUSD: 202000,
+      targetPriceUSD: 372000000,
+      valuationUSD: 58900000,
+      payableDiffUSD: 313100000,
       status: "Under Paint Gauge Audit",
       linkedStock: "STK-2026-007",
       inspectionSigned: false,
       intakeStatus: "Pending Intake",
-      projectedResaleUSD: 52000,
-      reconBudgetUSD: 5000,
+      projectedResaleUSD: 80600000,
+      reconBudgetUSD: 7750000,
     },
   ]);
 
@@ -97,6 +100,7 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
   const [target, setTarget] = useState("2024 Mercedes-Maybach S580");
   const [targetPrice, setTargetPrice] = useState("165,000");
   const [valuation, setValuation] = useState("45,000");
+  const [hub, setHub] = useState("Victoria Island Flagship Showroom, Lagos");
 
   // Calculator Form
   const [calcTargetPrice, setCalcTargetPrice] = useState(165000);
@@ -159,10 +163,10 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
 
   const openDifferentialCalculator = (item: TradeInItem) => {
     setSelectedForCalc(item);
-    setCalcTargetPrice(item.targetPriceUSD);
-    setCalcTradeValuation(item.valuationUSD);
-    setCalcDiscount(2500);
-    setCalcStatutoryFee(1250);
+    setCalcTargetPrice(item.targetPriceNGN ?? item.targetPriceUSD);
+    setCalcTradeValuation(item.valuationNGN ?? item.valuationUSD);
+    setCalcDiscount(3875000);
+    setCalcStatutoryFee(1937500);
     setIsCalculatorOpen(true);
   };
 
@@ -247,17 +251,17 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
               render: (item) => (
                 <div>
                   <span className="font-semibold text-[#1D4ED8] text-xs">{item.target}</span>
-                  <span className="block font-mono text-[10px] text-[#64748B]">${item.targetPriceUSD.toLocaleString()}</span>
+                  <span className="block font-mono text-[10px] text-[#64748B]">₦{item.targetPriceUSD.toLocaleString()}</span>
                 </div>
               ),
             },
             {
               key: "valuationUSD",
-              header: "Approved Trade Credit",
+              header: "Approved Trade Credit (₦)",
               sortable: true,
               render: (item) => (
                 <div>
-                  <span className="font-mono font-bold text-emerald-700 text-xs">${item.valuationUSD.toLocaleString()}</span>
+                  <span className="font-mono font-bold text-emerald-700 text-xs">₦{item.valuationUSD.toLocaleString()}</span>
                   <span className="block text-[10px] text-[#64748B]">
                     {item.inspectionSigned ? "Rule 6 Verified" : "Pending Inspection"}
                   </span>
@@ -266,11 +270,11 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
             },
             {
               key: "payableDiffUSD",
-              header: "Payable Difference",
+              header: "Payable Difference (₦)",
               sortable: true,
               render: (item) => (
                 <span className="font-mono font-bold text-[#0F172A] text-xs">
-                  ${item.payableDiffUSD.toLocaleString()}
+                  ₦{item.payableDiffUSD.toLocaleString()}
                 </span>
               ),
             },
@@ -351,6 +355,13 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
             onChange={(e) => setCarOffered(e.target.value)}
             required
           />
+          <MasterDropdown
+            category="inspection_centers"
+            label="Designated Appraisal Hub"
+            value={hub}
+            onChange={(val) => setHub(String(val))}
+            required
+          />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Dropdown
               label="Target Showroom Vehicle"
@@ -364,9 +375,9 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
               onChange={(val) => setTarget(String(val))}
             />
             <Input
-              label="Approved Trade Valuation ($)"
+              label="Approved Trade Valuation (₦ NGN)"
               type="text"
-              placeholder="e.g. 48,000"
+              placeholder="e.g. 75,000,000"
               value={valuation}
               onChange={(e) => setValuation(e.target.value)}
               required
@@ -395,25 +406,25 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
-                label="Target Vehicle Showroom Price ($)"
+                label="Target Vehicle Showroom Price (₦ NGN)"
                 type="number"
                 value={String(calcTargetPrice)}
                 onChange={(e) => setCalcTargetPrice(Number(e.target.value))}
               />
               <Input
-                label="Certified Trade-In Equity Credit ($)"
+                label="Certified Trade-In Equity Credit (₦ NGN)"
                 type="number"
                 value={String(calcTradeValuation)}
                 onChange={(e) => setCalcTradeValuation(Number(e.target.value))}
               />
               <Input
-                label="Authorized Dealership Discount ($)"
+                label="Authorized Dealership Discount (₦ NGN)"
                 type="number"
                 value={String(calcDiscount)}
                 onChange={(e) => setCalcDiscount(Number(e.target.value))}
               />
               <Input
-                label="Registration & Statutory Documentation Fees ($)"
+                label="Registration & Statutory Documentation Fees (₦ NGN)"
                 type="number"
                 value={String(calcStatutoryFee)}
                 onChange={(e) => setCalcStatutoryFee(Number(e.target.value))}
@@ -424,23 +435,23 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
             <div className="p-4 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl space-y-2 text-xs">
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">Showroom Car Gross:</span>
-                <span className="font-mono font-bold text-[#0F172A]">${calcTargetPrice.toLocaleString()}</span>
+                <span className="font-mono font-bold text-[#0F172A]">₦{calcTargetPrice.toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-emerald-700 font-semibold">Less Customer Trade Equity:</span>
-                <span className="font-mono font-bold text-emerald-700">-${calcTradeValuation.toLocaleString()}</span>
+                <span className="font-mono font-bold text-emerald-700">-₦{calcTradeValuation.toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">Less Authorized Discount:</span>
-                <span className="font-mono text-[#0F172A]">-${calcDiscount.toLocaleString()}</span>
+                <span className="font-mono text-[#0F172A]">-₦{calcDiscount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">Plus Registration & CMR Fees:</span>
-                <span className="font-mono text-[#0F172A]">+${calcStatutoryFee.toLocaleString()}</span>
+                <span className="font-mono text-[#0F172A]">+₦{calcStatutoryFee.toLocaleString()}</span>
               </div>
               <div className="flex justify-between pt-2 text-sm font-bold">
                 <span className="text-[#2563EB]">Net Customer Balance Payable:</span>
-                <span className="font-mono font-bold text-[#1D4ED8] text-base">${calculatedNetPayable.toLocaleString()}</span>
+                <span className="font-mono font-bold text-[#1D4ED8] text-base">₦{calculatedNetPayable.toLocaleString()}</span>
               </div>
             </div>
 
@@ -448,10 +459,10 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 space-y-1">
               <span className="font-bold block uppercase tracking-wide text-[10px]">Trade-In Resale Margin Forecast</span>
               <p>
-                Incoming Car Valuation: <strong>${calcTradeValuation.toLocaleString()}</strong> | Recon Budget: <strong>$3,500</strong> | Projected CPO Resale: <strong>${Math.round(calcTradeValuation * 1.25).toLocaleString()}</strong>
+                Incoming Car Valuation: <strong>₦{calcTradeValuation.toLocaleString()}</strong> | Recon Budget: <strong>₦5,425,000</strong> | Projected CPO Resale: <strong>₦{Math.round(calcTradeValuation * 1.25).toLocaleString()}</strong>
               </p>
               <p className="font-semibold text-emerald-800">
-                Projected Resale Margin on Acquired Unit: +${Math.round(calcTradeValuation * 0.25 - 3500).toLocaleString()} (approx. +17.5% net ROI).
+                Projected Resale Margin on Acquired Unit: +₦{Math.round(calcTradeValuation * 0.25 - 5425000).toLocaleString()} (approx. +17.5% net ROI).
               </p>
             </div>
 
@@ -476,7 +487,7 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
                     )
                   );
                   setIsCalculatorOpen(false);
-                  showToast(`Recalculated settlement balance for ${selectedForCalc.id}: $${calculatedNetPayable.toLocaleString()}.`);
+                  showToast(`Recalculated settlement balance for ${selectedForCalc.id}: ₦${calculatedNetPayable.toLocaleString()}.`);
                 }}
               >
                 Apply Adjusted Figures

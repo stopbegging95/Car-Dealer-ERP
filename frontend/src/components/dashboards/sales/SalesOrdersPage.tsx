@@ -16,7 +16,7 @@ import {
   FiFileText,
   FiShield,
 } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown, Table, KPICard } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
 
 export interface OrderItem {
   id: string;
@@ -96,8 +96,8 @@ export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newClient, setNewClient] = useState("");
   const [newCar, setNewCar] = useState("2024 Mercedes-Maybach S580");
-  const [newAmount, setNewAmount] = useState("165,000");
-  const [newDeposit, setNewDeposit] = useState("50,000");
+  const [newAmount, setNewAmount] = useState("255,750,000");
+  const [newDeposit, setNewDeposit] = useState("77,500,000");
   const [newDeliveryDate, setNewDeliveryDate] = useState("2026-11-20");
   const [newRep, setNewRep] = useState("Emeka O. (VIP Sales)");
   const [newHub, setNewHub] = useState("VI");
@@ -117,18 +117,18 @@ export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
 
   // Sales Representatives Performance & Commission Quotas
   const salesRepLedger: SalesRepQuota[] = [
-    { name: "Emeka O. (VIP Sales)", quota: "$800,000", closed: "$965,000", attainment: "120.6%", units: 5, commission: "$19,300", status: "Approved" },
-    { name: "Aisha M. (Diplomatic Desk)", quota: "$650,000", closed: "$720,000", attainment: "110.7%", units: 3, commission: "$14,400", status: "Approved" },
-    { name: "Babajide K. (Pre-Owned / Trade-In)", quota: "$500,000", closed: "$440,000", attainment: "88.0%", units: 4, commission: "$8,800", status: "Pending Audit" },
-    { name: "Ngozi E. (Corporate Fleet)", quota: "$1,200,000", closed: "$1,350,000", attainment: "112.5%", units: 7, commission: "$27,000", status: "Approved" },
+    { name: "Emeka O. (VIP Sales)", quota: "₦1,240,000,000", closed: "₦1,495,750,000", attainment: "120.6%", units: 5, commission: "₦29,915,000", status: "Approved" },
+    { name: "Aisha M. (Diplomatic Desk)", quota: "₦1,007,500,000", closed: "₦1,116,000,000", attainment: "110.7%", units: 3, commission: "₦22,320,000", status: "Approved" },
+    { name: "Babajide K. (Pre-Owned / Trade-In)", quota: "₦775,000,000", closed: "₦682,000,000", attainment: "88.0%", units: 4, commission: "₦13,640,000", status: "Pending Audit" },
+    { name: "Ngozi E. (Corporate Fleet)", quota: "₦1,860,000,000", closed: "₦2,092,500,000", attainment: "112.5%", units: 7, commission: "₦41,850,000", status: "Approved" },
   ];
 
   // Lost Deals Registry
   const lostDeals: LostDealItem[] = [
-    { id: "LST-101", client: "Federal Ministry of Transport", vehicle: "Toyota Land Cruiser 300 (x4)", lostValue: "$580,000", reason: "Price/Budget", rep: "Ngozi E.", date: "2026-11-04" },
-    { id: "LST-102", client: "Alhaji Musa Danjuma", vehicle: "2024 Rolls-Royce Ghost Extended", lostValue: "$485,000", reason: "Competitor", rep: "Emeka O.", date: "2026-10-28" },
-    { id: "LST-103", client: "Dr. Femi Adeleke", vehicle: "2023 Porsche Panamera GTS", lostValue: "$142,000", reason: "Loan Declined", rep: "Babajide K.", date: "2026-10-22" },
-    { id: "LST-104", client: "Apex Horizon Oil & Gas", vehicle: "Mercedes-Benz G63 AMG", lostValue: "$295,000", reason: "Vehicle Sold to Another", rep: "Aisha M.", date: "2026-10-18" },
+    { id: "LST-101", client: "Federal Ministry of Transport", vehicle: "Toyota Land Cruiser 300 (x4)", lostValue: "₦899,000,000", reason: "Price/Budget", rep: "Ngozi E.", date: "2026-11-04" },
+    { id: "LST-102", client: "Alhaji Musa Danjuma", vehicle: "2024 Rolls-Royce Ghost Extended", lostValue: "₦751,750,000", reason: "Competitor", rep: "Emeka O.", date: "2026-10-28" },
+    { id: "LST-103", client: "Dr. Femi Adeleke", vehicle: "2023 Porsche Panamera GTS", lostValue: "₦220,100,000", reason: "Loan Declined", rep: "Babajide K.", date: "2026-10-22" },
+    { id: "LST-104", client: "Apex Horizon Oil & Gas", vehicle: "Mercedes-Benz G63 AMG", lostValue: "₦457,250,000", reason: "Vehicle Sold to Another", rep: "Aisha M.", date: "2026-10-18" },
   ];
 
   const handleCreateOrder = (e: React.FormEvent) => {
@@ -143,9 +143,9 @@ export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
       id: newId,
       client: newClient,
       car: newCar,
-      amount: `$${Number(newAmount.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
-      deposit: `$${Number(newDeposit.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
-      balance: `$${(Number(newAmount.replace(/[^0-9]/g, "") || 0) - Number(newDeposit.replace(/[^0-9]/g, "") || 0)).toLocaleString()}`,
+      amount: `₦${Number(newAmount.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      deposit: `₦${Number(newDeposit.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      balance: `₦${(Number(newAmount.replace(/[^0-9]/g, "") || 0) - Number(newDeposit.replace(/[^0-9]/g, "") || 0)).toLocaleString()}`,
       status: isExceeding ? "Discount Awaiting Approval" : "Wire Deposit Verified",
       stage: isExceeding ? "Executive Authorization Required (Rule 4)" : "Contract Signed & Delivery Prep",
       rep: newRep,
@@ -544,14 +544,14 @@ export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
-              label="Agreed Contract Price ($)"
+              label="Agreed Contract Price (₦ NGN)"
               type="text"
               value={newAmount}
               onChange={(e) => setNewAmount(e.target.value)}
               required
             />
             <Input
-              label="Initial Wire Deposit ($)"
+              label="Initial Wire Deposit (₦ NGN)"
               type="text"
               value={newDeposit}
               onChange={(e) => setNewDeposit(e.target.value)}
@@ -568,11 +568,18 @@ export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
               label="Assigned Sales Representative"
               value={newRep}
               onChange={(e) => setNewRep(e.target.value)}
+              required
+            />
+            <MasterDropdown
+              category="hubs"
+              label="Delivery / Handover Hub"
+              value={newHub}
+              onChange={(val) => setNewHub(String(val))}
               required
             />
             <Input

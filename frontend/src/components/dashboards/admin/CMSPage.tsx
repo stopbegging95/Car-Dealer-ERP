@@ -157,12 +157,12 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
     };
     setCampaigns([newCamp, ...campaigns]);
     setIsCampaignModalOpen(false);
-    showToast(`Marketing campaign "${campName}" launched ($${budgetNum.toLocaleString()} allocation).`);
+    showToast(`Marketing campaign "${campName}" launched (₦${budgetNum.toLocaleString()} allocation).`);
     setCampName("");
   };
 
-  const totalMarketingSpend = campaigns.reduce((acc, c) => acc + c.actualSpendUSD, 0);
-  const totalAttributedRevenue = campaigns.reduce((acc, c) => acc + c.revenueGeneratedUSD, 0);
+  const totalMarketingSpend = campaigns.reduce((acc, c) => acc + c.actualSpendUSD * 1550, 0);
+  const totalAttributedRevenue = campaigns.reduce((acc, c) => acc + c.revenueGeneratedUSD * 1550, 0);
   const totalLeads = campaigns.reduce((acc, c) => acc + c.leadsGenerated, 0);
 
   return (
@@ -171,20 +171,20 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
       <div className="gap-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Attributed Sales Revenue"
-          value={`$${(totalAttributedRevenue / 1000000).toFixed(2)}M`}
+          value={`₦${(totalAttributedRevenue / 1000000000).toFixed(2)}B`}
           change="12 Closed Units Attributed"
           icon={<FiTrendingUp className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Total Advertising Spend"
-          value={`$${(totalMarketingSpend / 1000).toFixed(1)}k`}
+          value={`₦${(totalMarketingSpend / 1000000).toFixed(1)}M`}
           change="Across Google, Meta, OOH"
           icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Attributed Leads Generated"
           value={`${totalLeads} Leads`}
-          change="Avg CPL $214.50"
+          change="Avg CPL ₦332,500"
           icon={<FiTarget className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
@@ -278,11 +278,11 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
               },
               {
                 key: "budgetUSD",
-                header: "Budget / Spend",
+                header: "Budget / Spend (₦)",
                 sortable: true,
                 render: (c) => (
                   <span className="font-mono text-xs text-[#0F172A]">
-                    ${c.actualSpendUSD.toLocaleString()} / ${c.budgetUSD.toLocaleString()}
+                    ₦{(c.actualSpendUSD * 1550).toLocaleString()} / ₦{(c.budgetUSD * 1550).toLocaleString()}
                   </span>
                 ),
               },
@@ -293,7 +293,7 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
                 render: (c) => (
                   <div>
                     <span className="font-bold text-xs text-[#0F172A]">{c.leadsGenerated} Leads</span>
-                    <span className="block font-mono text-[10px] text-[#64748B]">${c.cplUSD.toFixed(1)} CPL</span>
+                    <span className="block font-mono text-[10px] text-[#64748B]">₦{(c.cplUSD * 1550).toFixed(0)} CPL</span>
                   </div>
                 ),
               },
@@ -304,11 +304,11 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
               },
               {
                 key: "revenueGeneratedUSD",
-                header: "Attributed Revenue",
+                header: "Attributed Revenue (₦)",
                 sortable: true,
                 render: (c) => (
                   <span className="font-mono font-bold text-[#1D4ED8] text-xs">
-                    ${c.revenueGeneratedUSD.toLocaleString()}
+                    ₦{(c.revenueGeneratedUSD * 1550).toLocaleString()}
                   </span>
                 ),
               },
@@ -418,8 +418,8 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
               ]}
             />
             <Input
-              label="Allocated Budget ($ USD)"
-              placeholder="20,000"
+              label="Allocated Budget (₦ NGN)"
+              placeholder="31,000,000"
               value={campBudget}
               onChange={(e) => setCampBudget(e.target.value)}
               required

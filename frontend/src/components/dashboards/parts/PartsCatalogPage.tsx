@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table } from "@/components/ui";
 
 export interface PartCatalogItem {
   sku: string;
@@ -19,10 +19,10 @@ export interface PartsCatalogPageProps {
 
 export const PartsCatalogPage: React.FC<PartsCatalogPageProps> = ({ showToast }) => {
   const [parts, setParts] = useState<PartCatalogItem[]>([
-    { sku: "PRT-MB-9912", name: "Maybach 22-Inch Forged Monoblock Wheel (Set)", oem: "Mercedes-Benz OEM", qty: "3 Sets in Stock", price: "$14,500", status: "In Stock" },
-    { sku: "PRT-PO-8810", name: "PCCB Carbon Ceramic Brake Rotor Kit", oem: "Porsche Motorsport", qty: "2 Kits Left", price: "$22,000", status: "Low Stock Alert" },
-    { sku: "PRT-RR-4401", name: "Autobiography Deployable Side Steps", oem: "Land Rover Genuine", qty: "5 Sets in Stock", price: "$6,200", status: "In Stock" },
-    { sku: "PRT-MB-3309", name: "G63 AMG Night Package II Radiator Grille", oem: "Mercedes-AMG", qty: "1 Unit Left", price: "$3,800", status: "Reorder Triggered" },
+    { sku: "PRT-MB-9912", name: "Maybach 22-Inch Forged Monoblock Wheel (Set)", oem: "Mercedes-Benz OEM", qty: "3 Sets in Stock", price: "₦22,475,000", status: "In Stock" },
+    { sku: "PRT-PO-8810", name: "PCCB Carbon Ceramic Brake Rotor Kit", oem: "Porsche Motorsport", qty: "2 Kits Left", price: "₦34,100,000", status: "Low Stock Alert" },
+    { sku: "PRT-RR-4401", name: "Autobiography Deployable Side Steps", oem: "Land Rover Genuine", qty: "5 Sets in Stock", price: "₦9,610,000", status: "In Stock" },
+    { sku: "PRT-MB-3309", name: "G63 AMG Night Package II Radiator Grille", oem: "Mercedes-AMG", qty: "1 Unit Left", price: "₦5,890,000", status: "Reorder Triggered" },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,7 +40,7 @@ export const PartsCatalogPage: React.FC<PartsCatalogPageProps> = ({ showToast })
       name,
       oem,
       qty: `${qty} Units in Stock`,
-      price: `$${Number(price.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      price: `₦${Number(price.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
       status: "In Stock",
     };
     setParts([newEntry, ...parts]);
@@ -90,17 +90,12 @@ export const PartsCatalogPage: React.FC<PartsCatalogPageProps> = ({ showToast })
               value={sku}
               onChange={(e) => setSku(e.target.value)}
             />
-            <Dropdown
-              label="OEM Brand"
-              options={[
-                { label: "Mercedes-Benz OEM", value: "Mercedes-Benz OEM" },
-                { label: "Mercedes-AMG Genuine", value: "Mercedes-AMG Genuine" },
-                { label: "Porsche Motorsport", value: "Porsche Motorsport" },
-                { label: "Land Rover Genuine", value: "Land Rover Genuine" },
-                { label: "Brembo Racing", value: "Brembo Racing" },
-              ]}
+            <MasterDropdown
+              category="makes"
+              label="OEM Brand / Manufacturer"
               value={oem}
               onChange={(val) => setOem(String(val))}
+              required
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -112,9 +107,9 @@ export const PartsCatalogPage: React.FC<PartsCatalogPageProps> = ({ showToast })
               required
             />
             <Input
-              label="Selling Price ($)"
+              label="Selling Price (₦ NGN)"
               type="text"
-              placeholder="e.g. 8,500"
+              placeholder="e.g. 13,500,000"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               required
@@ -167,7 +162,7 @@ export const PartsCatalogPage: React.FC<PartsCatalogPageProps> = ({ showToast })
           },
           {
             key: "price",
-            header: "Retail Price",
+            header: "Retail Price (₦ NGN)",
             sortable: true,
             render: (part) => (
               <span className="font-mono font-bold text-[#1D4ED8]">{part.price}</span>

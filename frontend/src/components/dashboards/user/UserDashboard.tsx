@@ -15,7 +15,7 @@ import {
   FiCheck,
   FiX,
 } from "react-icons/fi";
-import { Button, Badge, Modal, Input, Dropdown } from "@/components/ui";
+import { Button, Badge, Modal, Input, Dropdown, MasterDropdown } from "@/components/ui";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
 import { downloadVaultDocumentPdf } from "@/utils/pdfGenerator";
@@ -32,13 +32,13 @@ import { SecuritySettingsTab } from "./SecuritySettingsTab";
 export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string }) {
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [isNewBriefModalOpen, setIsNewBriefModalOpen] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<"USD" | "NGN">("USD");
+  const [selectedCurrency, setSelectedCurrency] = useState<"NGN">("NGN");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Sourcing Brief Form State
   const [briefTargetModel, setBriefTargetModel] = useState("");
   const [briefYearRange, setBriefYearRange] = useState("2023 - 2025");
-  const [briefMaxBudget, setBriefMaxBudget] = useState("350,000");
+  const [briefMaxBudget, setBriefMaxBudget] = useState("540,000,000");
   const [briefMarket, setBriefMarket] = useState("Germany (Stuttgart / Munich)");
   const [briefColors, setBriefColors] = useState("");
 
@@ -58,7 +58,7 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
       status: "In Progress",
       date: "Nov 04, 2026",
       market: "Germany (Stuttgart)",
-      budget: "$340,000",
+      budget: "₦527,000,000",
       broker: "Marcus V. (Antwerp Desk)",
     },
     {
@@ -69,7 +69,7 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
       status: "Action Required",
       date: "Nov 02, 2026",
       market: "Lagos Flagship",
-      budget: "$132,500 Balance",
+      budget: "₦205,375,000 Balance",
       broker: "Emeka O. (VIP Sales)",
     },
   ]);
@@ -137,7 +137,7 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
       amountUSD: 15000,
       amountNGN: 22500000,
       status: "Paid",
-      method: "USD Nostro Account",
+      method: "Corporate Treasury Account",
     },
     {
       id: "INV-2026-9720",
@@ -342,7 +342,7 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
                   status: "In Progress",
                   date: "Nov 08, 2026",
                   market: briefMarket,
-                  budget: `$${briefMaxBudget}`,
+                  budget: `₦${briefMaxBudget}`,
                   broker: "Marcus V. (Antwerp Desk)",
                 };
                 setActiveRequests([newReq, ...activeRequests]);
@@ -375,23 +375,19 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
               required
             />
             <Input
-              label="Maximum Budget ($ USD)"
-              placeholder="350,000"
+              label="Maximum Budget (₦ NGN)"
+              placeholder="540,000,000"
               value={briefMaxBudget}
               onChange={(e) => setBriefMaxBudget(e.target.value)}
               required
             />
           </div>
-          <Dropdown
+          <MasterDropdown
+            category="sourcing_markets"
             label="Preferred Sourcing Market"
             value={briefMarket}
-            options={[
-              { label: "Germany (Stuttgart / Munich)", value: "Germany (Stuttgart / Munich)" },
-              { label: "United States (California / Florida)", value: "United States (California / Florida)" },
-              { label: "United Arab Emirates (Dubai)", value: "United Arab Emirates (Dubai)" },
-              { label: "United Kingdom (London)", value: "United Kingdom (London)" },
-            ]}
             onChange={(val) => setBriefMarket(String(val))}
+            required
           />
           <Input
             label="Special Exterior / Interior Color Preferences"

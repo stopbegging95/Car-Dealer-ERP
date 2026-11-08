@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table } from "@/components/ui";
 
 export interface FinanceDealItem {
   app: string;
@@ -20,10 +20,10 @@ export interface FinancingUnderwritingPageProps {
 
 export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps> = ({ showToast }) => {
   const [deals, setDeals] = useState<FinanceDealItem[]>([
-    { app: "FIN-2026-441", client: "Dr. K. Somoye", car: "2024 Porsche 911 Turbo S", bank: "Zenith Bank Asset Finance", loan: "$135,000", tenor: "36 Mo @ 12.5%", status: "Pre-Approved" },
-    { app: "FIN-2026-440", client: "Chief Vance", car: "2024 Mercedes-Maybach S580", bank: "Stanbic IBTC Private Banking", loan: "$100,000", tenor: "24 Mo @ 11.8%", status: "Documentation Review" },
-    { app: "FIN-2026-438", client: "Apex Dynamics Ltd", car: "2024 Mercedes-AMG G63", bank: "First Bank of Nigeria", loan: "$160,000", tenor: "48 Mo @ 13.0%", status: "Approved & Funded" },
-    { app: "INS-2026-102", client: "Senator Godswill O.", car: "2023 Range Rover Autobiography", bank: "Leadway Comprehensive Luxury", loan: "$195,000 Value", tenor: "Annual 2.8% Premium", status: "Cover Note Issued" },
+    { app: "FIN-2026-441", client: "Dr. K. Somoye", car: "2024 Porsche 911 Turbo S", bank: "Zenith Bank Asset Finance", loan: "₦209,250,000", tenor: "36 Mo @ 12.5%", status: "Pre-Approved" },
+    { app: "FIN-2026-440", client: "Chief Vance", car: "2024 Mercedes-Maybach S580", bank: "Stanbic IBTC Private Banking", loan: "₦155,000,000", tenor: "24 Mo @ 11.8%", status: "Documentation Review" },
+    { app: "FIN-2026-438", client: "Apex Dynamics Ltd", car: "2024 Mercedes-AMG G63", bank: "First Bank of Nigeria", loan: "₦248,000,000", tenor: "48 Mo @ 13.0%", status: "Approved & Funded" },
+    { app: "INS-2026-102", client: "Senator Godswill O.", car: "2023 Range Rover Autobiography", bank: "Leadway Comprehensive Luxury", loan: "₦302,250,000 Value", tenor: "Annual 2.8% Premium", status: "Cover Note Issued" },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,7 +42,7 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
       client,
       car,
       bank,
-      loan: `$${Number(loanAmount.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      loan: `₦${Number(loanAmount.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
       tenor: `${tenorMonths} Mo @ ${apr}%`,
       status: "Pre-Approval Issued",
     };
@@ -91,7 +91,7 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
         <div className="p-2.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] space-y-1">
           <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#2563EB]">
             <span>Extended Warranty</span>
-            <span>+$4,500</span>
+            <span>+₦6,975,000</span>
           </div>
           <div className="text-xs font-bold text-[#0F172A]">2-Year Factory Bumper-to-Bumper</div>
           <div className="text-[10px] text-[#64748B]">Zero deductible drivetrain coverage</div>
@@ -99,7 +99,7 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
         <div className="p-2.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] space-y-1">
           <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#2563EB]">
             <span>Paint Protection (PPF)</span>
-            <span>+$2,800</span>
+            <span>+₦4,340,000</span>
           </div>
           <div className="text-xs font-bold text-[#0F172A]">Self-Healing Ceramic Armor</div>
           <div className="text-[10px] text-[#64748B]">Full frontal bumper & hood PPF</div>
@@ -115,7 +115,7 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
         <div className="p-2.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] space-y-1">
           <div className="flex items-center justify-between text-[10px] font-mono font-bold text-[#2563EB]">
             <span>Telematics & GPS</span>
-            <span>+$1,200</span>
+            <span>+₦1,860,000</span>
           </div>
           <div className="text-xs font-bold text-[#0F172A]">Real-Time Satellite Recovery</div>
           <div className="text-[10px] text-[#64748B]">Remote engine immobilizer active</div>
@@ -147,23 +147,19 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
               value={car}
               onChange={(val) => setCar(String(val))}
             />
-            <Dropdown
+            <MasterDropdown
+              category="banks"
               label="Lending Banking Partner"
-              options={[
-                { label: "Zenith Bank Asset Finance", value: "Zenith Bank Asset Finance" },
-                { label: "Stanbic IBTC Private Banking", value: "Stanbic IBTC Private Banking" },
-                { label: "First Bank of Nigeria Facility", value: "First Bank of Nigeria" },
-                { label: "Access Bank Commercial Loans", value: "Access Bank Commercial" },
-              ]}
               value={bank}
               onChange={(val) => setBank(String(val))}
+              required
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
-              label="Financed Principal ($)"
+              label="Financed Principal (₦ NGN)"
               type="text"
-              placeholder="e.g. 120,000"
+              placeholder="e.g. 185,000,000"
               value={loanAmount}
               onChange={(e) => setLoanAmount(e.target.value)}
               required

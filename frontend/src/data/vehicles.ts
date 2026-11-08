@@ -50,7 +50,7 @@ export interface Vehicle {
   priceUSD: number;
   priceNGN: number;
   status: VehicleStatus;
-  location: "Lagos Showroom" | "Abuja Showroom" | "Port Transit" | "Central Warehouse";
+  location: "Lagos Showroom" | "Abuja Showroom" | "Port Transit" | "Central Warehouse" | (string & {});
   image: string;
   gallery: string[];
   features: string[];

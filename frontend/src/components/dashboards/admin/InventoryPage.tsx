@@ -5,6 +5,7 @@ import Image from "next/image";
 import {
   FiPlus,
   FiEye,
+  FiFileText,
   FiDownload,
   FiDollarSign,
   FiTrendingUp,
@@ -129,9 +130,9 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
 
   // Financial aggregates
   const valuationMetrics = useMemo(() => {
-    const totalAcq = filteredVehicles.reduce((acc, v) => acc + (v.purchaseCost || 0), 0);
-    const totalLanded = filteredVehicles.reduce((acc, v) => acc + (v.landedCost || 0), 0);
-    const totalValue = filteredVehicles.reduce((acc, v) => acc + (v.priceUSD || 0), 0);
+    const totalAcq = filteredVehicles.reduce((acc, v) => acc + Math.round((v.priceNGN || 0) * 0.78), 0);
+    const totalLanded = filteredVehicles.reduce((acc, v) => acc + Math.round((v.priceNGN || 0) * 0.88), 0);
+    const totalValue = filteredVehicles.reduce((acc, v) => acc + (v.priceNGN || 0), 0);
     const totalMargin = totalValue - totalLanded;
     const marginPct = totalValue > 0 ? ((totalMargin / totalValue) * 100).toFixed(1) : "0.0";
 
@@ -150,18 +151,20 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
       "Category",
       "Status",
       "Days in Stock",
-      "Purchase Cost ($)",
-      "Landed Cost ($)",
-      "Selling Price ($)",
-      "Margin ($)",
+      "Purchase Cost (₦ NGN)",
+      "Landed Cost (₦ NGN)",
+      "Selling Price (₦ NGN)",
+      "Margin (₦ NGN)",
       "Margin (%)",
       "Location",
       "QA Certified",
     ];
 
     const rows = filteredVehicles.map((v) => {
-      const margin = (v.priceUSD || 0) - (v.landedCost || 0);
-      const marginPct = v.priceUSD > 0 ? ((margin / v.priceUSD) * 100).toFixed(1) : "0.0";
+      const landed = Math.round((v.priceNGN || 0) * 0.88);
+      const acq = Math.round((v.priceNGN || 0) * 0.78);
+      const margin = (v.priceNGN || 0) - landed;
+      const marginPct = v.priceNGN > 0 ? ((margin / v.priceNGN) * 100).toFixed(1) : "0.0";
       return [
         `"${v.stockId}"`,
         `"${v.vin}"`,
@@ -172,9 +175,9 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
         `"${v.category}"`,
         `"${v.status}"`,
         v.daysInStock ?? 0,
-        v.purchaseCost,
-        v.landedCost,
-        v.priceUSD,
+        acq,
+        landed,
+        v.priceNGN,
         margin,
         `${marginPct}%`,
         `"${v.location}"`,
@@ -257,9 +260,9 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
 
   const handleApplyAiPrice = (stockId: string, newPrice: number) => {
     setVehicleList((prev) =>
-      prev.map((v) => (v.stockId === stockId ? { ...v, priceUSD: newPrice } : v))
+      prev.map((v) => (v.stockId === stockId ? { ...v, priceNGN: newPrice } : v))
     );
-    showToast(`AI Machine Learning Pricing Applied: ${stockId} updated to $${newPrice.toLocaleString()}.`);
+    showToast(`AI Machine Learning Pricing Applied: ${stockId} updated to ₦${newPrice.toLocaleString()}.`);
     setAiValuationVehicle(null);
   };
 
@@ -276,25 +279,25 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
       <div className="gap-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Fleet Acquisition Cost"
-          value={`$${(valuationMetrics.totalAcq / 1000).toFixed(0)}k`}
+          value={`₦${(valuationMetrics.totalAcq / 1_000_000_000).toFixed(2)}B`}
           change="FOB Base Cost"
           icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Total Landed Investment"
-          value={`$${(valuationMetrics.totalLanded / 1000).toFixed(0)}k`}
+          value={`₦${(valuationMetrics.totalLanded / 1_000_000_000).toFixed(2)}B`}
           change="Duty + Freight + Recon"
           icon={<FiClock className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Showroom Valuation"
-          value={`$${(valuationMetrics.totalValue / 1000).toFixed(0)}k`}
+          value={`₦${(valuationMetrics.totalValue / 1_000_000_000).toFixed(2)}B`}
           change={`${filteredVehicles.length} Units Counted`}
           icon={<FiTrendingUp className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Projected Fleet Margin"
-          value={`$${(valuationMetrics.totalMargin / 1000).toFixed(0)}k`}
+          value={`₦${(valuationMetrics.totalMargin / 1_000_000_000).toFixed(2)}B`}
           change={`${valuationMetrics.marginPct}% Gross Return`}
           icon={<FiCheckCircle className="w-5 h-5 text-[#2563EB]" />}
         />
@@ -403,20 +406,20 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
             ),
           },
           {
-            key: "priceUSD",
-            header: "Pricing & Margin",
+            key: "priceNGN",
+            header: "Pricing & Margin (₦)",
             sortable: true,
             render: (v) => {
-              const landed = v.landedCost || v.purchaseCost || 0;
-              const margin = (v.priceUSD || 0) - landed;
-              const marginPct = v.priceUSD > 0 ? (margin / v.priceUSD) * 100 : 0;
+              const landed = Math.round((v.priceNGN || 0) * 0.88);
+              const margin = (v.priceNGN || 0) - landed;
+              const marginPct = v.priceNGN > 0 ? (margin / v.priceNGN) * 100 : 0;
               const isLowMargin = marginPct < 10;
 
               return (
                 <div>
-                  <span className="font-mono font-bold text-[#0F172A] text-xs">${v.priceUSD.toLocaleString()}</span>
+                  <span className="font-mono font-bold text-[#0F172A] text-xs">₦{v.priceNGN.toLocaleString()}</span>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="font-mono text-[#64748B] text-[10px]">Landed: ${landed.toLocaleString()}</span>
+                    <span className="font-mono text-[#64748B] text-[10px]">Landed: ₦{landed.toLocaleString()}</span>
                     {isLowMargin ? (
                       <span className="flex items-center gap-0.5 text-[9px] font-bold text-amber-700 bg-amber-50 px-1 rounded border border-amber-200">
                         <FiAlertTriangle className="w-2.5 h-2.5" />
@@ -496,13 +499,23 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
                   onClick={() => {
                     setSelectedVehicle(v);
                     setNewStatus(v.status);
-                    if (onPreviewVehicle) onPreviewVehicle(v);
                   }}
-                  leftIcon={<FiEye className="w-3.5 h-3.5 text-[#2563EB]" />}
-                  title="Inspect Specifications & Lifecycle Status"
+                  leftIcon={<FiCheckCircle className="w-3.5 h-3.5 text-emerald-600" />}
+                  title="Inspect QA Diagnostic Checklist & Update Lifecycle Status"
                 >
                   Inspect
                 </Button>
+                {onPreviewVehicle && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onPreviewVehicle(v)}
+                    leftIcon={<FiFileText className="w-3.5 h-3.5 text-[#2563EB]" />}
+                    title="View Vehicle Specification Dossier & Factory Features"
+                  >
+                    Dossier
+                  </Button>
+                )}
                 <Button
                   variant="secondary"
                   size="sm"
@@ -546,8 +559,8 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
           isOpen={!!selectedVehicle}
           onClose={() => setSelectedVehicle(null)}
           size="lg"
-          title={`${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`}
-          description={`Stock ID: ${selectedVehicle.stockId} • VIN: ${selectedVehicle.vin}`}
+          title={`Vehicle Inspection & Lifecycle Status: ${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`}
+          description={`Stock ID: ${selectedVehicle.stockId} • VIN: ${selectedVehicle.vin} • 150-Point QA Diagnostic & Lifecycle State Machine`}
         >
           <div className="space-y-4">
             <div className="relative w-full h-52 rounded-xl overflow-hidden bg-[#0F172A] border border-[#CBD5E1]">
@@ -560,11 +573,11 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
             <div className="gap-3 grid grid-cols-2 sm:grid-cols-4 text-xs">
               <div className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl">
                 <span className="block text-[10px] text-[#64748B] uppercase">Selling Price</span>
-                <span className="font-mono font-bold text-[#0F172A] text-sm">${selectedVehicle.priceUSD.toLocaleString()}</span>
+                <span className="font-mono font-bold text-[#0F172A] text-sm">₦{selectedVehicle.priceNGN.toLocaleString()}</span>
               </div>
               <div className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl">
                 <span className="block text-[10px] text-[#64748B] uppercase">Landed Cost</span>
-                <span className="font-mono font-bold text-[#1D4ED8] text-sm">${(selectedVehicle.landedCost || 0).toLocaleString()}</span>
+                <span className="font-mono font-bold text-[#1D4ED8] text-sm">₦{Math.round(selectedVehicle.priceNGN * 0.88).toLocaleString()}</span>
               </div>
               <div className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl">
                 <span className="block text-[10px] text-[#64748B] uppercase">Days in Stock</span>
@@ -696,7 +709,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
                   stage: "1. International Acquisition & PO",
                   date: "2026-08-14",
                   dept: "Procurement & Sourcing",
-                  details: `Acquired from Manheim Luxury Exchange USA for $${(provenanceVehicle.purchaseCost || 110000).toLocaleString()}. PO Ref: PO-2026-0819. Clean CarFax certified.`,
+                  details: `Acquired for ₦${Math.round((provenanceVehicle.priceNGN || 245000000) * 0.78).toLocaleString()}. PO Ref: PO-2026-0819. Clean CarFax certified.`,
                   badge: "Completed",
                   badgeVariant: "gold" as const,
                 },
@@ -728,7 +741,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
                   stage: "5. Workshop & Detailing Recon",
                   date: "2026-10-04",
                   dept: "Detailing & Recon",
-                  details: "Work Order #RC-8812. 9H Ceramic Pro nano-coating applied, full leather conditioning, and wheel alignment completed. Total recon: $1,450.",
+                  details: "Work Order #RC-8812. 9H Ceramic Pro nano-coating applied, full leather conditioning, and wheel alignment completed. Total recon: ₦2,247,500.",
                   badge: "Pristine",
                   badgeVariant: "gold" as const,
                 },
@@ -736,7 +749,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
                   stage: "6. Showroom Floor Listing",
                   date: "2026-10-10",
                   dept: "Inventory Management",
-                  details: `Landed cost rolled up to $${(provenanceVehicle.landedCost || 128000).toLocaleString()}. Showroom floor price placed at $${provenanceVehicle.priceUSD.toLocaleString()} with target margin 18.2%. Location: ${provenanceVehicle.location}.`,
+                  details: `Landed cost rolled up to ₦${Math.round((provenanceVehicle.priceNGN || 245000000) * 0.88).toLocaleString()}. Showroom floor price placed at ₦${(provenanceVehicle.priceNGN || 245000000).toLocaleString()} with target margin 18.2%. Location: ${provenanceVehicle.location}.`,
                   badge: "Active Listing",
                   badgeVariant: "outline" as const,
                 },
@@ -804,12 +817,12 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
                   onClick={() =>
                     handleApplyAiPrice(
                       aiValuationVehicle.stockId,
-                      Math.round(aiValuationVehicle.priceUSD * 0.96)
+                      Math.round(aiValuationVehicle.priceNGN * 0.96)
                     )
                   }
                   leftIcon={<FiCpu className="w-3.5 h-3.5" />}
                 >
-                  Apply AI Optimal Price (${Math.round(aiValuationVehicle.priceUSD * 0.96).toLocaleString()})
+                  Apply AI Optimal Price (₦{Math.round(aiValuationVehicle.priceNGN * 0.96).toLocaleString()})
                 </Button>
               </div>
             </div>
@@ -831,11 +844,11 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md">
                 <span className="text-[#64748B] block text-[10px] uppercase font-bold">Current Listing</span>
-                <span className="font-mono font-bold text-[#0F172A] text-sm">${aiValuationVehicle.priceUSD.toLocaleString()}</span>
+                <span className="font-mono font-bold text-[#0F172A] text-sm">₦{aiValuationVehicle.priceNGN.toLocaleString()}</span>
               </div>
               <div className="p-2.5 bg-[#F8FAFC] border border-purple-200 bg-purple-50/50 rounded-md">
                 <span className="text-purple-700 block text-[10px] uppercase font-bold">AI Recommended Price</span>
-                <span className="font-mono font-bold text-purple-700 text-sm">${Math.round(aiValuationVehicle.priceUSD * 0.96).toLocaleString()}</span>
+                <span className="font-mono font-bold text-purple-700 text-sm">₦{Math.round(aiValuationVehicle.priceNGN * 0.96).toLocaleString()}</span>
               </div>
               <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md">
                 <span className="text-[#64748B] block text-[10px] uppercase font-bold">Confidence Score</span>
@@ -853,9 +866,9 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
               </span>
               <div className="space-y-1.5">
                 {[
-                  { source: "US Manheim Luxury Auction Comps", avgPrice: `$${Math.round(aiValuationVehicle.priceUSD * 0.76).toLocaleString()}`, delta: "-24% (FOB Basis)" },
-                  { source: "Dubai Auto Zone Export Average", avgPrice: `$${Math.round(aiValuationVehicle.priceUSD * 0.81).toLocaleString()}`, delta: "-19% (FOB DXB)" },
-                  { source: "Lagos Premium Showroom Market Scraper", avgPrice: `$${Math.round(aiValuationVehicle.priceUSD * 0.97).toLocaleString()}`, delta: "-3% (Local Retail)" },
+                  { source: "US Manheim Luxury Auction Comps", avgPrice: `₦${Math.round(aiValuationVehicle.priceNGN * 0.76).toLocaleString()}`, delta: "-24% (FOB Basis)" },
+                  { source: "Dubai Auto Zone Export Average", avgPrice: `₦${Math.round(aiValuationVehicle.priceNGN * 0.81).toLocaleString()}`, delta: "-19% (FOB DXB)" },
+                  { source: "Lagos Premium Showroom Market Scraper", avgPrice: `₦${Math.round(aiValuationVehicle.priceNGN * 0.97).toLocaleString()}`, delta: "-3% (Local Retail)" },
                 ].map((comp, i) => (
                   <div key={i} className="flex items-center justify-between p-2 rounded bg-[#F8FAFC] border border-[#E2E8F0]">
                     <span className="font-medium text-[#0F172A]">{comp.source}</span>

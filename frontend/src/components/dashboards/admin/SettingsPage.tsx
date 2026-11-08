@@ -14,6 +14,7 @@ import {
   FiRefreshCw,
 } from "react-icons/fi";
 import { Button, Badge, Input, Card, KPICard, Table } from "@/components/ui";
+import { MasterDataPage } from "./MasterDataPage";
 
 export interface SettingsPageProps {
   showToast: (msg: string) => void;
@@ -38,14 +39,14 @@ interface SecurityThreatAlert {
 }
 
 export const SettingsPage: React.FC<SettingsPageProps> = ({ showToast }) => {
-  const [activeTab, setActiveTab] = useState<"parameters" | "telemetry" | "security" | "backups">("parameters");
+  const [activeTab, setActiveTab] = useState<"parameters" | "master-data" | "telemetry" | "security" | "backups">("parameters");
 
   // Global Financial & Authorization Ceilings (Section 17 & 23)
   const [discountCeiling, setDiscountCeiling] = useState("3.0");
-  const [purchaseCeiling, setPurchaseCeiling] = useState("100,000");
-  const [wireCeiling, setWireCeiling] = useState("50,000");
+  const [purchaseCeiling, setPurchaseCeiling] = useState("155,000,000");
+  const [wireCeiling, setWireCeiling] = useState("75,000,000");
   const [reservationLockHours, setReservationLockHours] = useState("48");
-  const [exchangeRate, setExchangeRate] = useState("1500");
+  const [dealershipCurrency, setDealershipCurrency] = useState("NGN (Nigerian Naira)");
   const [vatRate, setVatRate] = useState("7.5");
 
   const backups: BackupSnapshot[] = [
@@ -112,6 +113,14 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ showToast }) => {
               Approval Limits & Governance
             </Button>
             <Button
+              variant={activeTab === "master-data" ? "primary" : "ghost"}
+              size="sm"
+              onClick={() => setActiveTab("master-data")}
+              className="text-xs font-bold"
+            >
+              Master Data & Dropdown Registry
+            </Button>
+            <Button
               variant={activeTab === "telemetry" ? "primary" : "ghost"}
               size="sm"
               onClick={() => setActiveTab("telemetry")}
@@ -175,13 +184,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ showToast }) => {
                   helperText="Discounts exceeding this limit automatically route to Executive Approvals."
                 />
                 <Input
-                  label="Vehicle PO Executive Authorization Limit ($ USD) - Rule 5"
+                  label="Vehicle PO Executive Authorization Limit (₦ NGN) - Rule 5"
                   value={purchaseCeiling}
                   onChange={(e) => setPurchaseCeiling(e.target.value)}
-                  helperText="Procurement orders at or above $100k require formal executive sign-off."
+                  helperText="Procurement orders at or above ₦150,000,000 require formal executive sign-off."
                 />
                 <Input
-                  label="Chief Accountant Wire Disbursement Ceiling ($ USD)"
+                  label="Chief Accountant Wire Disbursement Ceiling (₦ NGN)"
                   value={wireCeiling}
                   onChange={(e) => setWireCeiling(e.target.value)}
                 />
@@ -198,9 +207,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ showToast }) => {
                   helperText="Unconfirmed reservations are automatically released back to 'Available'."
                 />
                 <Input
-                  label="USD to NGN Base Operational Exchange Rate"
-                  value={exchangeRate}
-                  onChange={(e) => setExchangeRate(e.target.value)}
+                  label="Dealership Standard Operating Currency"
+                  value={dealershipCurrency}
+                  onChange={(e) => setDealershipCurrency(e.target.value)}
                 />
                 <Input
                   label="Federal Inland Revenue Service (FIRS) Output VAT (%)"
@@ -217,6 +226,11 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ showToast }) => {
             </div>
           </form>
         </Card>
+      )}
+
+      {/* VIEW: Master Data & Dropdown Registry */}
+      {activeTab === "master-data" && (
+        <MasterDataPage showToast={showToast} />
       )}
 
       {/* VIEW 2: System Health & Telemetry */}

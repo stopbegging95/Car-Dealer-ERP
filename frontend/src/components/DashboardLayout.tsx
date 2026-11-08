@@ -66,7 +66,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [activeCurrency, setActiveCurrency] = useState<"USD" | "NGN">("USD");
+  const [activeCurrency] = useState<"NGN">("NGN");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([
     {
@@ -82,7 +82,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       id: "NOTIF-02",
       title: "High-Value Acquisition Gate",
       type: "Rule 5 PO Sign-off",
-      detail: "PO-2026-092 for 2x Range Rover SV ($240,000 / ₦372,000,000) requires Executive Management clearance.",
+      detail: "PO-2026-092 for 2x Range Rover SV (₦372,000,000) requires Executive Management clearance.",
       priority: "Critical",
       time: "24 mins ago",
       read: false,
@@ -109,7 +109,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       id: "NOTIF-05",
       title: "Stock Aging Warning (90+ Days)",
       type: "Inventory Alert",
-      detail: "Stock LX-2023-089 (2023 Bentley Flying Spur) in stock for 92 days. Holding cost: $4,600.",
+      detail: "Stock LX-2023-089 (2023 Bentley Flying Spur) in stock for 92 days. Holding cost: ₦7,130,000.",
       priority: "Medium",
       time: "Yesterday",
       read: true,
@@ -354,34 +354,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </Button>
             </div>
 
-            {/* Multi-Currency Header Switcher (USD / NGN) */}
-            <div className="flex items-center bg-[#F8FAFC] border border-[#CBD5E1] rounded-md p-0.5 text-xs">
-              <button
-                type="button"
-                onClick={() => setActiveCurrency("USD")}
-                className={`px-2 py-0.5 sm:py-1 rounded font-bold text-[11px] transition-colors cursor-pointer ${
-                  activeCurrency === "USD"
-                    ? "bg-[#2563EB] text-white shadow-xs"
-                    : "text-[#64748B] hover:text-[#0F172A]"
-                }`}
-                title="Switch active currency to US Dollars ($)"
-              >
-                USD ($)
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveCurrency("NGN")}
-                className={`px-2 py-0.5 sm:py-1 rounded font-bold text-[11px] transition-colors cursor-pointer ${
-                  activeCurrency === "NGN"
-                    ? "bg-[#2563EB] text-white shadow-xs"
-                    : "text-[#64748B] hover:text-[#0F172A]"
-                }`}
-                title="Switch active currency to Nigerian Naira (₦)"
-              >
-                NGN (₦)
-              </button>
-              <span className="hidden lg:inline px-1.5 py-0.5 text-[9px] font-mono text-[#2563EB] font-bold border-l border-[#CBD5E1] ml-0.5">
-                ₦1,550/$
+            {/* Platform Currency: Nigerian Naira (₦ NGN) */}
+            <div className="flex items-center gap-1.5 bg-[#EFF6FF] border border-[#BFDBFE] rounded-md px-2.5 py-1 text-xs">
+              <span className="font-bold text-[11px] text-[#2563EB] font-mono">
+                ₦ NGN
+              </span>
+              <span className="hidden sm:inline text-[10px] text-[#64748B] font-medium">
+                (Nigerian Naira)
               </span>
             </div>
 

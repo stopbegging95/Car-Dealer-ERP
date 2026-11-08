@@ -75,7 +75,7 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [newClient, setNewClient] = useState("");
   const [newVehicle, setNewVehicle] = useState("");
-  const [newAmountUSD, setNewAmountUSD] = useState("165,000");
+  const [newAmountNGN, setNewAmountNGN] = useState("255,750,000");
   const [newType, setNewType] = useState<"Commercial Sales Invoice" | "Proforma Quotation" | "Duty Receipt" | "Workshop Service Invoice">("Commercial Sales Invoice");
   const [newDueDate, setNewDueDate] = useState("2026-11-30");
 
@@ -83,7 +83,7 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
     e.preventDefault();
     if (!newClient || !newVehicle) return;
 
-    const priceNum = Number(newAmountUSD.replace(/[^0-9]/g, "") || 165000);
+    const priceNum = Number(newAmountNGN.replace(/[^0-9]/g, "") || 255750000);
     const newId = `INV-2026-${String(invoices.length + 8805).padStart(4, "0")}`;
 
     const newInv: InvoiceRecord = {
@@ -91,8 +91,8 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
       client: newClient,
       vehicle: newVehicle,
       invoiceType: newType,
-      amountUSD: priceNum,
-      amountNGN: priceNum * 1500,
+      amountUSD: Math.round(priceNum / 1550),
+      amountNGN: priceNum,
       status: "Awaiting Bank Wire",
       dueDate: newDueDate,
       wireReference: `PENDING-${Date.now().toString().slice(-4)}`,
@@ -100,7 +100,7 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
 
     setInvoices([newInv, ...invoices]);
     setIsIssueModalOpen(false);
-    showToast?.(`Commercial invoice ${newId} issued for ${newClient} ($${priceNum.toLocaleString()})!`);
+    showToast?.(`Commercial invoice ${newId} issued for ${newClient} (₦${priceNum.toLocaleString()})!`);
     setNewClient("");
     setNewVehicle("");
   };
@@ -135,19 +135,19 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
       <div className="gap-3 grid grid-cols-2 sm:grid-cols-4">
         <KPICard
           title="Total Invoiced YTD"
-          value="$48.2M"
-          change="₦72.3 Billion NGN"
+          value="₦74.7B"
+          change="148 Invoices Issued"
           icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Settled Wires in Escrow"
-          value="$45.8M"
+          value="₦71.0B"
           change="Verified to General Ledger"
           icon={<FiCheckCircle className="w-5 h-5 text-emerald-600" />}
         />
         <KPICard
           title="Pending Customer Balances"
-          value="$2.4M"
+          value="₦3.72B"
           change="18 Customer Accounts"
           icon={<FiClock className="w-5 h-5 text-[#D97706]" />}
         />
@@ -193,14 +193,11 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
               render: (inv) => <span className="text-[#475569]">{inv.invoiceType}</span>,
             },
             {
-              key: "amountUSD",
-              header: "Amount ($ USD)",
+              key: "amountNGN",
+              header: "Amount (₦ NGN)",
               sortable: true,
               render: (inv) => (
-                <div>
-                  <div className="font-mono font-bold text-[#0F172A]">${inv.amountUSD.toLocaleString()}</div>
-                  <div className="font-mono text-[10px] text-[#64748B]">₦{inv.amountNGN.toLocaleString()}</div>
-                </div>
+                <div className="font-mono font-bold text-[#0F172A]">₦{inv.amountNGN.toLocaleString()}</div>
               ),
             },
             {
@@ -265,10 +262,10 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
               required
             />
             <Input
-              label="Invoice Total Amount ($ USD)"
-              placeholder="165,000"
-              value={newAmountUSD}
-              onChange={(e) => setNewAmountUSD(e.target.value)}
+              label="Invoice Total Amount (₦ NGN)"
+              placeholder="255,750,000"
+              value={newAmountNGN}
+              onChange={(e) => setNewAmountNGN(e.target.value)}
               required
             />
           </div>

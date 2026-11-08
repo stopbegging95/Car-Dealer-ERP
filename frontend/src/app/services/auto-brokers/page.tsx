@@ -17,7 +17,7 @@ export default function AutoBrokersPage() {
   const [targetMake, setTargetMake] = useState("");
   const [targetModel, setTargetModel] = useState("");
   const [minYear, setMinYear] = useState("2023");
-  const [budgetUSD, setBudgetUSD] = useState("180000");
+  const [budgetNGN, setBudgetNGN] = useState("280000000");
   const [sourcingMarket, setSourcingMarket] = useState("USA");
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
@@ -117,11 +117,11 @@ export default function AutoBrokersPage() {
                 />
 
                 <Input
-                  label="Budget Ceiling ($ USD)"
+                  label="Budget Ceiling (₦ NGN)"
                   type="number"
-                  placeholder="180,000"
-                  value={budgetUSD}
-                  onChange={(e) => setBudgetUSD(e.target.value)}
+                  placeholder="280,000,000"
+                  value={budgetNGN}
+                  onChange={(e) => setBudgetNGN(e.target.value)}
                   required
                 />
 

@@ -50,7 +50,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         />
         <KPICard
           title="Trade-In Equity Approved"
-          value="$45,000"
+          value="₦69,750,000"
           change="Locked for 14 Days"
           icon={<FiRepeat className="w-4 h-4" />}
         />

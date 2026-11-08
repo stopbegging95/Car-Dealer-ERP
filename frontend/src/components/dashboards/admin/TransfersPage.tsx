@@ -60,7 +60,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ onOpenTransferModa
       capacity: 25,
       throughput: "24 Cars/Mo",
       utilization: "72%",
-      opex: "$42,000/Mo",
+      opex: "₦65,100,000/Mo",
       manager: "Emeka O.",
     },
     {
@@ -72,7 +72,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ onOpenTransferModa
       capacity: 15,
       throughput: "14 Cars/Mo",
       utilization: "80%",
-      opex: "$36,000/Mo",
+      opex: "₦55,800,000/Mo",
       manager: "Aisha M.",
     },
     {
@@ -84,7 +84,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ onOpenTransferModa
       capacity: 12,
       throughput: "18 Cars/Mo",
       utilization: "67%",
-      opex: "$24,000/Mo",
+      opex: "₦37,200,000/Mo",
       manager: "Engr. Tunde B.",
     },
     {
@@ -96,7 +96,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ onOpenTransferModa
       capacity: 20,
       throughput: "30 Inbound/Mo",
       utilization: "30%",
-      opex: "$18,000/Mo",
+      opex: "₦27,900,000/Mo",
       manager: "Chibuike A.",
     },
   ];

@@ -21,6 +21,7 @@ export default function CompareCarsPage() {
     "STK-2026-003",
   ]);
   const [highlightDifferences, setHighlightDifferences] = useState<boolean>(true);
+  const [isTableOpen, setIsTableOpen] = useState<boolean>(true);
 
   const selectedVehicles: Vehicle[] = selectedStockIds
     .map((id) => VEHICLES.find((v) => v.stockId === id))
@@ -41,7 +42,7 @@ export default function CompareCarsPage() {
   };
 
   const specRows = [
-    { label: "Price (USD)", key: "priceUSD", format: (v: Vehicle) => `$${v.priceUSD.toLocaleString()}` },
+    { label: "Price (Naira)", key: "priceNGN", format: (v: Vehicle) => `₦${v.priceNGN.toLocaleString()}` },
     { label: "Year & Model", key: "year", format: (v: Vehicle) => `${v.year} ${v.model}` },
     { label: "Category", key: "category", format: (v: Vehicle) => v.category },
     { label: "Engine / Powertrain", key: "engine", format: (v: Vehicle) => v.engine },
@@ -104,13 +105,44 @@ export default function CompareCarsPage() {
                 />
               </div>
             )}
+            <button
+              type="button"
+              onClick={() => setIsTableOpen((prev) => !prev)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#CBD5E1] bg-[#FFFFFF] text-xs font-semibold text-[#0F172A] hover:border-[#2563EB] hover:text-[#2563EB] transition-all shadow-xs cursor-pointer"
+            >
+              <svg
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isTableOpen ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+              <span>{isTableOpen ? "Collapse Matrix" : "Expand Matrix"}</span>
+            </button>
           </div>
         </div>
 
         {/* Comparison Matrix Table Card */}
         <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[700px]">
+          {!isTableOpen ? (
+            <div className="p-4 bg-[#F8FAFC] flex items-center justify-between text-xs text-[#64748B]">
+              <span className="italic">
+                Comparison matrix table is collapsed. Click &ldquo;Expand Matrix&rdquo; to view full vehicle comparison.
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsTableOpen(true)}
+                className="text-[#2563EB] font-bold hover:underline cursor-pointer"
+              >
+                Expand Matrix &rarr;
+              </button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[700px]">
               {/* Header Row: Vehicle Cards with Image & Quick Actions */}
               <thead>
                 <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
@@ -143,7 +175,7 @@ export default function CompareCarsPage() {
                             {car.make} {car.model}
                           </h4>
                           <div className="text-base font-extrabold font-mono text-[#1D4ED8]">
-                            ${car.priceUSD.toLocaleString()}
+                            ₦{car.priceNGN.toLocaleString()}
                           </div>
                         </div>
 
@@ -210,7 +242,8 @@ export default function CompareCarsPage() {
                 </tr>
               </tbody>
             </table>
-          </div>
+            </div>
+          )}
         </div>
       </main>
 

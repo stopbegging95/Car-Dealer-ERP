@@ -43,7 +43,7 @@ export default function CareersPage() {
       description: "Manage relationships with high-net-worth clients, corporate buyers, and VIP trade-in customers.",
       responsibilities: [
         "Conduct confidential private viewings and high-speed test drive experiences",
-        "Negotiate and structure multi-million Naira and USD vehicle purchase agreements",
+        "Negotiate and structure multi-million Naira vehicle purchase agreements",
         "Collaborate with auto brokers to fulfill bespoke vehicle sourcing briefs",
       ],
     },

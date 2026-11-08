@@ -17,7 +17,7 @@ import {
   FiNavigation,
   FiActivity,
 } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown, Table, KPICard } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
 
 export interface LandedCostBreakdown {
   fobUSD: number;
@@ -150,7 +150,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
       confidence: "96.4%",
       congestionQueue: "1.8 Days Queue (Low)",
       demurrageRisk: "Minimal (Free-Time Safe)",
-      hedgingAdvisory: "Euro forward contract locked at 1 EUR = 1.08 USD",
+      hedgingAdvisory: "Euro forward contract locked at official trade rates",
       status: "Optimal Route",
     },
     {
@@ -170,7 +170,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
       confidence: "94.0%",
       congestionQueue: "1.1 Days Queue (Minimal)",
       demurrageRisk: "Zero Risk (Swift Berthing)",
-      hedgingAdvisory: "AED/USD pegged currency stability",
+      hedgingAdvisory: "AED liquidity stability and forward clearing",
       status: "Highly Recommended",
     },
     {
@@ -180,7 +180,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
       confidence: "84.2%",
       congestionQueue: "4.2 Days Queue (Elevated)",
       demurrageRisk: "Elevated (Winter Atlantic Storms)",
-      hedgingAdvisory: "USD direct wire; no conversion volatility",
+      hedgingAdvisory: "Naira nostro direct clearing; zero volatility",
       status: "Weather Caution",
     },
     {
@@ -190,7 +190,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
       confidence: "91.0%",
       congestionQueue: "2.4 Days Queue (Normal)",
       demurrageRisk: "Low (Extended 14-day Free-Time)",
-      hedgingAdvisory: "JPY favorable export arbitrage index",
+      hedgingAdvisory: "Direct Naira trade settlement index",
       status: "Cost-Effective",
     },
   ];
@@ -203,11 +203,12 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
   const [container, setContainer] = useState("");
   const [origin, setOrigin] = useState("Antwerp, Belgium");
   const [eta, setEta] = useState("In 10 Days");
-  const [fobPrice, setFobPrice] = useState("120,000");
+  const [fobPrice, setFobPrice] = useState("186,000,000");
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    const fobNum = Number(fobPrice.replace(/[^0-9]/g, "") || 120000);
+    const rawFob = Number(fobPrice.replace(/[^0-9]/g, "") || 186000000);
+    const fobNum = Math.round(rawFob / 1550);
     const freight = 4000;
     const insurance = 1200;
     const duty = Math.round(fobNum * 0.08); // 8% avg effective customs
@@ -245,7 +246,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
 
     setShipments([newEntry, ...shipments]);
     setIsModalOpen(false);
-    showToast(`Ocean consignment logged for ${vessel}. Landed cost calculated: $${total.toLocaleString()}.`);
+    showToast(`Ocean consignment logged for ${vessel}. Landed cost calculated: ₦${(total * 1550).toLocaleString()}.`);
     setRefCode("");
     setContainer("");
   };
@@ -254,7 +255,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
     setShipments((prev) =>
       prev.map((s) => (s.ref === item.ref ? { ...s, rolledUpToInventory: true } : s))
     );
-    showToast(`Landed cost ($${item.costBreakdown.totalLandedUSD.toLocaleString()}) rolled up directly to Master Inventory for ${item.car}.`);
+    showToast(`Landed cost (₦${(item.costBreakdown.totalLandedUSD * 1550).toLocaleString()}) rolled up directly to Master Inventory for ${item.car}.`);
     setSelectedCostShipment(null);
   };
 
@@ -403,7 +404,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
                     onClick={() => setSelectedCostShipment(item)}
                     leftIcon={<FiDollarSign className="w-3.5 h-3.5 text-[#2563EB]" />}
                   >
-                    Landed Cost (${item.costBreakdown.totalLandedUSD.toLocaleString()})
+                    Landed Cost (₦{(item.costBreakdown.totalLandedUSD * 1550).toLocaleString()})
                   </Button>
                 ),
               },
@@ -502,27 +503,22 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
               },
               {
                 key: "fobUSD",
-                header: "Base FOB",
-                render: (item) => <span className="font-mono text-xs">${item.costBreakdown.fobUSD.toLocaleString()}</span>,
+                header: "Base FOB (₦)",
+                render: (item) => <span className="font-mono text-xs">₦{(item.costBreakdown.fobUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "customsDutySGD_USD",
-                header: "NCS Duty",
-                render: (item) => <span className="font-mono text-xs text-[#1D4ED8]">${item.costBreakdown.customsDutySGD_USD.toLocaleString()}</span>,
+                header: "NCS Duty (₦)",
+                render: (item) => <span className="font-mono text-xs text-[#1D4ED8]">₦{(item.costBreakdown.customsDutySGD_USD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "totalLandedUSD",
-                header: "Total Landed Investment",
+                header: "Total Landed Investment (₦)",
                 sortable: true,
                 render: (item) => (
-                  <div>
-                    <span className="font-mono font-bold text-[#0F172A] text-xs">
-                      ${item.costBreakdown.totalLandedUSD.toLocaleString()}
-                    </span>
-                    <span className="block font-mono text-[10px] text-[#64748B]">
-                      ₦{(item.costBreakdown.totalLandedUSD * 1500).toLocaleString()}
-                    </span>
-                  </div>
+                  <span className="font-mono font-bold text-[#0F172A] text-xs">
+                    ₦{(item.costBreakdown.totalLandedUSD * 1550).toLocaleString()}
+                  </span>
                 ),
               },
               {
@@ -611,7 +607,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
                 Currency Hedging Index
               </span>
               <span className="font-mono font-bold text-2xl text-emerald-600 mt-1 block">
-                Stable (USD/EUR)
+                Stable (Trade Forward)
               </span>
               <span className="text-[10px] text-[#64748B] block mt-1">
                 Forward Cover Active for Q4 Consignments
@@ -714,36 +710,36 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
             <div className="p-3 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl space-y-2">
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">1. Base FOB Purchase Price:</span>
-                <span className="font-mono font-bold text-[#0F172A]">${selectedCostShipment.costBreakdown.fobUSD.toLocaleString()}</span>
+                <span className="font-mono font-bold text-[#0F172A]">₦{(selectedCostShipment.costBreakdown.fobUSD * 1550).toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">2. Ocean Freight Transit:</span>
-                <span className="font-mono text-[#0F172A]">${selectedCostShipment.costBreakdown.oceanFreightUSD.toLocaleString()}</span>
+                <span className="font-mono text-[#0F172A]">₦{(selectedCostShipment.costBreakdown.oceanFreightUSD * 1550).toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">3. Marine Cargo Insurance:</span>
-                <span className="font-mono text-[#0F172A]">${selectedCostShipment.costBreakdown.marineInsuranceUSD.toLocaleString()}</span>
+                <span className="font-mono text-[#0F172A]">₦{(selectedCostShipment.costBreakdown.marineInsuranceUSD * 1550).toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">4. Nigerian Customs Duty (SGD Assessment):</span>
-                <span className="font-mono font-bold text-[#1D4ED8]">${selectedCostShipment.costBreakdown.customsDutySGD_USD.toLocaleString()}</span>
+                <span className="font-mono font-bold text-[#1D4ED8]">₦{(selectedCostShipment.costBreakdown.customsDutySGD_USD * 1550).toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">5. Port Terminal Handling (TCIT):</span>
-                <span className="font-mono text-[#0F172A]">${selectedCostShipment.costBreakdown.portHandlingUSD.toLocaleString()}</span>
+                <span className="font-mono text-[#0F172A]">₦{(selectedCostShipment.costBreakdown.portHandlingUSD * 1550).toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">6. Port Demurrage Fines:</span>
-                <span className="font-mono text-emerald-700 font-bold">$0 (Zero Demurrage)</span>
+                <span className="font-mono text-emerald-700 font-bold">₦0 (Zero Demurrage)</span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E2E8F0]">
                 <span className="text-[#64748B]">7. Inland Bonded Haulage:</span>
-                <span className="font-mono text-[#0F172A]">${selectedCostShipment.costBreakdown.inlandHaulageUSD.toLocaleString()}</span>
+                <span className="font-mono text-[#0F172A]">₦{(selectedCostShipment.costBreakdown.inlandHaulageUSD * 1550).toLocaleString()}</span>
               </div>
               <div className="flex justify-between pt-2 text-sm font-bold">
                 <span className="text-[#2563EB]">Total Landed Investment:</span>
                 <span className="font-mono font-bold text-[#1D4ED8] text-base">
-                  ${selectedCostShipment.costBreakdown.totalLandedUSD.toLocaleString()}
+                  ₦{(selectedCostShipment.costBreakdown.totalLandedUSD * 1550).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -790,10 +786,11 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
             required
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Input
-              label="Ocean Carrier Vessel"
+            <MasterDropdown
+              category="carriers"
+              label="Ocean Carrier Vessel / Shipping Line"
               value={vessel}
-              onChange={(e) => setVessel(e.target.value)}
+              onChange={(val) => setVessel(String(val))}
               required
             />
             <Input
@@ -805,19 +802,15 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Dropdown
+            <MasterDropdown
+              category="ports"
               label="Port of Loading"
               value={origin}
               onChange={(val) => setOrigin(String(val))}
-              options={[
-                { label: "Antwerp, Belgium", value: "Antwerp, Belgium" },
-                { label: "Hamburg, Germany", value: "Hamburg, Germany" },
-                { label: "JAXPORT, Florida, USA", value: "JAXPORT, Florida, USA" },
-                { label: "Jebel Ali, Dubai, UAE", value: "Jebel Ali, Dubai, UAE" },
-              ]}
+              required
             />
             <Input
-              label="Base FOB Purchase Price ($)"
+              label="Base FOB Purchase Cost (₦ NGN)"
               value={fobPrice}
               onChange={(e) => setFobPrice(e.target.value)}
               required

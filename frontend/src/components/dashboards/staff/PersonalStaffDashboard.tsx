@@ -180,13 +180,13 @@ export const PersonalStaffDashboard: React.FC<PersonalStaffDashboardProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
           title="Monthly Quota Attainment"
-          value="$410,000 / $500,000"
-          subtitle="82% of Monthly Target ($90k to bonus)"
+          value="₦635,500,000 / ₦775,000,000"
+          subtitle="82% of Monthly Target (₦139.5M to bonus)"
           icon={<FiAward className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Earned Commissions (MTD)"
-          value="$41,000"
+          value="₦63,550,000"
           subtitle="10% Gross Margin Share (3 deals closed)"
           icon={<FiDollarSign className="w-5 h-5 text-emerald-600" />}
         />

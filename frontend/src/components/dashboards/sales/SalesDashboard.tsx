@@ -32,7 +32,7 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({
         <KPICard
           title="Open Purchase Orders"
           value="8 Pending"
-          change="$1.4M Committed"
+          change="₦2.17B Committed"
           icon={<FiShoppingBag className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
@@ -49,7 +49,7 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({
         />
         <KPICard
           title="Average Deal Size"
-          value="$206,250"
+          value="₦319,687,500"
           change="+8.4% vs target"
           icon={<FiCheckCircle className="w-5 h-5 text-[#2563EB]" />}
         />

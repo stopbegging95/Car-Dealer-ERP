@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
-import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table } from "@/components/ui";
 
 export interface ReceivableItem {
   id: string;
@@ -44,7 +44,7 @@ export const ReceivablesPage: React.FC<ReceivablesPageProps> = ({
       id: `REC-2026-${String(list.length + 1).padStart(3, "0")}`,
       client,
       car,
-      balance: `$${Number(balance.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      balance: `₦${Number(balance.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
       bank,
       wireRef: wireRef || `WT-ZEN-${Math.floor(100000 + Math.random() * 900000)}`,
       status: "Inbound Wire Pending Clearing",
@@ -106,22 +106,19 @@ export const ReceivablesPage: React.FC<ReceivablesPageProps> = ({
               value={car}
               onChange={(val) => setCar(String(val))}
             />
-            <Dropdown
+            <MasterDropdown
+              category="banks"
               label="Receiving Escrow Bank"
-              options={[
-                { label: "Zenith Bank Plc (Treasury Escrow)", value: "Zenith Bank Escrow" },
-                { label: "GTBank Offshore USD Account", value: "GTBank Offshore USD" },
-                { label: "Standard Chartered Private Banking", value: "Standard Chartered" },
-              ]}
               value={bank}
               onChange={(val) => setBank(String(val))}
+              required
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Remittance Balance ($)"
+              label="Remittance Balance (₦ NGN)"
               type="text"
-              placeholder="e.g. 115,000"
+              placeholder="e.g. 175,000,000"
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
               required

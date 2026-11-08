@@ -17,7 +17,7 @@ export interface BankAccountBalance {
   id: string;
   bankName: string;
   accountNumber: string;
-  currency: "NGN" | "USD";
+  currency: "NGN";
   balance: number;
   unreconciledWires: number;
   status: "Reconciled Daily" | "Pending Matching";
@@ -56,12 +56,11 @@ export interface FinancialAuditEntry {
 
 export const FinancialReportsPage: React.FC<{ showToast?: (msg: string) => void }> = ({ showToast }) => {
   const [activeReport, setActiveReport] = useState<"pnl" | "cashflow" | "banks" | "binding" | "audit">("pnl");
-  const [currency, setCurrency] = useState<"USD" | "NGN">("USD");
+  const [currency] = useState<"NGN">("NGN");
 
-  const exchangeRate = 1500;
+  const exchangeRate = 1550;
   const formatVal = (usd: number) => {
-    if (currency === "USD") return `$${usd.toLocaleString()}`;
-    return `₦${(usd * exchangeRate).toLocaleString()}`;
+    return `₦${Math.round(usd * exchangeRate).toLocaleString()}`;
   };
 
   const notify = (msg: string) => {
@@ -85,8 +84,8 @@ export const FinancialReportsPage: React.FC<{ showToast?: (msg: string) => void 
     { id: "BNK-01", bankName: "Zenith Bank Plc (Lagos Corporate HQ)", accountNumber: "1018829102", currency: "NGN", balance: 2450000000, unreconciledWires: 2, status: "Reconciled Daily" },
     { id: "BNK-02", bankName: "Guaranty Trust Bank (GTBank) Plc", accountNumber: "0229918234", currency: "NGN", balance: 1760800000, unreconciledWires: 1, status: "Reconciled Daily" },
     { id: "BNK-03", bankName: "First Bank of Nigeria (Customs SGD Escrow)", accountNumber: "2019928172", currency: "NGN", balance: 340500000, unreconciledWires: 0, status: "Reconciled Daily" },
-    { id: "BNK-04", bankName: "JP Morgan Chase (Offshore Fleet Escrow, NY)", accountNumber: "8829-1029-44", currency: "USD", balance: 2450000, unreconciledWires: 1, status: "Reconciled Daily" },
-    { id: "BNK-05", bankName: "Emirates NBD (Dubai Luxury Buying Desk)", accountNumber: "9910-4402-19", currency: "USD", balance: 1392500, unreconciledWires: 0, status: "Reconciled Daily" },
+    { id: "BNK-04", bankName: "First Bank of Nigeria (Corporate Treasury Escrow)", accountNumber: "8829-1029-44", currency: "NGN", balance: 3797500000, unreconciledWires: 1, status: "Reconciled Daily" },
+    { id: "BNK-05", bankName: "Zenith Bank Plc (Trade Settlement Facility)", accountNumber: "9910-4402-19", currency: "NGN", balance: 2158375000, unreconciledWires: 0, status: "Reconciled Daily" },
   ];
 
   // Business Rule 7: Transaction-to-Payment Strict Binding Registry
@@ -172,26 +171,9 @@ export const FinancialReportsPage: React.FC<{ showToast?: (msg: string) => void 
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-[#F1F5F9] p-1 border border-[#CBD5E1] rounded-lg">
-            <Button
-              type="button"
-              variant={currency === "USD" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setCurrency("USD")}
-              className="px-2.5 py-0.5 font-mono text-xs"
-            >
-              USD ($)
-            </Button>
-            <Button
-              type="button"
-              variant={currency === "NGN" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setCurrency("NGN")}
-              className="px-2.5 py-0.5 font-mono text-xs"
-            >
-              NGN (₦)
-            </Button>
-          </div>
+          <span className="px-3 py-1 font-mono text-xs font-bold text-[#1D4ED8] bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg">
+            ₦ NGN (Official Currency)
+          </span>
 
           <Button
             variant="outline"
@@ -434,7 +416,7 @@ export const FinancialReportsPage: React.FC<{ showToast?: (msg: string) => void 
                 sortable: true,
                 render: (b) => (
                   <span className="font-mono font-bold text-xs text-[#0F172A]">
-                    {b.currency === "NGN" ? `₦${b.balance.toLocaleString()}` : `$${b.balance.toLocaleString()}`}
+                    ₦{b.balance.toLocaleString()}
                   </span>
                 ),
               },
@@ -497,7 +479,7 @@ export const FinancialReportsPage: React.FC<{ showToast?: (msg: string) => void 
                 key: "amountUSD",
                 header: "Payment Value",
                 sortable: true,
-                render: (bt) => <span className="font-mono font-bold text-xs text-emerald-700">${bt.amountUSD.toLocaleString()}</span>,
+                render: (bt) => <span className="font-mono font-bold text-xs text-emerald-700">₦{Math.round(bt.amountUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "orderId",

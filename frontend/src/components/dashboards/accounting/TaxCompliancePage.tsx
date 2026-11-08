@@ -10,10 +10,10 @@ export interface TaxCompliancePageProps {
 
 export const TaxCompliancePage: React.FC<TaxCompliancePageProps> = ({ showToast }) => {
   const taxFilings = [
-    { period: "October 2026", output: "$256,500", input: "$62,400", net: "$194,100", dueDate: "2026-11-21", ref: "FIRS-VAT-2026-10", status: "Audit Cleared" },
-    { period: "September 2026", output: "$284,000", input: "$71,200", net: "$212,800", dueDate: "2026-10-21", ref: "FIRS-VAT-2026-09", status: "Remitted & Verified" },
-    { period: "August 2026", output: "$210,500", input: "$54,000", net: "$156,500", dueDate: "2026-09-21", ref: "FIRS-VAT-2026-08", status: "Remitted & Verified" },
-    { period: "July 2026", output: "$310,000", input: "$88,500", net: "$221,500", dueDate: "2026-08-21", ref: "FIRS-VAT-2026-07", status: "Remitted & Verified" },
+    { period: "October 2026", output: "₦397,575,000", input: "₦96,720,000", net: "₦300,855,000", dueDate: "2026-11-21", ref: "FIRS-VAT-2026-10", status: "Audit Cleared" },
+    { period: "September 2026", output: "₦440,200,000", input: "₦110,360,000", net: "₦329,840,000", dueDate: "2026-10-21", ref: "FIRS-VAT-2026-09", status: "Remitted & Verified" },
+    { period: "August 2026", output: "₦326,275,000", input: "₦83,700,000", net: "₦242,575,000", dueDate: "2026-09-21", ref: "FIRS-VAT-2026-08", status: "Remitted & Verified" },
+    { period: "July 2026", output: "₦480,500,000", input: "₦137,175,000", net: "₦343,325,000", dueDate: "2026-08-21", ref: "FIRS-VAT-2026-07", status: "Remitted & Verified" },
   ];
 
   return (
@@ -38,17 +38,17 @@ export const TaxCompliancePage: React.FC<TaxCompliancePageProps> = ({ showToast 
       <div className="gap-3 grid grid-cols-1 sm:grid-cols-3 text-xs">
         <div className="space-y-1 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md">
           <span className="block text-[#64748B] text-[10px] uppercase">Gross Output VAT (7.5%)</span>
-          <div className="font-mono font-bold text-[#0F172A] text-base">$256,500</div>
-          <span className="block text-[#64748B] text-[10px]">Collected on $3.42M MTD Sales</span>
+          <div className="font-mono font-bold text-[#0F172A] text-base">₦397,575,000</div>
+          <span className="block text-[#64748B] text-[10px]">Collected on ₦5.3B MTD Sales</span>
         </div>
         <div className="space-y-1 bg-[#F8FAFC] p-3 border border-[#E2E8F0] rounded-md">
           <span className="block text-[#64748B] text-[10px] uppercase">Input VAT Offset Credits</span>
-          <div className="font-mono font-bold text-emerald-700 text-base">-$62,400</div>
+          <div className="font-mono font-bold text-emerald-700 text-base">-₦96,720,000</div>
           <span className="block text-[#64748B] text-[10px]">Paid at Port SGD Assessment</span>
         </div>
         <div className="space-y-1 bg-[#EFF6FF] p-3 border border-[#BFDBFE] rounded-md">
           <span className="block font-bold text-[#1D4ED8] text-[10px] uppercase">Net VAT Remittance Due</span>
-          <div className="font-mono font-bold text-[#1D4ED8] text-base">$194,100</div>
+          <div className="font-mono font-bold text-[#1D4ED8] text-base">₦300,855,000</div>
           <span className="block text-[#1D4ED8] text-[10px]">Due: 21st of November, 2026</span>
         </div>
       </div>

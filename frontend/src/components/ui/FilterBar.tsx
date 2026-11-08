@@ -350,7 +350,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           {/* Price Range with Always-Visible Increase/Decrease Steppers */}
           <div className="flex flex-col gap-1">
             <label className="h-5 flex items-center text-xs sm:text-sm font-bold text-[#FFFFFF]">
-              Price Range ($)
+              Price Range (₦)
             </label>
             <div className="grid grid-cols-2 gap-2">
               <StepperNumberInput
@@ -358,16 +358,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 value={filters.minPrice}
                 onChange={(val) => setFilters({ ...filters, minPrice: val })}
                 min={0}
-                step={10000}
-                defaultIncrementStart={50000}
+                step={5000000}
+                defaultIncrementStart={50000000}
               />
               <StepperNumberInput
                 placeholder="Max Price"
                 value={filters.maxPrice}
                 onChange={(val) => setFilters({ ...filters, maxPrice: val })}
                 min={0}
-                step={10000}
-                defaultIncrementStart={250000}
+                step={5000000}
+                defaultIncrementStart={500000000}
               />
             </div>
           </div>

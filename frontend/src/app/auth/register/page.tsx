@@ -30,7 +30,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [preferredCurrency, setPreferredCurrency] = useState("USD");
+  const [preferredCurrency, setPreferredCurrency] = useState("NGN");
   const [clientType, setClientType] = useState("Private Collector");
   const [showroomHub, setShowroomHub] = useState("VI");
   const [agreeTerms, setAgreeTerms] = useState(true);
@@ -38,6 +38,7 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [generatedClientId, setGeneratedClientId] = useState("LUX-88291");
 
   // Password strength score
   const getPasswordStrength = () => {
@@ -81,6 +82,7 @@ export default function RegisterPage() {
     }
 
     setIsSubmitting(true);
+    setGeneratedClientId(`LUX-${Math.floor(10000 + Math.random() * 90000)}`);
     setTimeout(() => {
       setIsSubmitting(false);
       setShowSuccessModal(true);
@@ -236,12 +238,11 @@ export default function RegisterPage() {
               {/* Preferred Currency */}
               <div>
                 <Dropdown
-                  label="Preferred Currency Valuation"
+                  label="Dealership Currency"
                   value={preferredCurrency}
                   onChange={(v) => setPreferredCurrency(String(v))}
                   options={[
-                    { label: "$ USD - United States Dollar (International Invoices & Escrow)", value: "USD" },
-                    { label: "₦ NGN - Nigerian Naira (Local Port Clearing & Showroom Wires)", value: "NGN" },
+                    { label: "₦ NGN - Nigerian Naira (Official Dealership Currency)", value: "NGN" },
                   ]}
                 />
               </div>
@@ -367,7 +368,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0] text-xs text-left space-y-1 font-mono">
-            <div><span className="text-[#64748B]">Client ID:</span> <strong className="text-[#2563EB]">LUX-{Math.floor(10000 + Math.random() * 90000)}</strong></div>
+            <div><span className="text-[#64748B]">Client ID:</span> <strong className="text-[#2563EB]">{generatedClientId}</strong></div>
             <div><span className="text-[#64748B]">Registered Email:</span> {email}</div>
             <div><span className="text-[#64748B]">Preferred Currency:</span> {preferredCurrency}</div>
             <div><span className="text-[#64748B]">Showroom Hub:</span> {showroomHub === "VI" ? "Victoria Island, Lagos" : "Maitama, Abuja"}</div>

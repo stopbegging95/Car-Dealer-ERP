@@ -193,7 +193,7 @@ export function downloadOrderAsPdf(data: OrderPdfData): void {
 
         <div class="total-box">
           <div class="total-title">Total Approved Sale Amount</div>
-          <div class="total-amount">${data.amount} USD</div>
+          <div class="total-amount">${data.amount.startsWith("₦") ? data.amount : `₦${data.amount}`}</div>
         </div>
 
         <div style="margin-top: 30px; font-size: 11px; color: #64748B; line-height: 1.6;">
@@ -249,7 +249,7 @@ export function downloadVaultDocumentPdf(doc: DocumentPdfData): void {
     orderId: doc.reference,
     clientName: doc.author,
     vehicleName: doc.title,
-    amount: "$0.00 (Official Record)",
+    amount: "₦0.00 (Official Record)",
     status: "Verified & Sealed",
     stage: doc.classification,
     salesRep: "Registrar of Dealership Records",

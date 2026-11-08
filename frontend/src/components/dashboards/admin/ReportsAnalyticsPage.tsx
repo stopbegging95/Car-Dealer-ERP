@@ -29,7 +29,7 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
       predictedDemand: "+38% Surge (204 Units)",
       confidence: "97.4%",
       stockingRecommendation: "Order +8 Units via Ro-Ro (Antwerp)",
-      estGrossProfit: "$6.2M",
+      estGrossProfit: "₦9.61B",
       seasonalityDriver: "Festive Season & Government Budget Cycle",
     },
     {
@@ -38,7 +38,7 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
       predictedDemand: "+24% Growth (141 Units)",
       confidence: "95.2%",
       stockingRecommendation: "Order +5 Units (US Manheim direct)",
-      estGrossProfit: "$3.5M",
+      estGrossProfit: "₦5.42B",
       seasonalityDriver: "Corporate Executive Fleet Renewals",
     },
     {
@@ -47,7 +47,7 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
       predictedDemand: "+45% High Acceleration (70 Units)",
       confidence: "91.8%",
       stockingRecommendation: "Order +6 Units (Dubai Freezone)",
-      estGrossProfit: "$1.4M",
+      estGrossProfit: "₦2.17B",
       seasonalityDriver: "Fuel Subsidy Shift & Luxury ESG Mandates",
     },
     {
@@ -56,7 +56,7 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
       predictedDemand: "+12% Steady (76 Units)",
       confidence: "94.6%",
       stockingRecommendation: "Order +3 Units (Bespoke Allocation)",
-      estGrossProfit: "$2.1M",
+      estGrossProfit: "₦3.25B",
       seasonalityDriver: "HNI Private Collector Inquiries",
     },
     {
@@ -65,7 +65,7 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
       predictedDemand: "+30% Surge (49 Units)",
       confidence: "96.0%",
       stockingRecommendation: "Order +10 Units (B6 Armoring Kit)",
-      estGrossProfit: "$1.8M",
+      estGrossProfit: "₦2.79B",
       seasonalityDriver: "Security & Regional Logistics Contracts",
     },
     {
@@ -74,7 +74,7 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
       predictedDemand: "+8% Niche Exclusive (37 Units)",
       confidence: "89.5%",
       stockingRecommendation: "Pre-Order on Escrow Deposit Only",
-      estGrossProfit: "$2.3M",
+      estGrossProfit: "₦3.56B",
       seasonalityDriver: "Year-End Galas & Collector Private Viewings",
     },
   ];
@@ -137,7 +137,7 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
         />
         <KPICard
           title="Average Margin Per Unit"
-          value="$21,650"
+          value="₦33,550,000"
           change="Luxury & Supercar Segment"
           icon={<FiCheckCircle className="w-5 h-5 text-[#2563EB]" />}
         />
@@ -157,14 +157,14 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
 
         <Table
           data={[
-            { category: "Executive Class (Mercedes S-Class, BMW 7 Series)", units: "114 Sold", days: "22 Days Avg", margin: "18.2% ($24.8k)", share: 75, velocity: "High" },
-            { category: "Premium SUVs (Range Rover, G-Class, Urus)", units: "148 Sold", days: "19 Days Avg", margin: "21.5% ($32.4k)", share: 90, velocity: "Very High" },
-            { category: "Sport & Performance (Porsche 911, BMW M)", units: "68 Sold", days: "28 Days Avg", margin: "19.8% ($28.0k)", share: 60, velocity: "Moderate" },
-            { category: "Exotic & Supercars (Ferrari, Lamborghini)", units: "34 Sold", days: "38 Days Avg", margin: "24.0% ($62.5k)", share: 45, velocity: "Exclusive" },
-            { category: "Electric Vehicles (Tesla, BYD)", units: "48 Sold", days: "25 Days Avg", margin: "14.5% ($12.2k)", share: 50, velocity: "High" },
-            { category: "Luxury Sedans (Lexus ES, Audi A6)", units: "52 Sold", days: "21 Days Avg", margin: "16.8% ($15.4k)", share: 55, velocity: "High" },
-            { category: "Commercial & Trucks (Toyota Hilux, MAN)", units: "38 Sold", days: "18 Days Avg", margin: "15.0% ($11.8k)", share: 40, velocity: "High" },
-            { category: "Classic & Vintage (Classic Benz, Porsche)", units: "12 Sold", days: "44 Days Avg", margin: "28.5% ($45.0k)", share: 20, velocity: "Niche" },
+            { category: "Executive Class (Mercedes S-Class, BMW 7 Series)", units: "114 Sold", days: "22 Days Avg", margin: "18.2% (₦38.4M)", share: 75, velocity: "High" },
+            { category: "Premium SUVs (Range Rover, G-Class, Urus)", units: "148 Sold", days: "19 Days Avg", margin: "21.5% (₦50.2M)", share: 90, velocity: "Very High" },
+            { category: "Sport & Performance (Porsche 911, BMW M)", units: "68 Sold", days: "28 Days Avg", margin: "19.8% (₦43.4M)", share: 60, velocity: "Moderate" },
+            { category: "Exotic & Supercars (Ferrari, Lamborghini)", units: "34 Sold", days: "38 Days Avg", margin: "24.0% (₦96.8M)", share: 45, velocity: "Exclusive" },
+            { category: "Electric Vehicles (Tesla, BYD)", units: "48 Sold", days: "25 Days Avg", margin: "14.5% (₦18.9M)", share: 50, velocity: "High" },
+            { category: "Luxury Sedans (Lexus ES, Audi A6)", units: "52 Sold", days: "21 Days Avg", margin: "16.8% (₦23.8M)", share: 55, velocity: "High" },
+            { category: "Commercial & Trucks (Toyota Hilux, MAN)", units: "38 Sold", days: "18 Days Avg", margin: "15.0% (₦18.2M)", share: 40, velocity: "High" },
+            { category: "Classic & Vintage (Classic Benz, Porsche)", units: "12 Sold", days: "44 Days Avg", margin: "28.5% (₦69.7M)", share: 20, velocity: "Niche" },
           ]}
           keyExtractor={(item) => item.category}
           pageSize={15}
@@ -271,13 +271,13 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
               Forecasted Gross Inventory Profit
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="font-mono font-bold text-2xl text-emerald-600">$17.3M</span>
+              <span className="font-mono font-bold text-2xl text-emerald-600">₦26.8B</span>
               <span className="text-purple-600 text-xs font-mono font-semibold">
                 (Avg 19.4% Margin)
               </span>
             </div>
             <p className="text-[10px] text-[#64748B] mt-1">
-              Simulated across recommended procurement batches with pre-hedged USD/NGN exchange forward rates.
+              Simulated across recommended procurement batches with pre-hedged NGN liquidity forward rates.
             </p>
           </div>
 

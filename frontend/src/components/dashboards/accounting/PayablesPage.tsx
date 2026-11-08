@@ -46,7 +46,7 @@ export const PayablesPage: React.FC<PayablesPageProps> = ({
       vendor,
       type,
       ref: ref || `REF-${Math.floor(1000 + Math.random() * 9000)}`,
-      amount: `$${Number(amount.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      amount: `₦${Number(amount.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
       dueDate,
       status: "Approved for Wire",
     };
@@ -117,9 +117,9 @@ export const PayablesPage: React.FC<PayablesPageProps> = ({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Disbursement Amount ($)"
+              label="Disbursement Amount (₦ NGN)"
               type="text"
-              placeholder="e.g. 18,500"
+              placeholder="e.g. 28,500,000"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required

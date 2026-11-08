@@ -17,15 +17,13 @@ export interface CustomerInvoice {
 
 export interface InvoicesTabProps {
   customerInvoices: CustomerInvoice[];
-  selectedCurrency: "USD" | "NGN";
-  onSelectCurrency: (curr: "USD" | "NGN") => void;
+  selectedCurrency?: "NGN";
+  onSelectCurrency?: (curr: "NGN") => void;
   onDownloadReceipt?: (inv: CustomerInvoice) => void;
 }
 
 export const InvoicesTab: React.FC<InvoicesTabProps> = ({
   customerInvoices,
-  selectedCurrency,
-  onSelectCurrency,
   onDownloadReceipt,
 }) => {
   return (
@@ -38,23 +36,8 @@ export const InvoicesTab: React.FC<InvoicesTabProps> = ({
           <p className="text-[#64748B] text-xs">Official purchase agreements, initial deposits, and port duty receipts.</p>
         </div>
 
-        <div className="flex items-center gap-1 bg-[#F1F5F9] p-1 border border-[#CBD5E1] rounded-xl">
-          <Button
-            variant={selectedCurrency === "USD" ? "primary" : "ghost"}
-            size="sm"
-            onClick={() => onSelectCurrency("USD")}
-            className="px-3 py-1 font-mono text-xs"
-          >
-            $ USD
-          </Button>
-          <Button
-            variant={selectedCurrency === "NGN" ? "primary" : "ghost"}
-            size="sm"
-            onClick={() => onSelectCurrency("NGN")}
-            className="px-3 py-1 font-mono text-xs"
-          >
-            ₦ NGN
-          </Button>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#EFF6FF] border border-[#BFDBFE] rounded-xl text-xs font-mono font-bold text-[#1D4ED8]">
+          <span>₦ NGN (Official Currency)</span>
         </div>
       </div>
 
@@ -93,14 +76,12 @@ export const InvoicesTab: React.FC<InvoicesTabProps> = ({
             render: (inv) => <span className="font-mono text-xs text-[#64748B]">{inv.date}</span>,
           },
           {
-            key: "amount",
-            header: "Amount",
+            key: "amountNGN",
+            header: "Amount (₦ NGN)",
             sortable: true,
             render: (inv) => (
               <span className="font-mono font-bold text-[#1D4ED8] text-xs">
-                {selectedCurrency === "USD"
-                  ? `$${inv.amountUSD.toLocaleString()}`
-                  : `₦${inv.amountNGN.toLocaleString()}`}
+                ₦{inv.amountNGN.toLocaleString()}
               </span>
             ),
           },

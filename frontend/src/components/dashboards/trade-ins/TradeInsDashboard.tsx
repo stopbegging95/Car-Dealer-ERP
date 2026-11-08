@@ -28,13 +28,13 @@ export const TradeInsDashboard: React.FC<TradeInsDashboardProps> = ({ onInspectT
         />
         <KPICard
           title="Total Appraised Equity"
-          value="$121,500"
+          value="₦188,325,000"
           change="Trade-In Credit Offered"
           icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
         />
         <KPICard
           title="Customer Settlement Gap"
-          value="$348,500"
+          value="₦540,175,000"
           change="Balance Due via Wire"
           icon={<FiClock className="w-5 h-5 text-[#2563EB]" />}
         />

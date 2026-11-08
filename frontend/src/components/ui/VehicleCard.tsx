@@ -9,7 +9,7 @@ import { Vehicle } from "@/data/vehicles";
 
 export interface VehicleCardProps {
   vehicle: Vehicle;
-  currency?: "USD" | "NGN";
+  currency?: "NGN";
   onViewDetails?: (vehicle: Vehicle) => void;
   onBookTestDrive?: (vehicle: Vehicle) => void;
   onCompareToggle?: (vehicle: Vehicle) => void;
@@ -20,7 +20,6 @@ export interface VehicleCardProps {
 
 export const VehicleCard: React.FC<VehicleCardProps> = ({
   vehicle,
-  currency = "USD",
   onViewDetails,
   onBookTestDrive,
   onCompareToggle,
@@ -28,10 +27,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   viewMode = "grid",
   className = "",
 }) => {
-  const formattedPrice =
-    currency === "USD"
-      ? `$ ${vehicle.priceUSD.toLocaleString()}`
-      : `₦ ${vehicle.priceNGN.toLocaleString()}`;
+  const formattedPrice = `₦${vehicle.priceNGN.toLocaleString()}`;
 
   const statusVariantMap: Record<string, "gold" | "dark" | "light"> = {
     Available: "gold",

@@ -85,7 +85,7 @@ const BRAND_LOGOS = [
 
 export default function App() {
   // Currency state
-  const currency: "USD" | "NGN" = "USD";
+  const currency: "NGN" = "NGN";
 
   // Modal states
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
@@ -165,10 +165,10 @@ export default function App() {
       result = result.filter((v) => v.year <= parseInt(filters.maxYear, 10));
     }
     if (filters.minPrice) {
-      result = result.filter((v) => v.priceUSD >= parseInt(filters.minPrice, 10));
+      result = result.filter((v) => v.priceNGN >= parseInt(filters.minPrice, 10));
     }
     if (filters.maxPrice) {
-      result = result.filter((v) => v.priceUSD <= parseInt(filters.maxPrice, 10));
+      result = result.filter((v) => v.priceNGN <= parseInt(filters.maxPrice, 10));
     }
     setFilteredVehicles(result);
   };
@@ -870,7 +870,7 @@ export default function App() {
               <div>
                 <span className="text-[10px] font-mono text-[#2563EB] font-bold">{selectedVehicle.stockId}</span>
                 <h4 className="text-sm font-bold text-[#0F172A]">{selectedVehicle.make} {selectedVehicle.model}</h4>
-                <span className="text-xs font-mono font-bold text-[#1D4ED8]">${selectedVehicle.priceUSD.toLocaleString()} USD</span>
+                <span className="text-xs font-mono font-bold text-[#1D4ED8]">₦{selectedVehicle.priceNGN.toLocaleString()} NGN</span>
               </div>
             </div>
           )}

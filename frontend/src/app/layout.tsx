@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { MasterDataProvider } from "@/context/MasterDataContext";
 
 export const metadata: Metadata = {
   title: "CarDeals CMS",
@@ -19,7 +20,9 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
       </head>
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <MasterDataProvider>{children}</MasterDataProvider>
+      </body>
     </html>
   );
 }

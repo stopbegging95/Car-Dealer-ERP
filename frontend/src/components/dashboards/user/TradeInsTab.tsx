@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiPlus, FiCheckCircle, FiDownload } from "react-icons/fi";
-import { Button, Badge, Modal, Input, Dropdown, Table, Card } from "@/components/ui";
+import { Button, Badge, Modal, Input, Dropdown, MasterDropdown, Table, Card } from "@/components/ui";
 import { VEHICLES } from "@/data/vehicles";
 
 export interface SwapAppraisalItem {
@@ -10,9 +10,9 @@ export interface SwapAppraisalItem {
   tradeCar: string;
   tradeMileage: string;
   targetCar: string;
-  targetPriceUSD: number;
-  approvedEquityUSD: number;
-  balanceUSD: number;
+  targetPriceNGN: number;
+  approvedEquityNGN: number;
+  balanceNGN: number;
   status: string;
   milestone: string;
   showroomHub: string;
@@ -25,9 +25,9 @@ export const TradeInsTab: React.FC = () => {
       tradeCar: "2020 Mercedes-Benz E350 AMG",
       tradeMileage: "42,000 KM • Non-Accident Certified",
       targetCar: "2024 Mercedes-Maybach S580",
-      targetPriceUSD: 165000,
-      approvedEquityUSD: 32500,
-      balanceUSD: 132500,
+      targetPriceNGN: 247500000,
+      approvedEquityNGN: 48750000,
+      balanceNGN: 198750000,
       status: "Appraisal Approved",
       milestone: "Two-Factor Director Approval Signed. Physical Handover Scheduled Nov 18.",
       showroomHub: "Victoria Island Flagship Showroom",
@@ -37,9 +37,9 @@ export const TradeInsTab: React.FC = () => {
       tradeCar: "2019 Range Rover Autobiography",
       tradeMileage: "56,000 KM • Single Owner",
       targetCar: "2024 Porsche 911 Turbo S",
-      targetPriceUSD: 225000,
-      approvedEquityUSD: 48000,
-      balanceUSD: 177000,
+      targetPriceNGN: 337500000,
+      approvedEquityNGN: 72000000,
+      balanceNGN: 265500000,
       status: "Inspection Completed",
       milestone: "OBD-II Diagnostic 100% Cleared. Final Underwriting in Review.",
       showroomHub: "Maitama Diplomatic Zone Suite",
@@ -68,17 +68,17 @@ export const TradeInsTab: React.FC = () => {
 
     const targetVehicle = VEHICLES.find((v) => v.stockId === targetStockId) || VEHICLES[1];
     const newId = `SWP-${Math.floor(4000 + Math.random() * 5000)}`;
-    const estimatedEquity = Math.round(targetVehicle.priceUSD * 0.22);
-    const balance = targetVehicle.priceUSD - estimatedEquity;
+    const estimatedEquity = Math.round(targetVehicle.priceNGN * 0.22);
+    const balance = targetVehicle.priceNGN - estimatedEquity;
 
     const newSwap: SwapAppraisalItem = {
       id: newId,
       tradeCar: `${currentCarYear} ${currentCarMake}`,
       tradeMileage: `${currentCarMileage} • Appraisal Pending`,
       targetCar: `${targetVehicle.year} ${targetVehicle.make} ${targetVehicle.model}`,
-      targetPriceUSD: targetVehicle.priceUSD,
-      approvedEquityUSD: estimatedEquity,
-      balanceUSD: balance,
+      targetPriceNGN: targetVehicle.priceNGN,
+      approvedEquityNGN: estimatedEquity,
+      balanceNGN: balance,
       status: "Inspection Scheduled",
       milestone: `Physical 150-point diagnostic inspection booked at ${selectedHub}.`,
       showroomHub: selectedHub,
@@ -149,29 +149,28 @@ export const TradeInsTab: React.FC = () => {
             render: (item) => (
               <div>
                 <span className="font-bold text-[#0F172A] text-xs">{item.targetCar}</span>
-                <span className="block font-mono text-[#64748B] text-[10px]">${item.targetPriceUSD.toLocaleString()}</span>
+                <span className="block font-mono text-[#64748B] text-[10px]">₦{item.targetPriceNGN.toLocaleString()}</span>
               </div>
             ),
           },
           {
-            key: "approvedEquityUSD",
-            header: "Approved Equity",
+            key: "approvedEquityNGN",
+            header: "Approved Equity (₦)",
             sortable: true,
             render: (item) => (
               <span className="font-mono font-bold text-emerald-600 text-xs">
-                ${item.approvedEquityUSD.toLocaleString()}
+                ₦{item.approvedEquityNGN.toLocaleString()}
               </span>
             ),
           },
           {
-            key: "balanceUSD",
-            header: "Balance Due",
+            key: "balanceNGN",
+            header: "Balance Due (₦)",
             sortable: true,
             render: (item) => (
-              <div>
-                <span className="font-mono font-bold text-[#1D4ED8] text-xs">${item.balanceUSD.toLocaleString()}</span>
-                <span className="block font-mono text-[#64748B] text-[10px]">₦{(item.balanceUSD * 1500).toLocaleString()}</span>
-              </div>
+              <span className="font-mono font-bold text-[#1D4ED8] text-xs">
+                ₦{item.balanceNGN.toLocaleString()}
+              </span>
             ),
           },
           {
@@ -249,21 +248,17 @@ export const TradeInsTab: React.FC = () => {
             value={targetStockId}
             onChange={(val) => setTargetStockId(String(val))}
             options={VEHICLES.map((v) => ({
-              label: `${v.year} ${v.make} ${v.model} - $${v.priceUSD.toLocaleString()} (${v.stockId})`,
+              label: `${v.year} ${v.make} ${v.model} - ₦${v.priceNGN.toLocaleString()} (${v.stockId})`,
               value: v.stockId,
             }))}
           />
 
-          <Dropdown
+          <MasterDropdown
+            category="inspection_centers"
             label="Preferred Inspection Center"
             value={selectedHub}
             onChange={(val) => setSelectedHub(String(val))}
-            options={[
-              { label: "Victoria Island Flagship Showroom, Lagos", value: "Victoria Island Flagship Showroom, Lagos" },
-              { label: "Ikoyi Private Client VIP Lounge, Lagos", value: "Ikoyi Private Client VIP Lounge, Lagos" },
-              { label: "Maitama Diplomatic Zone Suite, Abuja", value: "Maitama Diplomatic Zone Suite, Abuja" },
-              { label: "Lekki Phase 1 Performance Center, Lagos", value: "Lekki Phase 1 Performance Center, Lagos" },
-            ]}
+            required
           />
 
           <div className="flex justify-end gap-2 pt-2">

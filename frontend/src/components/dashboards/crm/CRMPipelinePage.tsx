@@ -73,60 +73,60 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
       name: "Alhaji Bello & Sons Ltd",
       tier: "Corporate Accounts",
       car: "2024 Mercedes-Maybach S580",
-      budget: "$180,000",
+      budget: "₦279,000,000",
       stage: "Delivery Scheduled",
       rep: "Emeka O. (VIP Sales)",
-      ltvUSD: 520000,
+      ltvUSD: 806000000,
     },
     {
       id: "CRM-102",
       name: "Dr. K. Somoye",
       tier: "VIP & High-Net-Worth (HNWI)",
       car: "2024 Porsche 911 Turbo S",
-      budget: "$230,000",
+      budget: "₦356,500,000",
       stage: "Quote Review",
       rep: "Emeka O. (VIP Sales)",
-      ltvUSD: 390000,
+      ltvUSD: 604500000,
     },
     {
       id: "CRM-103",
       name: "Senator Godswill O.",
       tier: "Government & Diplomatic",
       car: "2024 Mercedes-AMG G63 Magno",
-      budget: "$250,000",
+      budget: "₦387,500,000",
       stage: "Trade-In Review",
       rep: "Aisha M. (Diplomatic)",
-      ltvUSD: 740000,
+      ltvUSD: 1147000000,
     },
     {
       id: "CRM-104",
       name: "Mrs. Folashade A.",
       tier: "Commercial Fleet Accounts",
       car: "2024 Range Rover Autobiography",
-      budget: "$200,000",
+      budget: "₦310,000,000",
       stage: "VIP Test Drive",
       rep: "Ngozi E. (Fleet)",
-      ltvUSD: 280000,
+      ltvUSD: 434000000,
     },
     {
       id: "CRM-105",
       name: "Chief Alexander Vance",
       tier: "VIP & High-Net-Worth (HNWI)",
       car: "2024 Rolls-Royce Ghost Extended",
-      budget: "$350,000",
+      budget: "₦542,500,000",
       stage: "Contract Underwriting",
       rep: "Emeka O. (VIP Sales)",
-      ltvUSD: 850000,
+      ltvUSD: 1317500000,
     },
     {
       id: "CRM-106",
       name: "AutoBoutique Lekki Ltd",
       tier: "Automotive Dealers & Resellers",
       car: "3x 2024 Toyota Land Cruiser 300",
-      budget: "$420,000",
+      budget: "₦651,000,000",
       stage: "Wholesale Margin Locked",
       rep: "Chukwudi N.",
-      ltvUSD: 1200000,
+      ltvUSD: 1860000000,
     },
   ]);
 
@@ -278,7 +278,7 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
       name,
       tier,
       car,
-      budget: `$${Number(budget.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      budget: `₦${Number(budget.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
       stage,
       rep,
       ltvUSD: Number(budget.replace(/[^0-9]/g, "") || 0) * 1.5,
@@ -318,7 +318,7 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
         />
         <KPICard
           title="Portfolio LTV Total"
-          value={`$${(leads.reduce((acc, l) => acc + l.ltvUSD, 0) / 1000000).toFixed(2)}M`}
+          value={`₦${(leads.reduce((acc, l) => acc + l.ltvUSD, 0) / 1000000000).toFixed(2)}B`}
           subtitle="High-Net-Worth Accounts"
           icon={<FiStar className="w-5 h-5 text-[#2563EB]" />}
         />
@@ -454,7 +454,7 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
                 sortable: true,
                 render: (lead) => (
                   <span className="font-mono font-bold text-emerald-600 text-xs">
-                    ${lead.ltvUSD.toLocaleString()}
+                    ₦{lead.ltvUSD.toLocaleString()}
                   </span>
                 ),
               },
@@ -793,8 +793,8 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
               ]}
             />
             <Input
-              label="Target Budget ($ USD)"
-              placeholder="180,000"
+              label="Target Budget (₦ NGN)"
+              placeholder="280,000,000"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
               required

@@ -64,14 +64,11 @@ export const GarageTab: React.FC<GarageTabProps> = ({ savedVehicles }) => {
             ),
           },
           {
-            key: "priceUSD",
-            header: "Price (USD / NGN)",
+            key: "priceNGN",
+            header: "Price (₦ NGN)",
             sortable: true,
             render: (car) => (
-              <div>
-                <span className="font-mono font-bold text-[#0F172A] text-xs">${car.priceUSD.toLocaleString()}</span>
-                <span className="block font-mono text-[#64748B] text-[10px]">₦{car.priceNGN.toLocaleString()}</span>
-              </div>
+              <span className="font-mono font-bold text-[#1D4ED8] text-xs">₦{car.priceNGN.toLocaleString()}</span>
             ),
           },
           {
@@ -130,13 +127,9 @@ export const GarageTab: React.FC<GarageTabProps> = ({ savedVehicles }) => {
               </div>
             </div>
 
-            <div className="gap-3 grid grid-cols-2 sm:grid-cols-4 text-xs">
+            <div className="gap-3 grid grid-cols-1 sm:grid-cols-3 text-xs">
               <div className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl">
-                <span className="block text-[10px] text-[#64748B] uppercase">Price (USD)</span>
-                <span className="font-mono font-bold text-[#0F172A] text-sm">${selectedVehicle.priceUSD.toLocaleString()}</span>
-              </div>
-              <div className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl">
-                <span className="block text-[10px] text-[#64748B] uppercase">Price (NGN)</span>
+                <span className="block text-[10px] text-[#64748B] uppercase">Dealership Price (₦ NGN)</span>
                 <span className="font-mono font-bold text-[#1D4ED8] text-sm">₦{selectedVehicle.priceNGN.toLocaleString()}</span>
               </div>
               <div className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl">

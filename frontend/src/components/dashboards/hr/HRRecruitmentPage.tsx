@@ -13,7 +13,7 @@ import {
   FiGift,
   FiDownload,
 } from "react-icons/fi";
-import { Badge, Card, Button, Modal, Input, Dropdown, Table, KPICard } from "@/components/ui";
+import { Badge, Card, Button, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
 
 export interface EmployeeProfile {
   id: string;
@@ -169,7 +169,7 @@ export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast 
         />
         <KPICard
           title="Monthly Payroll Ledger"
-          value={`$${(payroll.reduce((acc, p) => acc + p.netPayUSD, 0) / 1000).toFixed(1)}k`}
+          value={`₦${((payroll.reduce((acc, p) => acc + p.netPayUSD, 0) * 1550) / 1000000).toFixed(1)}M`}
           change="Commissions & PAYE Reconciled"
           icon={<FiDollarSign className="w-5 h-5 text-[#2563EB]" />}
         />
@@ -498,35 +498,32 @@ export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast 
               },
               {
                 key: "baseSalaryUSD",
-                header: "Base Salary",
+                header: "Base Salary (₦)",
                 sortable: true,
-                render: (p) => <span className="font-mono text-xs text-[#0F172A]">${p.baseSalaryUSD.toLocaleString()}</span>,
+                render: (p) => <span className="font-mono text-xs text-[#0F172A]">₦{(p.baseSalaryUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "commissionsUSD",
-                header: "Sales Commissions",
+                header: "Sales Commissions (₦)",
                 sortable: true,
-                render: (p) => <span className="font-mono font-bold text-emerald-700 text-xs">+${p.commissionsUSD.toLocaleString()}</span>,
+                render: (p) => <span className="font-mono font-bold text-emerald-700 text-xs">+₦{(p.commissionsUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "bonusUSD",
-                header: "Performance Bonus",
-                render: (p) => <span className="font-mono text-xs text-[#475569]">+${p.bonusUSD.toLocaleString()}</span>,
+                header: "Performance Bonus (₦)",
+                render: (p) => <span className="font-mono text-xs text-[#475569]">+₦{(p.bonusUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "payeTaxUSD",
                 header: "PAYE Tax (7.5%)",
-                render: (p) => <span className="font-mono text-xs text-rose-700">-${p.payeTaxUSD.toLocaleString()}</span>,
+                render: (p) => <span className="font-mono text-xs text-rose-700">-₦{(p.payeTaxUSD * 1550).toLocaleString()}</span>,
               },
               {
                 key: "netPayUSD",
-                header: "Net Payable",
+                header: "Net Payable (₦)",
                 sortable: true,
                 render: (p) => (
-                  <div>
-                    <span className="font-mono font-bold text-[#1D4ED8] text-xs">${p.netPayUSD.toLocaleString()}</span>
-                    <span className="block font-mono text-[10px] text-[#64748B]">₦{(p.netPayUSD * 1500).toLocaleString()}</span>
-                  </div>
+                  <span className="font-mono font-bold text-[#1D4ED8] text-xs">₦{(p.netPayUSD * 1550).toLocaleString()}</span>
                 ),
               },
               {
@@ -624,29 +621,19 @@ export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast 
             required
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Dropdown
+            <MasterDropdown
+              category="departments"
               label="Assigned Department"
               value={empDept}
               onChange={(val) => setEmpDept(String(val))}
-              options={[
-                { label: "Sales & Marketing", value: "Sales & Marketing" },
-                { label: "Workshop & Technical Service", value: "Workshop Service" },
-                { label: "Parts Logistics & Warehouse", value: "Parts Logistics" },
-                { label: "Import Logistics & Customs", value: "Customs Logistics" },
-                { label: "Finance & Accounting", value: "Finance & Accounting" },
-                { label: "Operations & Facilities", value: "Operations & Facilities" },
-              ]}
+              required
             />
-            <Dropdown
+            <MasterDropdown
+              category="hubs"
               label="Facility Base / Showroom Node"
               value={empBranch}
               onChange={(val) => setEmpBranch(String(val))}
-              options={[
-                { label: "Victoria Island Flagship", value: "Victoria Island Flagship" },
-                { label: "Maitama Diplomatic Suite, Abuja", value: "Maitama Diplomatic Suite, Abuja" },
-                { label: "Central Workshop Hub, Lekki", value: "Central Workshop Hub, Lekki" },
-                { label: "Tin Can Port Logistics Node", value: "Tin Can Port Logistics Node" },
-              ]}
+              required
             />
           </div>
           <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0]">
