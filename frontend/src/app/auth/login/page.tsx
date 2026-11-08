@@ -30,8 +30,10 @@ export default function LoginPage() {
       if (accountType === "staff") {
         const lowerEmail = email.toLowerCase();
         let targetRole = "admin";
-        if (lowerEmail.includes("accountant") || lowerEmail.includes("finance")) {
-          targetRole = "finance";
+        if (lowerEmail.includes("accountant") || lowerEmail.includes("accounting")) {
+          targetRole = "accounting";
+        } else if (lowerEmail.includes("finance") || lowerEmail.includes("underwriting")) {
+          targetRole = "financing";
         } else if (lowerEmail.includes("sales")) {
           targetRole = "sales";
         } else if (lowerEmail.includes("service") || lowerEmail.includes("workshop")) {
@@ -251,6 +253,19 @@ export default function LoginPage() {
                   size="sm"
                   onClick={() => {
                     setAccountType("staff");
+                    setEmail("finance@luxauto.dealers.com");
+                    setPassword("finance123");
+                  }}
+                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
+                >
+                  Finance Dept
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setAccountType("staff");
                     setEmail("sales.director@luxauto.dealers.com");
                     setPassword("sales123");
                   }}
@@ -275,12 +290,20 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Footer Registration Link */}
-          <div className="text-[#64748B] text-xs text-center">
-            Don&apos;t have an account yet?{" "}
-            <Link href="/auth/register" className="font-bold text-[#2563EB] hover:underline">
-              Register for VIP Access &rarr;
-            </Link>
+          {/* Footer Registration & Staff Dashboard Links */}
+          <div className="space-y-2 text-[#64748B] text-xs text-center">
+            <div>
+              Don&apos;t have a customer account yet?{" "}
+              <Link href="/auth/register" className="font-bold text-[#2563EB] hover:underline">
+                Register as a VIP Customer &rarr;
+              </Link>
+            </div>
+            <div>
+              Dealership Staff, Accountant or Director?{" "}
+              <Link href="/auth/dashboard-login" className="font-bold text-[#0F172A] hover:text-[#2563EB] transition-colors underline">
+                Enterprise Dashboard Login &rarr;
+              </Link>
+            </div>
           </div>
         </div>
       </main>

@@ -145,18 +145,16 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
             </div>
             <div className="flex gap-1">
               {(["Weekly", "Monthly"] as const).map((t) => (
-                <button
+                <Button
                   key={t}
                   type="button"
+                  variant={growthTimeframe === t ? "primary" : "ghost"}
+                  size="sm"
                   onClick={() => setGrowthTimeframe(t)}
-                  className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
-                    growthTimeframe === t
-                      ? "bg-[#2563EB] text-[#FFFFFF]"
-                      : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
-                  }`}
+                  className="px-2 py-0.5 text-[10px] font-semibold"
                 >
                   {t}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

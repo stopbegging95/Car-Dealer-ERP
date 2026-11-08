@@ -12,7 +12,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa6";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Input, Textarea, Dropdown, Modal } from "@/components/ui";
+import { Button, Input, Textarea, Dropdown, Modal, PageBanner } from "@/components/ui";
 
 export default function ContactPage() {
   const [enquiryType, setEnquiryType] = useState("Vehicle Acquisition");
@@ -28,31 +28,24 @@ export default function ContactPage() {
       <Navbar />
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold mb-2">
-              <FiPhone className="w-3.5 h-3.5" />
-              <span>Executive Concierge & Inquiries</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-              Contact Dealership
-            </h1>
-            <p className="text-xs sm:text-sm text-[#475569] mt-0.5">
-              Connect directly with our sales executives, broker concierge, or port clearance officers.
-            </p>
-          </div>
-
-          <a
-            href="https://wa.me/2348001234567"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#16A34A] text-[#FFFFFF] font-bold text-xs shadow-xs hover:bg-[#15803D] self-start md:self-auto transition-colors"
-          >
-            <FaWhatsapp className="w-4 h-4" />
-            <span>Instant WhatsApp Chat</span>
-          </a>
-        </div>
+        {/* Public Contact Hero Banner */}
+        <PageBanner
+          badge="EXECUTIVE CONCIERGE & INQUIRIES"
+          title="CONNECT WITH"
+          titleHighlight="DEALERSHIP"
+          subtitle="Connect directly with our VIP sales liaisons, international auto brokers, or Tin Can Island port customs clearance officers."
+          backgroundImage="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[{ label: "Company" }, { label: "Contact Us" }]}
+          stats={[
+            { value: "24/7", label: "WhatsApp Concierge" },
+            { value: "< 2 Hours", label: "Response Window" },
+            { value: "Lagos & Abuja", label: "Physical Showrooms" },
+          ]}
+          ctaText="Instant WhatsApp Chat"
+          ctaHref="https://wa.me/2348001234567"
+          secondaryCtaText="Book Showroom Visit"
+          secondaryCtaHref="/inventory"
+        />
 
         {/* Showrooms Info & Form Split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

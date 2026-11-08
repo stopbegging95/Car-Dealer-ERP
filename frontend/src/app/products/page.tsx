@@ -6,7 +6,7 @@ import Image from "next/image";
 import { FiArrowRight, FiLayers } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui";
+import { Button, PageBanner } from "@/components/ui";
 import { VEHICLE_CATEGORIES, VEHICLES } from "@/data/vehicles";
 
 export default function ProductsPage() {
@@ -15,18 +15,19 @@ export default function ProductsPage() {
       <Navbar />
 
       <main className="flex-1 space-y-8 mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full max-w-7xl">
-        <div className="space-y-2 mx-auto max-w-2xl text-center">
-          <div className="inline-flex items-center gap-2 bg-[#EFF6FF] px-3.5 py-1 border border-[#BFDBFE] rounded-full font-bold text-[#1D4ED8] text-xs">
-            <FiLayers className="w-3.5 h-3.5 text-[#2563EB]" />
-            <span>Curated Automotive Portfolios</span>
-          </div>
-          <h1 className="font-black text-[#0F172A] text-3xl sm:text-4xl uppercase tracking-tight">
-            Vehicle Categories
-          </h1>
-          <p className="text-[#64748B] text-xs sm:text-sm">
-            Explore our curated luxury collections tailored for executive chauffeuring, track performance, and family comfort.
-          </p>
-        </div>
+        <PageBanner
+          badge="CURATED AUTOMOTIVE PORTFOLIOS"
+          title="VEHICLE"
+          titleHighlight="CATEGORIES"
+          subtitle="Explore our curated luxury collections tailored for executive chauffeuring, track performance, and family comfort."
+          backgroundImage="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[{ label: "Vehicle Portfolios" }]}
+          stats={[
+            { value: `${VEHICLE_CATEGORIES.length - 1} Classes`, label: "Portfolio Categories" },
+            { value: `${VEHICLES.length}+ Models`, label: "Available Fleet" },
+            { value: "100%", label: "Inspection Guarantee" },
+          ]}
+        />
 
         <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {VEHICLE_CATEGORIES.filter((c) => c.slug !== "all").map((cat) => {

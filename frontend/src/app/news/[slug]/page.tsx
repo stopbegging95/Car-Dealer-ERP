@@ -15,7 +15,7 @@ import {
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Badge, VehicleCard } from "@/components/ui";
+import { Button, Badge, VehicleCard, PageBanner } from "@/components/ui";
 import { NEWS_ARTICLES, NewsArticle } from "@/data/news";
 import { VEHICLES } from "@/data/vehicles";
 
@@ -50,56 +50,39 @@ function NewsArticleDetailContent() {
       <Navbar />
 
       <main className="flex-1 space-y-8 mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full max-w-5xl">
-        {/* Back Link & Actions */}
-        <div className="flex justify-between items-center gap-4">
-          <Link
-            href="/news"
-            className="inline-flex items-center gap-1.5 font-semibold text-[#64748B] hover:text-[#2563EB] text-xs transition-colors"
-          >
-            <FiArrowLeft className="w-4 h-4 text-[#2563EB]" />
-            <span>Back to All News & Releases</span>
-          </Link>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleShare}
-            leftIcon={isCopied ? <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600" /> : <FiShare2 className="w-3.5 h-3.5 text-[#2563EB]" />}
-          >
-            {isCopied ? "Link Copied" : "Share Release"}
-          </Button>
-        </div>
-
-        {/* Article Header (Clean, elegant, no forced banner) */}
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <Badge variant="gold" size="sm">
-              {article.category.toUpperCase()}
-            </Badge>
-            <span className="flex items-center gap-1.5 text-[#64748B] text-xs">
-              <FiCalendar className="w-3.5 h-3.5 text-[#2563EB]" />
-              {article.date}
-            </span>
-            <span className="text-[#CBD5E1]">&bull;</span>
-            <span className="flex items-center gap-1.5 text-[#64748B] text-xs">
-              <FiClock className="w-3.5 h-3.5 text-[#2563EB]" />
-              {article.readTime}
-            </span>
-            <span className="text-[#CBD5E1]">&bull;</span>
-            <span className="flex items-center gap-1.5 text-[#64748B] text-xs">
-              <FiUser className="w-3.5 h-3.5 text-[#2563EB]" />
-              {article.author}
-            </span>
-          </div>
-
-          <h1 className="font-black text-[#0F172A] text-2xl sm:text-3xl md:text-4xl lg:text-5xl uppercase leading-tight tracking-tight">
-            {article.title}
-          </h1>
-
-          <p className="max-w-3xl font-medium text-[#475569] text-sm sm:text-base leading-relaxed">
-            {article.summary}
-          </p>
-        </div>
+        {/* Page Banner */}
+        <PageBanner
+          badge={article.category.toUpperCase()}
+          title={article.title}
+          subtitle={article.summary}
+          backgroundImage={article.image}
+          breadcrumbs={[
+            { label: "News & Events", href: "/news" },
+            { label: "Article Details" },
+          ]}
+          stats={[
+            { value: article.date, label: "Publication Date" },
+            { value: article.readTime, label: "Read Time" },
+            { value: article.author, label: "Author & Desk" },
+          ]}
+          actions={
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/news">
+                <Button variant="outline" size="sm" className="bg-white/10 hover:bg-white/20 text-white border-white/20" leftIcon={<FiArrowLeft />}>
+                  Back to All Stories
+                </Button>
+              </Link>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleShare}
+                leftIcon={isCopied ? <FiCheckCircle className="text-white" /> : <FiShare2 />}
+              >
+                {isCopied ? "Link Copied" : "Share Article"}
+              </Button>
+            </div>
+          }
+        />
 
         {/* Main High-Res Editorial Photography */}
         <div className="relative bg-[#000000] shadow-xl border border-white/10 rounded-2xl w-full h-72 sm:h-96 md:h-[440px] overflow-hidden">

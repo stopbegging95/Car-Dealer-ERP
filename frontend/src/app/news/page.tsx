@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Badge, Modal, Tabs } from "@/components/ui";
+import { Button, Badge, Modal, Tabs, PageBanner } from "@/components/ui";
 import { NEWS_ARTICLES, NewsArticle } from "@/data/news";
 
 export default function NewsPage() {
@@ -30,22 +30,28 @@ export default function NewsPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Block (Modern clean header, no forced banner) */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold mb-2">
-              <FiFileText className="w-3.5 h-3.5" />
-              <span>Dealership Press & Editorial</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-              News, Events & Automotive Insights
-            </h1>
-            <p className="text-xs sm:text-sm text-[#475569] mt-0.5">
-              Stay informed on new showroom arrivals, exhibition galas, and automotive import updates.
-            </p>
-          </div>
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Page Banner */}
+        <PageBanner
+          badge="DEALERSHIP PRESS & EDITORIAL"
+          title="NEWS, EVENTS &"
+          titleHighlight="AUTOMOTIVE INSIGHTS"
+          subtitle="Stay informed on new showroom arrivals, private gala exhibitions, and automotive market updates across West Africa."
+          backgroundImage="https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[{ label: "News & Events" }]}
+          stats={[
+            { value: `${NEWS_ARTICLES.length} Stories`, label: "Published Articles" },
+            { value: "Lagos & Abuja", label: "Press Bureau" },
+            { value: "Weekly", label: "Editorial Updates" },
+          ]}
+        />
 
+        {/* Filter Navigation */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-[#E2E8F0]">
+          <div>
+            <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Explore Dispatches</h2>
+            <p className="text-xs text-[#64748B]">Select a category to filter automotive insights and press releases</p>
+          </div>
           <Tabs
             variant="pills"
             activeTab={activeCategory}

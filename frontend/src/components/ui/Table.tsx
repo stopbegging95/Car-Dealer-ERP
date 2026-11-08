@@ -79,7 +79,7 @@ export function Table<T>({
         <table className="min-w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#64748B]">
-              {columns.map((col) => {
+              {columns.map((col, colIndex) => {
                 const isSorted = sortKey === col.key;
                 const alignClass =
                   col.align === "right"
@@ -90,7 +90,7 @@ export function Table<T>({
 
                 return (
                   <th
-                    key={col.key}
+                    key={`${col.key}-${colIndex}`}
                     onClick={() => col.sortable && handleSort(col.key)}
                     className={`py-3.5 px-3 sm:px-4 whitespace-nowrap ${alignClass} ${
                       col.sortable ? "cursor-pointer select-none hover:text-[#2563EB]" : ""
@@ -133,8 +133,8 @@ export function Table<T>({
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
-                  {columns.map((col) => (
-                    <td key={col.key} className="py-3.5 px-3 sm:px-4 whitespace-nowrap">
+                  {columns.map((col, colIndex) => (
+                    <td key={`${col.key}-${colIndex}`} className="py-3.5 px-3 sm:px-4 whitespace-nowrap">
                       <div className="h-4 bg-slate-200 rounded w-3/4" />
                     </td>
                   ))}
@@ -164,7 +164,7 @@ export function Table<T>({
                         : "hover:bg-[#F8FAFC]"
                     }`}
                   >
-                    {columns.map((col) => {
+                    {columns.map((col, colIndex) => {
                       const alignClass =
                         col.align === "right"
                           ? "text-right"
@@ -174,7 +174,7 @@ export function Table<T>({
 
                       return (
                         <td
-                          key={col.key}
+                          key={`${col.key}-${colIndex}`}
                           className={`py-3 px-3 sm:px-4 text-xs sm:text-sm whitespace-nowrap ${alignClass} ${col.className || ""}`}
                         >
                           {col.render

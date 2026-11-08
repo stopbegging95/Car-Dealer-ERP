@@ -172,15 +172,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
             )}
           </div>
 
-          <Link
-            href="/portal"
-            className={`py-1 transition-colors ${
-              pathname.startsWith("/portal") ? "text-[#2563EB] font-bold" : "text-[#475569] hover:text-[#2563EB]"
-            }`}
-          >
-            My Portal
-          </Link>
-
           {/* Company Dropdown / About Us / Contact */}
           <div
             className="relative"
@@ -329,9 +320,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                       icon: <FiBox className="w-3.5 h-3.5 text-[#2563EB]" />,
                     },
                     {
-                      name: "Finance & Insurance",
+                      name: "Finance",
                       href: "/erp/financing",
-                      dept: "Auto Loans & Policies",
+                      dept: "Auto Loans & Underwriting",
                       icon: <FiActivity className="w-3.5 h-3.5 text-[#2563EB]" />,
                     },
                     {
@@ -347,9 +338,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                       icon: <FiTruck className="w-3.5 h-3.5 text-[#2563EB]" />,
                     },
                     {
-                      name: "Accounting & Finance",
+                      name: "Accounting",
                       href: "/erp/accounting",
-                      dept: "Landed Margins & Treasury",
+                      dept: "Landed Margins & GL",
                       icon: <FiDollarSign className="w-3.5 h-3.5 text-[#2563EB]" />,
                     },
                     {
@@ -380,19 +371,38 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                   ))}
                 </div>
 
-                {/* Footer security tag */}
-                <div className="mt-3 pt-2.5 border-t border-[#E2E8F0] flex items-center justify-between text-[10px] text-[#64748B]">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    Encrypted Session & RBAC Protected
-                  </span>
-                  <Link
-                    href="/auth/login"
-                    onClick={() => setLoginDropdownOpen(false)}
-                    className="font-bold text-[#2563EB] hover:underline"
-                  >
-                    Auth Portal &rarr;
-                  </Link>
+                {/* Footer Quick Links & Security */}
+                <div className="mt-3 pt-2.5 border-t border-[#E2E8F0] space-y-2">
+                  <div className="flex items-center justify-between text-[10px] text-[#64748B]">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      Encrypted Session & RBAC Protected
+                    </span>
+                    <Link
+                      href="/auth/dashboard-login"
+                      onClick={() => setLoginDropdownOpen(false)}
+                      className="font-bold text-[#2563EB] hover:underline"
+                    >
+                      Staff Dashboard Login &rarr;
+                    </Link>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px]">
+                    <Link
+                      href="/auth/login"
+                      onClick={() => setLoginDropdownOpen(false)}
+                      className="text-[#64748B] hover:text-[#2563EB]"
+                    >
+                      Client Portal Login
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      onClick={() => setLoginDropdownOpen(false)}
+                      className="font-bold text-[#2563EB] hover:underline"
+                    >
+                      Create Customer Account &rarr;
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}
@@ -458,10 +468,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                 { name: "Sales & Orders", href: "/erp/sales" },
                 { name: "Service & Workshop", href: "/erp/service" },
                 { name: "Parts & Inventory", href: "/erp/parts" },
-                { name: "Finance & Insurance", href: "/erp/financing" },
+                { name: "Finance", href: "/erp/financing" },
                 { name: "Detailing & Recon", href: "/erp/recon" },
                 { name: "Import Logistics", href: "/erp/imports" },
-                { name: "Accounting & Finance", href: "/erp/accounting" },
+                { name: "Accounting", href: "/erp/accounting" },
                 { name: "Trade-In & Swap", href: "/erp/trade-ins" },
               ].map((d) => (
                 <Link
@@ -473,6 +483,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                   {d.name}
                 </Link>
               ))}
+            </div>
+
+            <div className="pt-2.5 mt-2 border-t border-[#E2E8F0] flex flex-col gap-1.5 px-1">
+              <Link
+                href="/auth/dashboard-login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-[#FFFFFF] bg-[#2563EB] hover:bg-[#1D4ED8]"
+              >
+                <FiShield className="w-3.5 h-3.5" />
+                <span>Staff Dashboard Login</span>
+              </Link>
+              <Link
+                href="/auth/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-[#2563EB] bg-[#EFF6FF] border border-[#BFDBFE] hover:bg-[#DBEAFE]"
+              >
+                <span>Create VIP Customer Account</span>
+              </Link>
             </div>
           </div>
         </div>

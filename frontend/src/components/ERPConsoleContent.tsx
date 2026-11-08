@@ -149,7 +149,14 @@ export function ERPConsoleContent({
     return role.defaultModule;
   });
 
+  const [stockList, setStockList] = useState<Vehicle[]>(VEHICLES);
   const [isAddVehicleOpen, setIsAddVehicleOpen] = useState<boolean>(false);
+  const [newVehMake, setNewVehMake] = useState<string>("");
+  const [newVehModel, setNewVehModel] = useState<string>("");
+  const [newVehYear, setNewVehYear] = useState<string>("2026");
+  const [newVehVin, setNewVehVin] = useState<string>("");
+  const [newVehPriceUSD, setNewVehPriceUSD] = useState<string>("");
+  const [newVehLocation, setNewVehLocation] = useState<"Lagos Showroom" | "Abuja Showroom" | "Port Transit" | "Central Warehouse">("Lagos Showroom");
   const [isTransferModalOpen, setIsTransferModalOpen] = useState<boolean>(false);
   const [tableSearch, setTableSearch] = useState<string>("");
 
@@ -362,7 +369,7 @@ export function ERPConsoleContent({
   };
 
   // Master stock filtering
-  const filteredStock = VEHICLES.filter(
+  const filteredStock = stockList.filter(
     (v) =>
       v.make.toLowerCase().includes(tableSearch.toLowerCase()) ||
       v.model.toLowerCase().includes(tableSearch.toLowerCase()) ||
@@ -377,13 +384,13 @@ export function ERPConsoleContent({
       { name: "Orders & Sales", icon: <FiShoppingCart className="w-4 h-4 shrink-0" />, badge: "8" },
       { name: "Service & Workshop", icon: <FiTool className="w-4 h-4 shrink-0" />, badge: "6 Bays" },
       { name: "Parts & Inventory", icon: <FiBox className="w-4 h-4 shrink-0" />, badge: "4 Low" },
-      { name: "Finance & Insurance", icon: <FiActivity className="w-4 h-4 shrink-0" />, badge: "6 Pending" },
+      { name: "Finance", icon: <FiActivity className="w-4 h-4 shrink-0" />, badge: "6 Pending" },
       { name: "Detailing & Recon", icon: <FiCheckSquare className="w-4 h-4 shrink-0" />, badge: "4 Ready" },
       { name: "Branch Transfers", icon: <FiNavigation className="w-4 h-4 shrink-0" />, badge: "2 Active" },
       { name: "Import Logistics", icon: <FiTruck className="w-4 h-4 shrink-0" />, badge: "3 Vessels" },
       { name: "Trade-In & Swap", icon: <FiRepeat className="w-4 h-4 shrink-0" />, badge: "3" },
       { name: "CRM Pipeline & 360", icon: <FiMessageSquare className="w-4 h-4 shrink-0" />, badge: "14" },
-      { name: "Accounting & Finance", icon: <FiDollarSign className="w-4 h-4 shrink-0" /> },
+      { name: "Accounting", icon: <FiDollarSign className="w-4 h-4 shrink-0" /> },
       { name: "HR & Recruitment", icon: <FiBriefcase className="w-4 h-4 shrink-0" />, badge: "5 Apps" },
     ],
     [filteredStock.length]
@@ -522,7 +529,7 @@ export function ERPConsoleContent({
             <PartsDashboard showToast={showToast} />
           )}
 
-          {activeModule === "Finance & Insurance" && (
+          {activeModule === "Finance" && (
             <FinancingDashboard showToast={showToast} />
           )}
 
@@ -548,7 +555,7 @@ export function ERPConsoleContent({
             <CRMDashboard showToast={showToast} />
           )}
 
-          {activeModule === "Accounting & Finance" && (
+          {activeModule === "Accounting" && (
             <AccountingDashboard
               payablesList={payablesList}
               receivablesList={receivablesList}
@@ -636,7 +643,7 @@ export function ERPConsoleContent({
         isOpen={isAddVehicleOpen}
         onClose={() => setIsAddVehicleOpen(false)}
         size="lg"
-        title="Register New Vehicle to Stock"
+        title="Register New Vehicle to Stock (Product Intake)"
         description="Add a new luxury vehicle to inventory for internal valuation and public listing."
         footer={
           <>
@@ -652,8 +659,49 @@ export function ERPConsoleContent({
               variant="primary"
               size="sm"
               onClick={() => {
-                showToast("New vehicle submitted to Inventory Master Table with 'Draft Inspection' status.");
+                if (!newVehMake || !newVehModel) {
+                  showToast("Please enter vehicle make and model.");
+                  return;
+                }
+                const newStockId = `STK-2026-${String(stockList.length + 1).padStart(3, "0")}`;
+                const price = Number(newVehPriceUSD.replace(/[^0-9]/g, "") || 165000);
+                const newVeh: Vehicle = {
+                  stockId: newStockId,
+                  vin: newVehVin || `WDD223${Date.now().toString().slice(-10)}`,
+                  category: "Executive Class",
+                  make: newVehMake,
+                  model: newVehModel,
+                  trim: "Executive Edition",
+                  year: parseInt(newVehYear, 10) || 2026,
+                  mileage: 1200,
+                  condition: "Brand-new",
+                  transmission: "Automatic",
+                  fuel: "Petrol",
+                  exteriorColor: "Obsidian Black",
+                  interiorColor: "Nappa Leather Black",
+                  purchaseCost: Math.round(price * 0.78),
+                  landedCost: Math.round(price * 0.88),
+                  priceUSD: price,
+                  priceNGN: price * 1500,
+                  status: "Available",
+                  location: newVehLocation,
+                  image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80",
+                  gallery: [
+                    "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
+                  ],
+                  features: ["VIP Lounge Seating", "360 Surround View", "Active Lane Assist"],
+                  horsepower: 503,
+                  engine: "4.0L V8 Biturbo",
+                  description: `${newVehMake} ${newVehModel} registered for showroom stock. Fully inspected and authenticated.`,
+                };
+                setStockList([newVeh, ...stockList]);
                 setIsAddVehicleOpen(false);
+                showToast(`New vehicle product ${newStockId} (${newVehMake} ${newVehModel}) added to showroom stock!`);
+                setNewVehMake("");
+                setNewVehModel("");
+                setNewVehVin("");
+                setNewVehPriceUSD("");
               }}
               leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
@@ -664,26 +712,66 @@ export function ERPConsoleContent({
       >
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <Input label="Make (Brand)" placeholder="e.g. Mercedes-Benz" required />
-            <Input label="Model & Trim" placeholder="e.g. S580 4MATIC Maybach" required />
+            <Input
+              label="Make (Brand)"
+              placeholder="e.g. Mercedes-Benz"
+              value={newVehMake}
+              onChange={(e) => setNewVehMake(e.target.value)}
+              required
+            />
+            <Input
+              label="Model & Trim"
+              placeholder="e.g. S580 4MATIC Maybach"
+              value={newVehModel}
+              onChange={(e) => setNewVehModel(e.target.value)}
+              required
+            />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            <Input label="Model Year" placeholder="2026" required />
-            <Input label="Chassis / VIN" placeholder="WDD223..." required />
-            <Input label="Mileage (KM)" placeholder="1,500" required />
+            <Input
+              label="Model Year"
+              placeholder="2026"
+              value={newVehYear}
+              onChange={(e) => setNewVehYear(e.target.value)}
+              required
+            />
+            <Input
+              label="Chassis / VIN"
+              placeholder="WDD223..."
+              value={newVehVin}
+              onChange={(e) => setNewVehVin(e.target.value)}
+              required
+            />
+            <Input
+              label="Mileage (KM)"
+              placeholder="1,500"
+              defaultValue="1,200"
+            />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <Input label="FOB Purchase Price ($)" placeholder="118500" required />
-            <Input label="Target Showroom Price ($)" placeholder="165000" required />
+            <Input
+              label="FOB Purchase Price ($)"
+              placeholder="118,500"
+              defaultValue="118,500"
+            />
+            <Input
+              label="Target Showroom Price ($)"
+              placeholder="165,000"
+              value={newVehPriceUSD}
+              onChange={(e) => setNewVehPriceUSD(e.target.value)}
+              required
+            />
           </div>
           <Dropdown
             label="Initial Allocation Hub"
             options={[
-              { label: "Victoria Island HQ Flagship, Lagos", value: "Lagos" },
-              { label: "Maitama Diplomatic Zone, Abuja", value: "Abuja" },
-              { label: "Tin Can Port Transit Holding Bay", value: "Tin Can" },
+              { label: "Victoria Island Flagship Showroom (Lagos Showroom)", value: "Lagos Showroom" },
+              { label: "Maitama Diplomatic Zone Suite (Abuja Showroom)", value: "Abuja Showroom" },
+              { label: "Tin Can Port Transit Holding Bay (Port Transit)", value: "Port Transit" },
+              { label: "Central Distribution Warehouse (Central Warehouse)", value: "Central Warehouse" },
             ]}
-            onChange={() => {}}
+            value={newVehLocation}
+            onChange={(val) => setNewVehLocation(val as "Lagos Showroom" | "Abuja Showroom" | "Port Transit" | "Central Warehouse")}
           />
         </div>
       </Modal>
@@ -1262,11 +1350,11 @@ export function ERPConsoleContent({
               <Dropdown
                 label="Authorized Department Dashboard"
                 options={[
-                  { label: "Accounting & Treasury (Desk #13)", value: "finance" },
+                  { label: "Accounting (Desk #13)", value: "accounting" },
                   { label: "Showroom Sales & Orders (Desk #03)", value: "sales" },
                   { label: "Master Workshop & Service (Desk #04)", value: "service" },
                   { label: "Spare Parts & Accessories (Desk #05)", value: "parts" },
-                  { label: "Finance & Insurance Underwriting (Desk #06)", value: "financing" },
+                  { label: "Finance (Desk #06)", value: "financing" },
                   { label: "Detailing, Paint & Recon (Desk #07)", value: "recon" },
                   { label: "Import Logistics & Customs (Desk #08)", value: "imports" },
                   { label: "Trade-In & Swap Appraisals (Desk #10)", value: "trade-ins" },

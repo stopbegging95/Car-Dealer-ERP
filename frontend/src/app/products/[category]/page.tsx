@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { VehicleCard } from "@/components/ui";
+import { VehicleCard, PageBanner, Button } from "@/components/ui";
 import { VEHICLES, VEHICLE_CATEGORIES, Vehicle } from "@/data/vehicles";
 
 function CategoryProductsContent() {
@@ -33,28 +33,29 @@ function CategoryProductsContent() {
     <div className="min-h-screen text-[#0F172A] bg-[#F8FAFC] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <div className="flex items-center justify-between gap-4">
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-1.5 text-xs text-[#64748B] hover:text-[#2563EB] transition-colors font-semibold"
-          >
-            <FiArrowLeft className="w-4 h-4 text-[#2563EB]" />
-            <span>All Categories</span>
-          </Link>
-          <span className="text-xs font-mono text-[#2563EB] font-bold">
-            {categoryVehicles.length || VEHICLES.length} Units Available
-          </span>
-        </div>
-
-        <div className="pb-4 border-b border-[#E2E8F0]">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-            {categoryMeta.name}
-          </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-1 max-w-xl">
-            Verified luxury and performance vehicles available for private delivery and showroom viewings.
-          </p>
-        </div>
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <PageBanner
+          badge={`PORTFOLIO: ${categoryMeta.name.toUpperCase()}`}
+          title={categoryMeta.name}
+          subtitle="Verified luxury and performance vehicles available for private delivery, bespoke customization, and showroom viewings."
+          backgroundImage={categoryVehicles[0]?.image || "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"}
+          breadcrumbs={[
+            { label: "Vehicle Portfolios", href: "/products" },
+            { label: categoryMeta.name },
+          ]}
+          stats={[
+            { value: `${categoryVehicles.length || VEHICLES.length} Units`, label: "Vehicles In Class" },
+            { value: "0 km - 25k km", label: "Mileage Envelope" },
+            { value: "Immediate", label: "Showroom Delivery" },
+          ]}
+          actions={
+            <Link href="/products">
+              <Button variant="outline" size="sm" className="bg-white/10 hover:bg-white/20 text-white border-white/20" leftIcon={<FiArrowLeft />}>
+                All Categories
+              </Button>
+            </Link>
+          }
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {(categoryVehicles.length > 0 ? categoryVehicles : VEHICLES).map((vehicle) => (

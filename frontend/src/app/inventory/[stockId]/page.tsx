@@ -30,6 +30,7 @@ import {
   DatePicker,
   Dropdown,
   VehicleCard,
+  PageBanner,
 } from "@/components/ui";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
 
@@ -121,6 +122,28 @@ function VehicleDetailContent() {
             </div>
           </div>
         </div>
+
+        {/* Public Vehicle Dossier Hero Banner */}
+        <PageBanner
+          badge={`${vehicle.year} ${vehicle.make.toUpperCase()} • ${vehicle.stockId}`}
+          title={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+          titleHighlight={vehicle.trim}
+          subtitle={`Showroom Node: ${vehicle.location} • 150-Point Certified Pass • Clean Title Documented`}
+          backgroundImage={vehicle.image}
+          breadcrumbs={[
+            { label: "Inventory", href: "/inventory" },
+            { label: `${vehicle.make} ${vehicle.model}` },
+          ]}
+          stats={[
+            { value: `$${vehicle.priceUSD.toLocaleString()}`, label: "Price USD" },
+            { value: `${vehicle.mileage.toLocaleString()} KM`, label: "Mileage" },
+            { value: vehicle.status, label: "Status" },
+          ]}
+          ctaText="Book Private Test Drive"
+          onCtaClick={() => setIsTestDriveOpen(true)}
+          secondaryCtaText="Finance Estimator"
+          secondaryCtaHref={`/services/loan-calculator?price=${vehicle.priceUSD}`}
+        />
 
         {/* Top Header Block: Make, Model, Status, and Price */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E2E8F0]">

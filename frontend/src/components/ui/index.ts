@@ -13,4 +13,5 @@ export * from "./Checkbox";
 export * from "./DatePicker";
 export * from "./FilterBar";
 export * from "./VehicleCard";
+export * from "./PageBanner";
 

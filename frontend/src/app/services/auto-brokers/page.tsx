@@ -11,7 +11,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa6";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Input, Dropdown, Modal } from "@/components/ui";
+import { Button, Input, Dropdown, Modal, PageBanner } from "@/components/ui";
 
 export default function AutoBrokersPage() {
   const [targetMake, setTargetMake] = useState("");
@@ -40,32 +40,35 @@ export default function AutoBrokersPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold mb-2">
-              <FiCompass className="w-3.5 h-3.5" />
-              <span>International Automotive Concierge</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-              Auto Broker & Custom Sourcing
-            </h1>
-            <p className="text-xs sm:text-sm text-[#475569] mt-0.5">
-              Can&apos;t find your exact specification locally? We inspect, bid, ship, and clear exotic and bespoke vehicles worldwide.
-            </p>
-          </div>
-
-          <a
-            href="https://wa.me/2348001234567?text=Hello%20Premier%20Auto%20Broker%20Concierge"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FFFFFF] text-[#16A34A] border border-[#CBD5E1] hover:border-[#16A34A] text-xs font-bold self-start md:self-auto shadow-xs transition-colors"
-          >
-            <FaWhatsapp className="w-4 h-4 text-[#16A34A]" />
-            <span>Direct Concierge WhatsApp</span>
-          </a>
-        </div>
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Page Banner */}
+        <PageBanner
+          badge="INTERNATIONAL BESPOKE SOURCING"
+          title="GLOBAL AUTO"
+          titleHighlight="BROKER DESK"
+          subtitle="Direct private scans across German, Belgian, and UAE dealership networks with doorstep delivery and verified title."
+          backgroundImage="https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[
+            { label: "Sourcing & Logistics" },
+            { label: "Auto Broker Concierge" },
+          ]}
+          stats={[
+            { value: "14 Days", label: "Average Sourcing Window" },
+            { value: "3 Continents", label: "Direct Dealer Auctions" },
+            { value: "100%", label: "Clean Title & CARFAX" },
+          ]}
+          actions={
+            <a
+              href="https://wa.me/2348001234567?text=Hello%20Premier%20Auto%20Broker%20Concierge"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#22C55E] text-white hover:bg-[#16A34A] text-xs font-bold shadow-md transition-all"
+            >
+              <FaWhatsapp className="w-4 h-4 text-white" />
+              <span>Direct WhatsApp Desk</span>
+            </a>
+          }
+        />
 
         {/* Form and Pipeline Split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

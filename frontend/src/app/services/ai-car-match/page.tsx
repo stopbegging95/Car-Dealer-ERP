@@ -16,7 +16,7 @@ import {
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Badge, Modal, Input, RadioGroup, Dropdown } from "@/components/ui";
+import { Button, Badge, Modal, Input, RadioGroup, Dropdown, PageBanner } from "@/components/ui";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
 
 export default function AICarMatchPage() {
@@ -46,20 +46,24 @@ export default function AICarMatchPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Block */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold">
-            <FiCpu className="w-3.5 h-3.5 text-[#2563EB]" />
-            <span>AI Automotive Recommendation Engine</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-            Find Your Ideal Vehicle Match
-          </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] max-w-xl mx-auto">
-            Answer 3 quick questions about your lifestyle, performance desires, and budget to receive algorithmic vehicle matches from our stock.
-          </p>
-        </div>
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Page Banner */}
+        <PageBanner
+          badge="CONCIERGE INTELLIGENCE"
+          title="AI-POWERED"
+          titleHighlight="VEHICLE MATCHMAKER"
+          subtitle="Find your ideal luxury vehicle tailored to lifestyle, performance preferences, and budget."
+          backgroundImage="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[
+            { label: "AI Concierge" },
+            { label: "Vehicle Matchmaker" },
+          ]}
+          stats={[
+            { value: "98.4%", label: "Client Satisfaction" },
+            { value: "3 Steps", label: "Smart Diagnostic" },
+            { value: "Instant", label: "Inventory Matching" },
+          ]}
+        />
 
         {/* 3-Step Wizard Indicator */}
         <div className="flex items-center justify-between max-w-md mx-auto pt-2">

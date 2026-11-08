@@ -1,12 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   FiEye,
   FiCheckSquare,
   FiDownload,
+  FiPlus,
+  FiX,
+  FiCheck,
 } from "react-icons/fi";
-import { Button, Badge, Card } from "@/components/ui";
+import { Button, Badge, Card, Modal, Input, Dropdown } from "@/components/ui";
 
 export interface OrderItem {
   id: string;
@@ -30,11 +33,42 @@ export interface SalesOrdersPageProps {
 }
 
 export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
-  orders,
+  orders: initialOrders,
   onPreviewOrder,
   onInspectOrder,
   onDownloadPdf,
 }) => {
+  const [orders, setOrders] = useState<OrderItem[]>(initialOrders);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newClient, setNewClient] = useState("");
+  const [newCar, setNewCar] = useState("2024 Mercedes-Maybach S580");
+  const [newAmount, setNewAmount] = useState("165,000");
+  const [newDeposit, setNewDeposit] = useState("50,000");
+  const [newDeliveryDate, setNewDeliveryDate] = useState("2026-11-20");
+  const [newRep, setNewRep] = useState("Senior Sales Liaison");
+  const [newHub, setNewHub] = useState("VI");
+
+  const handleCreateOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClient) return;
+    const newId = `ORD-2026-${String(orders.length + 1).padStart(3, "0")}`;
+    const newEntry: OrderItem = {
+      id: newId,
+      client: newClient,
+      car: newCar,
+      amount: `$${Number(newAmount.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      deposit: `$${Number(newDeposit.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      balance: `$${(Number(newAmount.replace(/[^0-9]/g, "") || 0) - Number(newDeposit.replace(/[^0-9]/g, "") || 0)).toLocaleString()}`,
+      status: "Wire Deposit Verified",
+      stage: "Contract Signed & Delivery Prep",
+      rep: newRep,
+      deliveryDate: newDeliveryDate,
+    };
+    setOrders([newEntry, ...orders]);
+    setIsCreateOpen(false);
+    setNewClient("");
+  };
+
   return (
     <Card className="space-y-3 shadow-xs p-4 sm:p-5">
       <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2 pb-2.5 border-[#E2E8F0] border-b">
@@ -42,8 +76,101 @@ export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
           <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">Active Luxury Sales Orders Pipeline</h3>
           <p className="text-[#64748B] text-[11px]">Audited contract commitments, bank escrow verification & delivery handover stages</p>
         </div>
-        <Badge variant="gold" size="sm">Q4 FY 2026</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="gold" size="sm">Q4 FY 2026</Badge>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsCreateOpen(true)}
+            leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+          >
+            + Create Sales Order
+          </Button>
+        </div>
       </div>
+
+      {/* Modal for Creating Sales Order */}
+      <Modal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="Generate New Luxury Sales Order & Proforma"
+        size="lg"
+      >
+        <form onSubmit={handleCreateOrder} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Input
+              label="Client Name & Organization"
+              placeholder="e.g. Chief Dr. Somoye / Zenith Partners"
+              value={newClient}
+              onChange={(e) => setNewClient(e.target.value)}
+              required
+            />
+            <Dropdown
+              label="Vehicle Acquired (Stock)"
+              options={[
+                { label: "2024 Mercedes-Maybach S580 (STK-001)", value: "2024 Mercedes-Maybach S580" },
+                { label: "2024 Porsche 911 Turbo S (STK-002)", value: "2024 Porsche 911 Turbo S" },
+                { label: "2023 Range Rover Autobiography (STK-003)", value: "2023 Range Rover Autobiography" },
+                { label: "2024 Mercedes-AMG G63 Magno (STK-007)", value: "2024 Mercedes-AMG G63 Magno" },
+              ]}
+              value={newCar}
+              onChange={(val) => setNewCar(String(val))}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Input
+              label="Agreed Contract Price ($)"
+              type="text"
+              value={newAmount}
+              onChange={(e) => setNewAmount(e.target.value)}
+              required
+            />
+            <Input
+              label="Initial Wire Deposit ($)"
+              type="text"
+              value={newDeposit}
+              onChange={(e) => setNewDeposit(e.target.value)}
+              required
+            />
+            <Input
+              label="Handover Target Date"
+              type="date"
+              value={newDeliveryDate}
+              onChange={(e) => setNewDeliveryDate(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Input
+              label="Assigned Sales Representative"
+              value={newRep}
+              onChange={(e) => setNewRep(e.target.value)}
+              required
+            />
+            <Dropdown
+              label="Delivery Showroom Hub"
+              options={[
+                { label: "Victoria Island Flagship Showroom", value: "VI" },
+                { label: "Maitama Diplomatic Suite, Abuja", value: "Abuja" },
+                { label: "White-Glove Doorstep Delivery", value: "Home" },
+              ]}
+              value={newHub}
+              onChange={(val) => setNewHub(String(val))}
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0]">
+            <Button variant="ghost" size="sm" type="button" onClick={() => setIsCreateOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" type="submit" leftIcon={<FiCheck />}>
+              Issue Sales Order & Proforma
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
       <div className="overflow-x-auto">
         <table className="w-full text-xs text-left">

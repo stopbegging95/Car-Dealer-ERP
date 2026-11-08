@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Input, Dropdown, Modal } from "@/components/ui";
+import { Button, Input, Dropdown, Modal, PageBanner } from "@/components/ui";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
 
 export default function SellOrSwapPage() {
@@ -39,24 +39,33 @@ export default function SellOrSwapPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Block with Mode Switcher */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Page Banner */}
+        <PageBanner
+          badge="VEHICLE APPRAISALS & TRADE-IN"
+          title="SELL OR SWAP YOUR"
+          titleHighlight="LUXURY CAR"
+          subtitle="Instant 150-point valuation appraisal and equity rollover into brand new 2026 showroom models."
+          backgroundImage="https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[
+            { label: "Concierge Services" },
+            { label: "Sell or Swap" },
+          ]}
+          stats={[
+            { value: "2-Hour", label: "Formal Cash Offer" },
+            { value: "150-Point", label: "Technical Appraisal" },
+            { value: "100% Equity", label: "Trade-In Rollover" },
+          ]}
+        />
+
+        {/* Transaction Type Segmented Switcher */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-[#E2E8F0]">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold mb-2">
-              <FiRepeat className="w-3.5 h-3.5" />
-              <span>Direct Dealership Exchange & Valuation</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-              Sell or Swap Your Vehicle
-            </h1>
-            <p className="text-xs sm:text-sm text-[#475569] mt-0.5">
-              Upgrade seamlessly to approved inventory or receive an instant cash purchase offer within 2 hours.
-            </p>
+            <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Select Transaction Route</h2>
+            <p className="text-xs text-[#64748B]">Choose whether to trade your equity toward a new vehicle or receive direct capital settlement</p>
           </div>
 
-          {/* Mode Segmented Switcher */}
-          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start md:self-auto gap-1">
+          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start sm:self-auto gap-1">
             <Button
               variant={mode === "swap" ? "primary" : "ghost"}
               size="sm"

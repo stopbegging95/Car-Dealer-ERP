@@ -99,35 +99,26 @@ export default function App() {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const brandsRef = useRef<HTMLDivElement>(null);
 
-  // Banner Slider State
-  // Slide 0: Text + Image (Mercedes fleet)
-  // Slide 1: Image Only (Exotic supercar — no text)
-  // Slide 2: Text Only (Editorial prestige)
-  // Slide 3: Text + Video (video background + animated overlay text)
+  // Banner Slider State (5 distinct luxury archetypes):
+  // Slide 0: Text + Image (Mercedes fleet + headline & CTAs)
+  // Slide 1: Text Only (Editorial prestige — gradient bg, no image)
+  // Slide 2: Image Only (Exotic supercar — full-bleed, no text)
+  // Slide 3: Text + Video (Autoplaying background video + animated overlay text, no pause/play controls)
+  // Slide 4: Video Only (Autoplaying full-bleed performance video without text stacked on it)
+  const TOTAL_SLIDES = 5;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 4);
+      setCurrentSlide((prev) => (prev + 1) % TOTAL_SLIDES);
     }, 6000);
     return () => clearInterval(timer);
   }, [isPaused]);
 
-  useEffect(() => {
-    if (!videoRef.current) return;
-    if (currentSlide === 3) {
-      videoRef.current.play().catch(() => {});
-    } else {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  }, [currentSlide]);
-
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % 4);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + 4) % 4);
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % TOTAL_SLIDES);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + TOTAL_SLIDES) % TOTAL_SLIDES);
 
   const scrollBrands = (direction: "left" | "right") => {
     if (brandsRef.current) {
@@ -402,7 +393,7 @@ export default function App() {
               <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/15 via-transparent to-transparent" />
             </div>
 
-            {/* ── SLIDE 3: Text + Video (video background + animated overlay text) ── */}
+            {/* ── SLIDE 3: Text + Video (Autoplaying video background + animated overlay text, no pause/play controls) ── */}
             <div
               className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 currentSlide === 3
@@ -410,29 +401,26 @@ export default function App() {
                   : "opacity-0 z-0 pointer-events-none"
               }`}
             >
-              {/* Background video — autoplay, muted, looped, no controls */}
-              <video
-                ref={videoRef}
-                className="absolute inset-0 w-full h-full object-cover object-center"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-              >
-                <source
-                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                  type="video/mp4"
+              {/* YouTube video background — autoplays automatically when slide is current, zero pause/play controls */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-[#0F172A]">
+                <iframe
+                  src={
+                    currentSlide === 3
+                      ? "https://www.youtube-nocookie.com/embed/YAFUyPp_238?autoplay=1&mute=1&loop=1&playlist=YAFUyPp_238&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1"
+                      : "about:blank"
+                  }
+                  title="Luxury Fleet Video Experience"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
+                  loading="lazy"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
+                  tabIndex={-1}
                 />
-                <source
-                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
-                  type="video/mp4"
-                />
-              </video>
+              </div>
 
               {/* Gradient overlays for legibility */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/88 via-[#0F172A]/70 to-transparent sm:w-4/5 md:w-3/4" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/65 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/30 via-transparent to-transparent" />
 
               {/* Animated text overlay — same layout pattern as Text+Image slide */}
               <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
@@ -512,6 +500,36 @@ export default function App() {
               </div>
             </div>
 
+            {/* ── SLIDE 4: Video Only (Pure full-bleed live performance footage — zero text stacked) ── */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                currentSlide === 4
+                  ? "opacity-100 z-10 pointer-events-auto"
+                  : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              {/* Full-bleed YouTube video background — autoplays automatically once current, no text stacked */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-[#0F172A]">
+                <iframe
+                  src={
+                    currentSlide === 4
+                      ? "https://www.youtube-nocookie.com/embed/YAFUyPp_238?autoplay=1&mute=1&loop=1&playlist=YAFUyPp_238&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1"
+                      : "about:blank"
+                  }
+                  title="Pure Supercar Performance Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
+                  loading="lazy"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
+                  tabIndex={-1}
+                />
+              </div>
+
+              {/* Atmospheric subtle vignette overlay only — intentionally zero text content, pure video */}
+              <div className="absolute inset-0 bg-[#0F172A]/20 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/50 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/20 via-transparent to-transparent pointer-events-none" />
+            </div>
+
             {/* Slider Navigation Arrows */}
             <Button
               variant="ghost"
@@ -535,7 +553,7 @@ export default function App() {
 
             {/* Slide Pagination Indicators */}
             <div className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5 bg-[#0F172A]/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15">
-              {[0, 1, 2, 3].map((idx) => (
+              {[0, 1, 2, 3, 4].map((idx) => (
                 <Button
                   key={idx}
                   variant="ghost"

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { FiSearch, FiSliders, FiGrid, FiList, FiCheck, FiX } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Tabs, Dropdown, VehicleCard, Modal, Input, DatePicker, Button } from "@/components/ui";
+import { Tabs, Dropdown, VehicleCard, Modal, Input, DatePicker, Button, PageBanner } from "@/components/ui";
 import { VEHICLES, Vehicle, VEHICLE_CATEGORIES } from "@/data/vehicles";
 
 export default function InventoryPage() {
@@ -49,23 +49,20 @@ export default function InventoryPage() {
       <Navbar onBookTestDrive={() => openTestDrive(VEHICLES[0])} />
 
       <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
-        {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#E2E8F0]">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="w-6 h-0.5 bg-[#2563EB]" />
-              <span className="text-xs font-bold uppercase tracking-wider text-[#2563EB]">
-                Approved Dealership Stock
-              </span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0F172A] uppercase tracking-tight">
-              Vehicle Inventory
-            </h1>
-            <p className="text-xs sm:text-sm text-[#64748B] mt-1 max-w-xl">
-              Browse our verified collection of luxury and executive automobiles available for immediate delivery.
-            </p>
-          </div>
-        </div>
+        {/* Public Inventory Hero Banner */}
+        <PageBanner
+          badge="APPROVED DEALERSHIP STOCK"
+          title="LUXURY VEHICLE"
+          titleHighlight="INVENTORY"
+          subtitle="Browse our verified collection of luxury, armored, and executive automobiles available for immediate delivery across Lagos and Abuja showrooms."
+          backgroundImage="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[{ label: "Inventory" }]}
+          stats={[
+            { value: `${filteredVehicles.length} Units`, label: "In Stock" },
+            { value: "100%", label: "Clean Titles" },
+            { value: "150-Point", label: "Certified PDI" },
+          ]}
+        />
 
         {/* Category Filter Pills (from requirements) */}
         <div>

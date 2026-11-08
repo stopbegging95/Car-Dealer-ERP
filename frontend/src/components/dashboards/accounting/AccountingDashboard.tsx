@@ -139,18 +139,16 @@ export const AccountingDashboard: React.FC<AccountingDashboardProps> = ({
             { id: "receivables", label: `Accounts Receivable (${receivablesList.filter(r => r.status !== "Verified & Reconciled to GL").length} Pending)` },
             { id: "tax", label: "FIRS VAT & Tax Compliance" },
           ].map((tab) => (
-            <button
+            <Button
               key={tab.id}
               type="button"
+              variant={accountingTab === tab.id ? "primary" : "ghost"}
+              size="sm"
               onClick={() => onTabChange(tab.id as any)}
-              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                accountingTab === tab.id
-                  ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs"
-                  : "text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9]"
-              }`}
+              className="text-xs font-bold"
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
 

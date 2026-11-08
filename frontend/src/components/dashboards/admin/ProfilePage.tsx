@@ -7,7 +7,7 @@ import {
   FiUser,
   FiLock,
 } from "react-icons/fi";
-import { Badge, Card } from "@/components/ui";
+import { Badge, Card, Button } from "@/components/ui";
 import { RoleDefinition } from "@/data/roles";
 
 export interface ProfilePageProps {
@@ -49,14 +49,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </div>
 
           <div className="flex items-center self-end sm:self-auto gap-2">
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="sm"
               onClick={onNavigateSessionHistory}
-              className="inline-flex items-center gap-1.5 bg-[#EFF6FF] hover:bg-[#2563EB] px-3 py-1.5 border border-[#BFDBFE] rounded-md font-semibold text-[#1D4ED8] hover:text-white text-xs transition-all cursor-pointer"
+              leftIcon={<FiClock className="w-3.5 h-3.5" />}
             >
-              <FiClock className="w-3.5 h-3.5" />
-              <span>View WORM Session Audit Trail</span>
-            </button>
+              View WORM Session Audit Trail
+            </Button>
           </div>
         </div>
       </Card>

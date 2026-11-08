@@ -10,7 +10,7 @@ import {
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Toggle, Dropdown } from "@/components/ui";
+import { Button, Toggle, Dropdown, PageBanner } from "@/components/ui";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
 
 export default function CompareCarsPage() {
@@ -59,23 +59,32 @@ export default function CompareCarsPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Page Banner */}
+        <PageBanner
+          badge="SIDE-BY-SIDE SPECIFICATION"
+          title="VEHICLE COMPARISON"
+          titleHighlight="LAB"
+          subtitle="Side-by-side technical specification, horsepower, and torque audit across your shortlisted vehicles."
+          backgroundImage="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[
+            { label: "Vehicle Tools" },
+            { label: "Comparison Lab" },
+          ]}
+          stats={[
+            { value: `${selectedVehicles.length} / 4`, label: "Vehicles Selected" },
+            { value: "12 Specs", label: "Parameters Benchmarked" },
+            { value: "Live Sync", label: "Spec Differences" },
+          ]}
+        />
+
+        {/* Controls Strip: Highlight Differences & Add vehicle */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-[#E2E8F0]">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold mb-2">
-              <FiColumns className="w-3.5 h-3.5 text-[#2563EB]" />
-              <span>Multi-Vehicle Comparison Matrix</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-              Compare Vehicles Side-by-Side
-            </h1>
-            <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
-              Review specifications, performance numbers, and features across up to 4 models simultaneously.
-            </p>
+            <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Active Comparison Matrix</h2>
+            <p className="text-xs text-[#64748B]">Benchmark key engineering features, pricing, and powertrain metrics</p>
           </div>
 
-          {/* Controls Strip: Highlight Differences & Add vehicle */}
           <div className="flex flex-wrap items-center gap-4">
             <Toggle
               checked={highlightDifferences}

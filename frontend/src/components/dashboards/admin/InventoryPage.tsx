@@ -82,7 +82,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
             ),
           },
           {
-            key: "stockId",
+            key: "actions",
             header: "Action",
             render: (v) => (
               <Button

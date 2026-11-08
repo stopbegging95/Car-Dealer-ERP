@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Input, Modal, Dropdown } from "@/components/ui";
+import { Button, Input, Modal, Dropdown, PageBanner } from "@/components/ui";
 
 export default function LoanCalculatorPage() {
   const [currency, setCurrency] = useState<"USD" | "NGN">("USD");
@@ -83,24 +83,33 @@ export default function LoanCalculatorPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Hero Section Banner */}
+        <PageBanner
+          badge="AUTO LOANS & CHATTEL MORTGAGES"
+          title="LUXURY VEHICLE"
+          titleHighlight="FINANCE CALCULATOR"
+          subtitle="Model customized monthly repayment terms, down payments, and prime bank facility structures with real-time amortization."
+          backgroundImage="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[
+            { label: "Financial Services" },
+            { label: "Loan Calculator" },
+          ]}
+          stats={[
+            { value: "4.5% - 9.5%", label: "Indicative APR" },
+            { value: "12 - 60 Mo", label: "Flexible Tenures" },
+            { value: "24-Hour", label: "Pre-Approval Turnaround" },
+          ]}
+        />
+
+        {/* Currency Switcher & Controls Bar */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-[#E2E8F0]">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold mb-2">
-              <FiDollarSign className="w-3.5 h-3.5 text-[#2563EB]" />
-              <span>Automotive Financing & Loan Engine</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-              Vehicle Loan Calculator
-            </h1>
-            <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
-              Accurate monthly repayment estimations using standard amortized compound schedules.
-            </p>
+            <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Financing Parameters</h2>
+            <p className="text-xs text-[#64748B]">Adjust vehicle price, equity down payment, and preferred loan duration</p>
           </div>
 
-          {/* Currency Switcher */}
-          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start md:self-auto gap-1">
+          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start sm:self-auto gap-1">
             <span className="text-xs text-[#64748B] px-2 font-medium">Currency:</span>
             <Button
               variant={currency === "USD" ? "primary" : "ghost"}

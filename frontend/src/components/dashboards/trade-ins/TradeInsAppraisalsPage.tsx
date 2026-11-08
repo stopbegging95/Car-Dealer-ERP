@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-import { FiCheckSquare } from "react-icons/fi";
-import { Button, Badge, Card } from "@/components/ui";
+import React, { useState } from "react";
+import { FiCheckSquare, FiPlus, FiCheck } from "react-icons/fi";
+import { Button, Badge, Card, Modal, Input, Dropdown } from "@/components/ui";
 
 export interface TradeInItem {
   id: string;
@@ -22,7 +22,7 @@ export interface TradeInsAppraisalsPageProps {
 export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
   onInspectTradeIn,
 }) => {
-  const tradeIns: TradeInItem[] = [
+  const [tradeIns, setTradeIns] = useState<TradeInItem[]>([
     {
       id: "TRD-2026-001",
       client: "Alhaji Bello & Sons Ltd",
@@ -53,7 +53,38 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
       status: "Under Paint Gauge Audit",
       linkedStock: "STK-2026-007",
     },
-  ];
+  ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [client, setClient] = useState("");
+  const [carOffered, setCarOffered] = useState("");
+  const [target, setTarget] = useState("2024 Mercedes-Maybach S580");
+  const [valuation, setValuation] = useState("");
+  const [targetPrice, setTargetPrice] = useState("165,000");
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!client || !carOffered) return;
+    const valNum = Number(valuation.replace(/[^0-9]/g, "") || 0);
+    const tarNum = Number(targetPrice.replace(/[^0-9]/g, "") || 0);
+    const diffNum = Math.max(0, tarNum - valNum);
+
+    const newEntry: TradeInItem = {
+      id: `TRD-2026-${String(tradeIns.length + 1).padStart(3, "0")}`,
+      client,
+      carOffered,
+      target,
+      valuation: `$${valNum.toLocaleString()}`,
+      diff: `$${diffNum.toLocaleString()} (To Pay)`,
+      status: "Initial Appraisal Registered",
+      linkedStock: "STK-2026-001",
+    };
+    setTradeIns([newEntry, ...tradeIns]);
+    setIsModalOpen(false);
+    setClient("");
+    setCarOffered("");
+    setValuation("");
+  };
 
   return (
     <Card className="space-y-4 shadow-xs p-4 sm:p-5">
@@ -66,8 +97,72 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
             Auction market comp valuations, laser paint micrometer verification, and equity delta settlement
           </p>
         </div>
-        <Badge variant="gold" size="sm">Certified Pre-Owned Standards</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="gold" size="sm">Certified Pre-Owned Standards</Badge>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsModalOpen(true)}
+            leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+          >
+            + New Vehicle Appraisal
+          </Button>
+        </div>
       </div>
+
+      {/* Modal for Creating New Vehicle Appraisal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Register Vehicle Trade-In & Valuation Dossier"
+        size="md"
+      >
+        <form onSubmit={handleCreate} className="space-y-3">
+          <Input
+            label="Client / Vehicle Owner Name"
+            placeholder="e.g. Alhaji Bello & Sons Ltd"
+            value={client}
+            onChange={(e) => setClient(e.target.value)}
+            required
+          />
+          <Input
+            label="Trade-In Vehicle Offered (Make, Model, Year, Mileage)"
+            placeholder="e.g. 2021 Mercedes-Benz S500 4MATIC (42,000 KM)"
+            value={carOffered}
+            onChange={(e) => setCarOffered(e.target.value)}
+            required
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Dropdown
+              label="Target Showroom Vehicle"
+              options={[
+                { label: "2024 Mercedes-Maybach S580", value: "2024 Mercedes-Maybach S580" },
+                { label: "2024 Porsche 911 Turbo S", value: "2024 Porsche 911 Turbo S" },
+                { label: "2023 Range Rover Autobiography", value: "2023 Range Rover Autobiography" },
+                { label: "2024 Mercedes-AMG G63 Magno", value: "2024 Mercedes-AMG G63 Magno" },
+              ]}
+              value={target}
+              onChange={(val) => setTarget(String(val))}
+            />
+            <Input
+              label="Approved Trade Valuation ($)"
+              type="text"
+              placeholder="e.g. 48,000"
+              value={valuation}
+              onChange={(e) => setValuation(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0]">
+            <Button variant="ghost" size="sm" type="button" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" type="submit" leftIcon={<FiCheck />}>
+              Generate Appraisal Dossier
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
       <div className="space-y-3">
         {tradeIns.map((item) => (

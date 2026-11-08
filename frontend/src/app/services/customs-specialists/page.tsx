@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Input, Dropdown, Modal } from "@/components/ui";
+import { Button, Input, Dropdown, Modal, PageBanner } from "@/components/ui";
 
 export default function CustomsSpecialistsPage() {
   const [cifValueUSD, setCifValueUSD] = useState<number>(65000);
@@ -51,30 +51,24 @@ export default function CustomsSpecialistsPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold mb-2">
-              <FiAnchor className="w-3.5 h-3.5" />
-              <span>Licensed Port Customs Clearance & Logistics</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight">
-              Customs Specialists & Port Clearance
-            </h1>
-            <p className="text-xs sm:text-sm text-[#475569] mt-0.5">
-              100% compliant documentation, fast terminal release, and official single-goods declaration clearance.
-            </p>
-          </div>
-
-          <div className="bg-[#FFFFFF] border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs flex items-center gap-3 shadow-xs">
-            <FiShield className="w-5 h-5 text-[#2563EB] shrink-0" />
-            <div>
-              <span className="font-bold text-[#0F172A] block">NCS Fast-Track Certified</span>
-              <span className="text-[11px] text-[#2563EB] font-medium">Tin Can Island & Apapa Terminals</span>
-            </div>
-          </div>
-        </div>
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Page Banner */}
+        <PageBanner
+          badge="PORT OF LAGOS CLEARING"
+          title="CUSTOMS & PORT"
+          titleHighlight="LOGISTICS SPECIALISTS"
+          subtitle="NCS fast-track green lane, single goods declarations (SGD), and zero-demurrage port handling."
+          backgroundImage="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[
+            { label: "Logistics & Clearance" },
+            { label: "Customs Clearance" },
+          ]}
+          stats={[
+            { value: "48-72 Hours", label: "Fast-Track Clearance" },
+            { value: "100%", label: "Genuine SGD Verification" },
+            { value: "Tin Can & Apapa", label: "Dedicated Terminals" },
+          ]}
+        />
 
         {/* Duty Estimator and Form Split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

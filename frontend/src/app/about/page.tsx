@@ -13,7 +13,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa6";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui";
+import { Button, PageBanner } from "@/components/ui";
 
 export default function AboutPage() {
   const [selectedShowroom, setSelectedShowroom] = useState<"lagos" | "abuja">("lagos");
@@ -44,19 +44,24 @@ export default function AboutPage() {
       <Navbar />
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-        {/* Hero Section */}
-        <div className="text-center space-y-3 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-xs font-bold">
-            <FiAward className="w-3.5 h-3.5" />
-            <span>Pioneering Automotive Luxury Since 2014</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0F172A] uppercase tracking-tight">
-            Excellence In Motion
-          </h1>
-          <p className="text-xs sm:text-sm text-[#475569] leading-relaxed">
-            Premier Auto Motors is West Africa&apos;s leading dealership for curated executive luxury vehicles, bespoke international vehicle sourcing, and end-to-end customs clearance.
-          </p>
-        </div>
+        {/* Hero Section Banner */}
+        <PageBanner
+          badge="PIONEERING AUTOMOTIVE LUXURY SINCE 2014"
+          title="EXCELLENCE IN"
+          titleHighlight="MOTION"
+          subtitle="Premier Auto Motors is West Africa's leading dealership for curated executive luxury vehicles, bespoke international vehicle sourcing, and end-to-end customs clearance."
+          backgroundImage="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"
+          breadcrumbs={[{ label: "Company" }, { label: "About Us" }]}
+          stats={[
+            { value: "10+ Years", label: "Heritage of Trust" },
+            { value: "1,200+", label: "Clients Served" },
+            { value: "2 Flagships", label: "Lagos & Abuja" },
+          ]}
+          ctaText="Explore Inventory"
+          ctaHref="/inventory"
+          secondaryCtaText="Contact Concierge"
+          secondaryCtaHref="/contact"
+        />
 
         {/* 4 Pillars Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
