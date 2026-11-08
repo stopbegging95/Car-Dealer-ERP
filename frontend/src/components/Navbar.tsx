@@ -231,14 +231,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
         {/* Right Action CTAs: Dashboard Logins Dropdown */}
         <div className="hidden sm:flex items-center gap-3">
           <div className="relative">
-            <button
+            <Button
+              variant="warmGold"
+              size="sm"
               onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold bg-[#0F172A] border border-[#0F172A] text-[#FFFFFF] hover:bg-[#1E293B] shadow-xs transition-all select-none cursor-pointer"
+              leftIcon={<FiShield className="w-3.5 h-3.5 text-[#38BDF8]" />}
+              rightIcon={<FiChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${loginDropdownOpen ? "rotate-180" : ""}`} />}
             >
-              <FiShield className="w-3.5 h-3.5 text-[#38BDF8]" />
-              <span>Dashboard Logins</span>
-              <FiChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${loginDropdownOpen ? "rotate-180" : ""}`} />
-            </button>
+              Dashboard Logins
+            </Button>
 
             {loginDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-96 sm:w-[460px] bg-[#FFFFFF] border border-[#CBD5E1] rounded-md shadow-2xl p-3.5 z-50 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
@@ -392,14 +393,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
         </div>
 
         {/* Mobile Hamburger Button */}
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 rounded-md bg-[#FFFFFF] text-[#0F172A] border border-[#CBD5E1] hover:border-[#2563EB]"
           aria-label="Toggle Navigation Menu"
+          className="lg:hidden p-2"
         >
           {mobileMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
-        </button>
+        </Button>
       </header>
 
       {/* Mobile Drawer Navigation */}

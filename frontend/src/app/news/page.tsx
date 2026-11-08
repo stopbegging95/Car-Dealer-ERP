@@ -66,6 +66,7 @@ export default function NewsPage() {
               src={featuredArticle.image}
               alt={featuredArticle.title}
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               unoptimized
               className="object-cover"
               priority
@@ -129,6 +130,7 @@ export default function NewsPage() {
                     src={art.image}
                     alt={art.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -218,6 +220,7 @@ export default function NewsPage() {
                 src={activeArticleModal.image}
                 alt={activeArticleModal.title}
                 fill
+                sizes="(max-width: 768px) 100vw, 700px"
                 unoptimized
                 className="object-cover"
               />

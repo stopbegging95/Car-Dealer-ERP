@@ -91,36 +91,33 @@ function VehicleDetailContent() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleShare}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#FFFFFF] border border-[#CBD5E1] text-[#0F172A] hover:border-[#2563EB] hover:text-[#2563EB] text-xs transition-colors shadow-xs cursor-pointer"
+              leftIcon={<FiShare2 className="w-3.5 h-3.5 text-[#2563EB]" />}
             >
-              <FiShare2 className="w-3.5 h-3.5 text-[#2563EB]" />
-              <span>{isCopied ? "Link Copied!" : "Share Vehicle"}</span>
-            </button>
+              {isCopied ? "Link Copied!" : "Share Vehicle"}
+            </Button>
 
             {/* Currency Switcher */}
-            <div className="flex items-center bg-[#FFFFFF] p-0.5 rounded-md border border-[#CBD5E1] shadow-xs">
-              <button
+            <div className="flex items-center bg-[#FFFFFF] p-0.5 rounded-md border border-[#CBD5E1] shadow-xs gap-1">
+              <Button
+                variant={currency === "USD" ? "primary" : "ghost"}
+                size="sm"
                 onClick={() => setCurrency("USD")}
-                className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
-                  currency === "USD"
-                    ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs"
-                    : "text-[#64748B] hover:text-[#0F172A]"
-                }`}
+                className="px-2.5 py-1 text-xs font-mono font-bold"
               >
                 $ USD
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={currency === "NGN" ? "primary" : "ghost"}
+                size="sm"
                 onClick={() => setCurrency("NGN")}
-                className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
-                  currency === "NGN"
-                    ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs"
-                    : "text-[#64748B] hover:text-[#0F172A]"
-                }`}
+                className="px-2.5 py-1 text-xs font-mono font-bold"
               >
                 ₦ NGN
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -174,6 +171,7 @@ function VehicleDetailContent() {
                 src={activePhoto}
                 alt={`${vehicle.make} ${vehicle.model}`}
                 fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
                 unoptimized
                 className="object-cover transition-all duration-300"
                 priority
@@ -191,17 +189,18 @@ function VehicleDetailContent() {
             {/* Thumbnail Strip */}
             <div className="flex items-center gap-3 overflow-x-auto pb-1">
               {[vehicle.image, ...vehicle.gallery].map((imgSrc, idx) => (
-                <button
+                <Button
                   key={idx}
+                  variant="ghost"
                   onClick={() => setActivePhoto(imgSrc)}
-                  className={`relative w-20 sm:w-24 h-14 sm:h-16 rounded-md overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                  className={`relative w-20 sm:w-24 h-14 sm:h-16 p-0 rounded-md overflow-hidden shrink-0 border-2 transition-all ${
                     activePhoto === imgSrc
                       ? "border-[#2563EB] ring-2 ring-[#2563EB]/25 shadow-sm scale-105"
                       : "border-[#CBD5E1] opacity-70 hover:opacity-100 hover:border-[#2563EB]"
                   }`}
                 >
-                  <Image src={imgSrc} alt="Thumbnail" fill unoptimized className="object-cover" />
-                </button>
+                  <Image src={imgSrc} alt="Thumbnail" fill sizes="96px" unoptimized className="object-cover" />
+                </Button>
               ))}
             </div>
           </div>
@@ -282,13 +281,16 @@ function VehicleDetailContent() {
                   </a>
                 </div>
 
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  fullWidth
                   onClick={() => alert(`Brochure for ${vehicle.make} ${vehicle.model} generated.`)}
-                  className="w-full flex items-center justify-center gap-1.5 py-2 text-xs text-[#64748B] hover:text-[#2563EB] transition-colors cursor-pointer"
+                  leftIcon={<FiDownload className="w-3.5 h-3.5" />}
+                  className="text-xs text-[#64748B] hover:text-[#2563EB]"
                 >
-                  <FiDownload className="w-3.5 h-3.5" />
-                  <span>Download Spec Sheet & Title Document Summary (PDF)</span>
-                </button>
+                  Download Spec Sheet &amp; Title Document Summary (PDF)
+                </Button>
               </div>
             </div>
 
@@ -402,18 +404,16 @@ function VehicleDetailContent() {
               <span className="text-xs text-[#475569] block">Tenure (Months):</span>
               <div className="grid grid-cols-4 gap-1.5">
                 {[12, 24, 36, 48].map((m) => (
-                  <button
+                  <Button
                     key={m}
                     type="button"
+                    variant={loanTermMonths === m ? "primary" : "outline"}
+                    size="sm"
                     onClick={() => setLoanTermMonths(m)}
-                    className={`py-1.5 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer ${
-                      loanTermMonths === m
-                        ? "bg-[#2563EB] text-[#FFFFFF] border-[#2563EB] shadow-xs"
-                        : "bg-[#FFFFFF] text-[#475569] border-[#CBD5E1] hover:border-[#2563EB]"
-                    }`}
+                    className="font-mono text-xs py-1.5"
                   >
                     {m}M
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

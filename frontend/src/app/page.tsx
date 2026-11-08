@@ -14,6 +14,7 @@ import {
   FiCompass,
   FiCheck,
   FiX,
+  FiVideo,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import {
@@ -23,6 +24,7 @@ import {
   FilterState,
   VehicleCard,
   Input,
+  Dropdown,
 } from "@/components/ui";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
 import { Navbar } from "@/components/Navbar";
@@ -97,20 +99,35 @@ export default function App() {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const brandsRef = useRef<HTMLDivElement>(null);
 
-  // Banner Slider State (3 curated luxury slides: 0 = Premier Fleet, 1 = Exotic Supercar, 2 = Editorial Prestige)
+  // Banner Slider State
+  // Slide 0: Text + Image (Mercedes fleet)
+  // Slide 1: Image Only (Exotic supercar — no text)
+  // Slide 2: Text Only (Editorial prestige)
+  // Slide 3: Text + Video (video background + animated overlay text)
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 3);
+      setCurrentSlide((prev) => (prev + 1) % 4);
     }, 6000);
     return () => clearInterval(timer);
   }, [isPaused]);
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % 3);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + 3) % 3);
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (currentSlide === 3) {
+      videoRef.current.play().catch(() => {});
+    } else {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [currentSlide]);
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % 4);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + 4) % 4);
 
   const scrollBrands = (direction: "left" | "right") => {
     if (brandsRef.current) {
@@ -132,7 +149,7 @@ export default function App() {
     el?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Handle Search on Public FilterBar (supports All Makes, Models, Categories, Fuel, Transmission, Years, and Prices)
+  // Handle Search on Public FilterBar
   const handleFilterSearch = (filters: FilterState) => {
     let result = [...VEHICLES];
     if (filters.make) {
@@ -172,7 +189,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
-      {/* 1. Global Navigation Bar with Top Utility Strip & Dashboard Logins */}
+      {/* 1. Global Navigation Bar */}
       <Navbar onBookTestDrive={() => openTestDriveModal()} />
 
       {/* 2. HERO SLIDER BANNER SECTION */}
@@ -184,7 +201,7 @@ export default function App() {
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            {/* SLIDE 1 (Index 0): Premier Luxury Fleet with Stacked Text */}
+            {/* ── SLIDE 0: Text + Image (Mercedes Premier Fleet) ── */}
             <div
               className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 currentSlide === 0
@@ -192,20 +209,18 @@ export default function App() {
                   : "opacity-0 z-0 pointer-events-none"
               }`}
             >
-              {/* Background Image from online luxury automotive collection */}
               <Image
                 src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1920&q=80"
                 alt="Premier Luxury Fleet"
                 fill
+                sizes="100vw"
                 unoptimized
                 className="object-cover object-center"
                 priority
               />
-              {/* Dark Gradient Overlay for optimal legibility */}
               <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
 
-              {/* Stacked Text Content */}
               <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
                 <div
                   className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
@@ -237,7 +252,6 @@ export default function App() {
                   Explore our prestigious collection of luxury and executive vehicles. Hand-selected, fully certified, and delivered with VIP concierge excellence.
                 </p>
 
-                {/* Direct Action Buttons */}
                 <div
                   className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
                     currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -265,7 +279,6 @@ export default function App() {
                   </Button>
                 </div>
 
-                {/* Sub-badge perks */}
                 <div
                   className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
                     currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -284,91 +297,10 @@ export default function App() {
               </div>
             </div>
 
-            {/* SLIDE 2 (Index 1): Exotic Supercar Showcase */}
+            {/* ── SLIDE 1: Text Only (Editorial Prestige — gradient bg, no image) ── */}
             <div
               className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 currentSlide === 1
-                  ? "opacity-100 z-10 pointer-events-auto"
-                  : "opacity-0 z-0 pointer-events-none"
-              }`}
-            >
-              <Image
-                src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1920&q=80"
-                alt="Premier Exotic Supercar Showcase"
-                fill
-                unoptimized
-                className="object-cover object-center"
-              />
-              {/* Color Layer Stack on top */}
-              <div className="absolute inset-0 bg-[#0F172A]/45" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/75 via-[#0F172A]/40 to-transparent sm:w-4/5 md:w-3/4" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
-
-              {/* Supercar Overlay Text */}
-              <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
-                <div
-                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
-                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-pulse" />
-                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
-                    EXOTIC & SUPERCAR FLEET
-                  </span>
-                </div>
-
-                <h2
-                  className={`text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm transition-all duration-700 delay-150 ease-out transform ${
-                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  UNCOMPROMISED <br />
-                  <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
-                    PERFORMANCE
-                  </span>
-                </h2>
-
-                <p
-                  className={`text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow transition-all duration-700 delay-300 ease-out transform ${
-                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  Commanding presence and track-bred engineering. Experience the apex of automotive power and design in our climate-controlled showrooms.
-                </p>
-
-                <div
-                  className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
-                    currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={() => {
-                      const el = document.getElementById("inventory-section");
-                      el?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                    rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
-                  >
-                    Explore Fleet
-                  </Button>
-
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    onClick={() => openTestDriveModal()}
-                    leftIcon={<FiCalendar className="w-4 h-4 text-[#2563EB]" />}
-                  >
-                    Book Private Viewing
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* SLIDE 3 (Index 2): Editorial Statement */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                currentSlide === 2
                   ? "opacity-100 z-10 pointer-events-auto"
                   : "opacity-0 z-0 pointer-events-none"
               }`}
@@ -381,7 +313,7 @@ export default function App() {
                 <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-5">
                   <div
                     className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/20 border border-[#38BDF8]/30 w-fit transition-all duration-700 ease-out transform ${
-                      currentSlide === 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >
                     <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#38BDF8]">
@@ -391,18 +323,18 @@ export default function App() {
 
                   <h2
                     className={`text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight text-white transition-all duration-700 delay-150 ease-out transform ${
-                      currentSlide === 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >
                     CRAFTED FOR THE EXCEPTIONAL. <br />
                     <span className="bg-gradient-to-r from-[#38BDF8] via-[#60A5FA] to-[#93C5FD] bg-clip-text text-transparent">
-                      UNCOMPROMISED LUXURY & POWER.
+                      UNCOMPROMISED LUXURY &amp; POWER.
                     </span>
                   </h2>
 
                   <p
                     className={`text-xs sm:text-sm md:text-base text-[#94A3B8] leading-relaxed max-w-2xl transition-all duration-700 delay-300 ease-out transform ${
-                      currentSlide === 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >
                     Premier Auto Motors redefines luxury vehicle ownership with verified provenance, bespoke international sourcing, zero-demurrage terminal logistics, and private showroom viewings across Lagos and Abuja.
@@ -411,7 +343,7 @@ export default function App() {
                   {/* 4 Feature Value Highlights */}
                   <div
                     className={`grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2 transition-all duration-700 delay-450 ease-out transform ${
-                      currentSlide === 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >
                     <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
@@ -424,7 +356,7 @@ export default function App() {
                     </div>
                     <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
                       <div className="text-base sm:text-lg font-black text-[#38BDF8]">100% Clean</div>
-                      <div className="text-[10px] sm:text-xs text-[#CBD5E1]">Carfax & Title</div>
+                      <div className="text-[10px] sm:text-xs text-[#CBD5E1]">Carfax &amp; Title</div>
                     </div>
                     <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
                       <div className="text-base sm:text-lg font-black text-[#38BDF8]">White-Glove</div>
@@ -448,34 +380,171 @@ export default function App() {
               </div>
             </div>
 
+            {/* ── SLIDE 2: Image Only (Exotic Supercar — full-bleed, no text) ── */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                currentSlide === 2
+                  ? "opacity-100 z-10 pointer-events-auto"
+                  : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              <Image
+                src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"
+                alt="Exotic Supercar Collection"
+                fill
+                sizes="100vw"
+                unoptimized
+                className="object-cover object-center"
+              />
+              {/* Atmospheric overlays only — intentionally no text content */}
+              <div className="absolute inset-0 bg-[#0F172A]/25" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/55 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/15 via-transparent to-transparent" />
+            </div>
+
+            {/* ── SLIDE 3: Text + Video (video background + animated overlay text) ── */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                currentSlide === 3
+                  ? "opacity-100 z-10 pointer-events-auto"
+                  : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              {/* Background video — autoplay, muted, looped, no controls */}
+              <video
+                ref={videoRef}
+                className="absolute inset-0 w-full h-full object-cover object-center"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+              >
+                <source
+                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                  type="video/mp4"
+                />
+                <source
+                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
+                  type="video/mp4"
+                />
+              </video>
+
+              {/* Gradient overlays for legibility */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/88 via-[#0F172A]/70 to-transparent sm:w-4/5 md:w-3/4" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/65 via-transparent to-transparent" />
+
+              {/* Animated text overlay — same layout pattern as Text+Image slide */}
+              <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
+                <div
+                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
+                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  <FiVideo className="w-3 h-3 text-[#60A5FA] animate-pulse" />
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
+                    LIVE PERFORMANCE EXPERIENCE
+                  </span>
+                </div>
+
+                <h2
+                  className={`text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm transition-all duration-700 delay-150 ease-out transform ${
+                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  FEEL EVERY <br />
+                  <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
+                    HEARTBEAT
+                  </span>
+                </h2>
+
+                <p
+                  className={`text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow transition-all duration-700 delay-300 ease-out transform ${
+                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  Raw power, precision engineering, and unrivalled driving dynamics — experience our fleet before you even set foot in the showroom.
+                </p>
+
+                <div
+                  className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
+                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => {
+                      const el = document.getElementById("inventory-section");
+                      el?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
+                  >
+                    Browse Performance Fleet
+                  </Button>
+
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    onClick={() => openTestDriveModal()}
+                    leftIcon={<FiCalendar className="w-4 h-4 text-[#2563EB]" />}
+                  >
+                    Book Track Experience
+                  </Button>
+                </div>
+
+                {/* Sub-badge perks matching Text+Image Slide */}
+                <div
+                  className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
+                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <FiShield className="w-3.5 h-3.5 text-[#60A5FA]" />
+                    Track-Tested &amp; Certified
+                  </span>
+                  <span>&bull;</span>
+                  <span className="flex items-center gap-1.5">
+                    <FiClock className="w-3.5 h-3.5 text-[#60A5FA]" />
+                    Dynamic Launch Demonstration
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* Slider Navigation Arrows */}
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={prevSlide}
               aria-label="Previous Slide"
-              className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#0F172A]/40 hover:bg-[#0F172A]/70 text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer opacity-80 hover:opacity-100"
+              className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#0F172A]/40 hover:bg-[#0F172A]/70 text-white border border-white/20 backdrop-blur-md shadow-md opacity-80 hover:opacity-100"
             >
               <FiChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
+            </Button>
 
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={nextSlide}
               aria-label="Next Slide"
-              className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#0F172A]/40 hover:bg-[#0F172A]/70 text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer opacity-80 hover:opacity-100"
+              className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#0F172A]/40 hover:bg-[#0F172A]/70 text-white border border-white/20 backdrop-blur-md shadow-md opacity-80 hover:opacity-100"
             >
               <FiChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
+            </Button>
 
             {/* Slide Pagination Indicators */}
             <div className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5 bg-[#0F172A]/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15">
-              {[0, 1, 2].map((idx) => (
-                <button
+              {[0, 1, 2, 3].map((idx) => (
+                <Button
                   key={idx}
+                  variant="ghost"
                   onClick={() => setCurrentSlide(idx)}
                   aria-label={`Slide ${idx + 1}`}
-                  className={`h-2 sm:h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  className={`!h-2 sm:!h-2.5 !p-0 !min-w-0 rounded-full transition-all duration-300 ${
                     currentSlide === idx
-                      ? "w-7 sm:w-8 bg-[#2563EB] shadow-xs shadow-[#2563EB]/50"
-                      : "w-2 sm:w-2.5 bg-white/40 hover:bg-white/70"
+                      ? "!w-7 sm:!w-8 bg-[#2563EB] shadow-xs shadow-[#2563EB]/50"
+                      : "!w-2 sm:!w-2.5 bg-white/40 hover:bg-white/70"
                   }`}
                 />
               ))}
@@ -527,14 +596,15 @@ export default function App() {
 
           {/* Brand Logo Showcase Strip */}
           <div className="max-w-7xl mx-auto w-full mt-2.5 sm:mt-3 bg-[#FFFFFF] rounded-md py-2.5 px-3 sm:px-4 flex items-center justify-between text-[#0F172A] shadow-xs border border-[#CBD5E1]">
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => scrollBrands("left")}
-              className="p-2 rounded-md bg-[#F1F5F9] hover:bg-[#EFF6FF] text-[#475569] hover:text-[#2563EB] transition-colors cursor-pointer shrink-0"
               aria-label="Previous Brands"
+              className="p-2 rounded-md bg-[#F1F5F9] hover:bg-[#EFF6FF] text-[#475569] hover:text-[#2563EB] shrink-0"
             >
               <FiChevronLeft className="w-4 h-4" />
-            </button>
+            </Button>
 
             {/* Brand Logo Items Carousel */}
             <div
@@ -544,12 +614,13 @@ export default function App() {
               {BRAND_LOGOS.map((brand) => {
                 const isSelected = selectedBrand === brand.make;
                 return (
-                  <button
+                  <Button
                     key={brand.name}
-                    type="button"
+                    variant={isSelected ? "secondary" : "ghost"}
+                    size="sm"
                     onClick={() => handleBrandClick(brand.make)}
                     title={`Filter by ${brand.name}`}
-                    className={`group shrink-0 flex flex-col items-center justify-center py-1.5 px-3 sm:px-4 rounded-md transition-all duration-200 cursor-pointer ${
+                    className={`group shrink-0 flex flex-col items-center justify-center py-1.5 px-3 sm:px-4 rounded-md transition-all duration-200 ${
                       isSelected
                         ? "bg-[#EFF6FF] border border-[#2563EB] shadow-xs"
                         : "hover:bg-[#F8FAFC] border border-transparent hover:border-[#E2E8F0]"
@@ -574,19 +645,20 @@ export default function App() {
                     >
                       {brand.name}
                     </span>
-                  </button>
+                  </Button>
                 );
               })}
             </div>
 
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => scrollBrands("right")}
-              className="p-2 rounded-md bg-[#F1F5F9] hover:bg-[#EFF6FF] text-[#475569] hover:text-[#2563EB] transition-colors cursor-pointer shrink-0"
               aria-label="Next Brands"
+              className="p-2 rounded-md bg-[#F1F5F9] hover:bg-[#EFF6FF] text-[#475569] hover:text-[#2563EB] shrink-0"
             >
               <FiChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
 
           {/* Quick Filter Component Bar */}
@@ -595,7 +667,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* 3. VEHICLE INVENTORY SHOWCASE (Cards bottom side in #0F172A) */}
+        {/* 3. VEHICLE INVENTORY SHOWCASE */}
         <section
           id="inventory-section"
           className="py-14 sm:py-18 px-4 sm:px-8 lg:px-12 bg-[#F8FAFC] border-b border-[#E2E8F0]"
@@ -616,10 +688,13 @@ export default function App() {
 
               <div className="flex items-center gap-3">
                 <Link href="/inventory">
-                  <button className="flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-bold bg-[#0F172A] hover:bg-[#1E293B] text-[#FFFFFF] transition-all shadow-md shadow-[#0F172A]/25 border border-[#0F172A] cursor-pointer">
-                    <span>VIEW ALL INVENTORY</span>
-                    <FiArrowRight className="w-4 h-4 text-white" />
-                  </button>
+                  <Button
+                    variant="primary"
+                    size="md"
+                    rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
+                  >
+                    VIEW ALL INVENTORY
+                  </Button>
                 </Link>
               </div>
             </div>
@@ -637,9 +712,10 @@ export default function App() {
               ].map((tab) => {
                 const isActive = activeCategoryTab === tab.id;
                 return (
-                  <button
+                  <Button
                     key={tab.id}
-                    type="button"
+                    variant={isActive ? "primary" : "outline"}
+                    size="sm"
                     onClick={() => {
                       setActiveCategoryTab(tab.id);
                       if (tab.id === "all") {
@@ -652,19 +728,15 @@ export default function App() {
                         );
                       }
                     }}
-                    className={`px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all select-none whitespace-nowrap cursor-pointer ${
-                      isActive
-                        ? "bg-[#0F172A] text-[#FFFFFF] font-bold shadow-md shadow-[#0F172A]/25 border-2 border-[#0F172A]"
-                        : "bg-[#FFFFFF] text-[#475569] hover:text-[#2563EB] border border-[#CBD5E1] hover:border-[#2563EB] shadow-xs"
-                    }`}
+                    className="whitespace-nowrap"
                   >
                     {tab.label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
 
-            {/* Vehicle Card Grid (Cards bottom side in #0F172A) */}
+            {/* Vehicle Card Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredVehicles.map((vehicle) => (
                 <VehicleCard
@@ -688,7 +760,9 @@ export default function App() {
                 <h3 className="text-2xl font-black text-[#0F172A] uppercase tracking-tight">Interactive Automotive Suite</h3>
               </div>
               <Link href="/services/ai-car-match">
-                <Button variant="secondary" size="sm">Explore All Services &rarr;</Button>
+                <Button variant="secondary" size="sm" rightIcon={<FiArrowRight className="w-3.5 h-3.5 text-[#0F172A]" />}>
+                  Explore All Services
+                </Button>
               </Link>
             </div>
 
@@ -773,7 +847,7 @@ export default function App() {
           {selectedVehicle && (
             <div className="p-3.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] flex items-center gap-3.5">
               <div className="relative w-24 h-16 rounded-md overflow-hidden shrink-0 bg-[#0F172A] border border-[#CBD5E1]">
-                <Image src={selectedVehicle.image} alt={selectedVehicle.model} fill className="object-cover" />
+                <Image src={selectedVehicle.image} alt={selectedVehicle.model} fill sizes="96px" className="object-cover" />
               </div>
               <div>
                 <span className="text-[10px] font-mono text-[#2563EB] font-bold">{selectedVehicle.stockId}</span>
@@ -789,28 +863,22 @@ export default function App() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-[#0F172A]">Preferred Date</label>
-              <input
-                type="date"
-                value={testDriveDate}
-                onChange={(e) => setTestDriveDate(e.target.value)}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] text-xs py-2 px-3 border border-[#CBD5E1] focus:border-[#2563EB] outline-none [color-scheme:light] shadow-xs"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-[#0F172A]">Showroom Location</label>
-              <select
-                value={testDriveLocation}
-                onChange={(e) => setTestDriveLocation(e.target.value)}
-                className="w-full rounded-md bg-[#FFFFFF] text-[#0F172A] text-xs py-2 px-3 border border-[#CBD5E1] focus:border-[#2563EB] outline-none shadow-xs"
-              >
-                <option value="Lagos Showroom">Victoria Island HQ Flagship, Lagos</option>
-                <option value="Abuja Showroom">Maitama Diplomatic Suite, Abuja</option>
-                <option value="Home Delivery">VIP Private Concierge Residence Dispatch</option>
-              </select>
-            </div>
+            <Input
+              label="Preferred Date"
+              type="date"
+              value={testDriveDate}
+              onChange={(e) => setTestDriveDate(e.target.value)}
+            />
+            <Dropdown
+              label="Showroom Location"
+              value={testDriveLocation}
+              onChange={(v) => setTestDriveLocation(String(v))}
+              options={[
+                { label: "Victoria Island HQ Flagship, Lagos", value: "Lagos Showroom" },
+                { label: "Maitama Diplomatic Suite, Abuja", value: "Abuja Showroom" },
+                { label: "VIP Private Concierge Residence Dispatch", value: "Home Delivery" },
+              ]}
+            />
           </div>
         </div>
       </Modal>

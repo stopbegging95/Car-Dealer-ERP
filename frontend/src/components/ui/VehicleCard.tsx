@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { FiMapPin, FiBarChart2 } from "react-icons/fi";
 import { Badge } from "./Badge";
+import { Button } from "./Button";
 import { Vehicle } from "@/data/vehicles";
 
 export interface VehicleCardProps {
@@ -52,6 +53,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
             src={vehicle.image}
             alt={`${vehicle.make} ${vehicle.model}`}
             fill
+            sizes="(max-width: 768px) 100vw, 256px"
             unoptimized
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -122,36 +124,34 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
             <div className="flex items-center gap-2">
               {onCompareToggle && (
-                <button
-                  type="button"
+                <Button
+                  variant={isCompared ? "primary" : "secondary"}
+                  size="icon"
                   onClick={() => onCompareToggle(vehicle)}
-                  className={`p-2 rounded-xl border text-xs transition-colors cursor-pointer ${
-                    isCompared
-                      ? "bg-[#2563EB] text-[#FFFFFF] border-[#2563EB] shadow-xs"
-                      : "bg-white/10 text-white border-white/20 hover:border-[#2563EB] hover:text-[#60A5FA]"
-                  }`}
                   title="Compare Vehicle"
+                  className={!isCompared ? "bg-white/10 text-white border-white/20 hover:border-[#2563EB] hover:text-[#60A5FA]" : ""}
                 >
                   <FiBarChart2 className="w-4 h-4" />
-                </button>
+                </Button>
               )}
               {onBookTestDrive && (
-                <button
-                  type="button"
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => onBookTestDrive(vehicle)}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#FFFFFF] text-[#0F172A] hover:bg-slate-100 transition-all cursor-pointer shadow-xs"
+                  className="bg-[#FFFFFF] text-[#0F172A] hover:bg-slate-100"
                 >
                   Book Test Drive
-                </button>
+                </Button>
               )}
               {onViewDetails && (
-                <button
-                  type="button"
+                <Button
+                  variant="primary"
+                  size="sm"
                   onClick={() => onViewDetails(vehicle)}
-                  className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-[#FFFFFF] transition-all shadow-md shadow-[#2563EB]/25 cursor-pointer"
                 >
                   Details
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -171,6 +171,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
           src={vehicle.image}
           alt={`${vehicle.make} ${vehicle.model}`}
           fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           unoptimized
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -238,27 +239,24 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
           <div className="flex items-center gap-1.5">
             {onCompareToggle && (
-              <button
-                type="button"
+              <Button
+                variant={isCompared ? "primary" : "secondary"}
+                size="icon"
                 onClick={() => onCompareToggle(vehicle)}
-                className={`p-1.5 rounded-lg border text-xs transition-all cursor-pointer ${
-                  isCompared
-                    ? "bg-[#2563EB] text-[#FFFFFF] border-[#2563EB] shadow-xs"
-                    : "bg-white/10 text-white border-white/20 hover:border-[#2563EB] hover:text-[#60A5FA]"
-                }`}
                 title="Compare Vehicle"
+                className={!isCompared ? "bg-white/10 text-white border-white/20 hover:border-[#2563EB] hover:text-[#60A5FA]" : ""}
               >
                 <FiBarChart2 className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             )}
             {onViewDetails && (
-              <button
-                type="button"
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={() => onViewDetails(vehicle)}
-                className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-[#FFFFFF] transition-all shadow-md shadow-[#2563EB]/25 cursor-pointer"
               >
                 Details
-              </button>
+              </Button>
             )}
           </div>
         </div>

@@ -91,15 +91,13 @@ export default function CustomsSpecialistsPage() {
 
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="text-[#0F172A] font-medium">Estimated CIF Value (USD):</span>
-                  <span className="font-mono font-bold text-[#1D4ED8]">${cifValueUSD.toLocaleString()}</span>
-                </div>
-                <input
+                <Input
+                  label="Estimated CIF Value (USD)"
                   type="number"
                   value={cifValueUSD}
                   onChange={(e) => setCifValueUSD(Math.max(5000, Number(e.target.value)))}
-                  className="w-full bg-[#FFFFFF] text-sm text-[#0F172A] font-mono px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] outline-none shadow-xs"
+                  className="font-mono"
+                  helperText={`Equivalent to approx. ₦${(cifValueUSD * fxRate).toLocaleString()}`}
                 />
               </div>
 

@@ -84,14 +84,12 @@ export default function InventoryPage() {
         {/* Search, Sort, and View Controls Strip */}
         <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl p-3 sm:p-3.5 flex flex-wrap items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3 flex-1 min-w-[240px]">
-            <div className="relative w-full max-w-md">
-              <FiSearch className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2 sm:top-2.5" />
-              <input
-                type="text"
+            <div className="w-full max-w-md">
+              <Input
                 placeholder="Search by make, model, category, stock ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#F8FAFC] text-xs sm:text-sm text-[#0F172A] placeholder-[#94A3B8] rounded-md pl-9 pr-3.5 py-1.5 sm:py-2 border border-[#CBD5E1] focus:border-[#2563EB] outline-none shadow-xs"
+                leftIcon={<FiSearch className="w-4 h-4 text-[#94A3B8]" />}
               />
             </div>
             <span className="text-xs text-[#64748B] whitespace-nowrap hidden sm:inline">
@@ -115,21 +113,25 @@ export default function InventoryPage() {
             </div>
 
             {/* Grid / List Toggle */}
-            <div className="flex items-center bg-[#F8FAFC] p-1 rounded-md border border-[#CBD5E1]">
-              <button
+            <div className="flex items-center bg-[#F8FAFC] p-1 rounded-md border border-[#CBD5E1] gap-1">
+              <Button
+                variant={viewMode === "grid" ? "primary" : "ghost"}
+                size="icon"
                 onClick={() => setViewMode("grid")}
-                className={`p-1.5 rounded transition-colors cursor-pointer ${viewMode === "grid" ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs" : "text-[#64748B] hover:text-[#0F172A]"}`}
-                title="Grid View"
+                aria-label="Grid View"
+                className="w-8 h-8 p-1.5"
               >
                 <FiGrid className="w-4 h-4" />
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "primary" : "ghost"}
+                size="icon"
                 onClick={() => setViewMode("list")}
-                className={`p-1.5 rounded transition-colors cursor-pointer ${viewMode === "list" ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs" : "text-[#64748B] hover:text-[#0F172A]"}`}
-                title="List View"
+                aria-label="List View"
+                className="w-8 h-8 p-1.5"
               >
                 <FiList className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         </div>

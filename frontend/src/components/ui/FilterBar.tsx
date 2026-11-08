@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FiSearch, FiStar, FiTag, FiLayers, FiX } from "react-icons/fi";
 import { Dropdown } from "./Dropdown";
+import { Button } from "./Button";
 
 export interface FilterState {
   type: "all" | "new" | "used";
@@ -190,44 +191,50 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
       {/* Top Type Switcher Tabs (Active = Black, Non-active = White per user specification) */}
       <div className="flex items-center gap-2 mb-3 overflow-x-auto sm:overflow-visible pb-1">
-        <button
+        <Button
           type="button"
           onClick={() => setFilters({ ...filters, type: "all" })}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
+          variant={filters.type === "all" ? "primary" : "secondary"}
+          size="sm"
+          leftIcon={<FiLayers className="w-3.5 h-3.5" />}
+          className={
             filters.type === "all"
-              ? "bg-[#000000] text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
-              : "bg-[#FFFFFF] text-[#0F172A] font-bold border border-white/20 hover:bg-[#F1F5F9] shadow-xs"
-          }`}
+              ? "!bg-[#000000] !text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
+              : "!bg-[#FFFFFF] !text-[#0F172A] font-bold border border-white/20 hover:!bg-[#F1F5F9] shadow-xs"
+          }
         >
-          <FiLayers className="w-3.5 h-3.5" />
           All Vehicles
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
           onClick={() => setFilters({ ...filters, type: "new" })}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
+          variant={filters.type === "new" ? "primary" : "secondary"}
+          size="sm"
+          leftIcon={<FiStar className="w-3.5 h-3.5" />}
+          className={
             filters.type === "new"
-              ? "bg-[#000000] text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
-              : "bg-[#FFFFFF] text-[#0F172A] font-bold border border-white/20 hover:bg-[#F1F5F9] shadow-xs"
-          }`}
+              ? "!bg-[#000000] !text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
+              : "!bg-[#FFFFFF] !text-[#0F172A] font-bold border border-white/20 hover:!bg-[#F1F5F9] shadow-xs"
+          }
         >
-          <FiStar className="w-3.5 h-3.5" />
           New Cars
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
           onClick={() => setFilters({ ...filters, type: "used" })}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-bold transition-all duration-200 select-none shrink-0 cursor-pointer ${
+          variant={filters.type === "used" ? "primary" : "secondary"}
+          size="sm"
+          leftIcon={<FiTag className="w-3.5 h-3.5" />}
+          className={
             filters.type === "used"
-              ? "bg-[#000000] text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
-              : "bg-[#FFFFFF] text-[#0F172A] font-bold border border-white/20 hover:bg-[#F1F5F9] shadow-xs"
-          }`}
+              ? "!bg-[#000000] !text-[#FFFFFF] shadow-lg font-black border-2 border-white/20"
+              : "!bg-[#FFFFFF] !text-[#0F172A] font-bold border border-white/20 hover:!bg-[#F1F5F9] shadow-xs"
+          }
         >
-          <FiTag className="w-3.5 h-3.5" />
           Used Cars
-        </button>
+        </Button>
       </div>
 
       {/* Main Filter Inputs: All Dropdowns & Range Inputs Visible By Default (No Toggle Button) */}

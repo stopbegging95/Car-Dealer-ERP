@@ -137,18 +137,16 @@ export default function AICarMatchPage() {
                     "Power Bikes",
                     "Executive Buses",
                   ].map((cat) => (
-                    <button
+                    <Button
                       key={cat}
                       type="button"
+                      variant={preferredCategory === cat ? "primary" : "outline"}
+                      size="sm"
                       onClick={() => setPreferredCategory(cat)}
-                      className={`p-3 rounded-xl border text-xs font-semibold text-left transition-all cursor-pointer ${
-                        preferredCategory === cat
-                          ? "bg-[#2563EB] text-[#FFFFFF] border-[#2563EB] shadow-xs"
-                          : "bg-[#FFFFFF] text-[#0F172A] border-[#CBD5E1] hover:border-[#2563EB]"
-                      }`}
+                      className="p-3 text-xs font-semibold justify-start text-left"
                     >
                       {cat}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -283,7 +281,7 @@ export default function AICarMatchPage() {
                   <div>
                     {/* Image with Match Pill */}
                     <div className="relative h-44 w-full bg-[#0F172A]">
-                      <Image src={car.image} alt={car.model} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <Image src={car.image} alt={car.model} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                       <div className="absolute top-3 left-3">
                         <span className="px-2.5 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] font-mono text-xs font-bold shadow-xs">
                           {car.matchScore}% Match

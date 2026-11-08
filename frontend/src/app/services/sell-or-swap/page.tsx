@@ -56,29 +56,23 @@ export default function SellOrSwapPage() {
           </div>
 
           {/* Mode Segmented Switcher */}
-          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start md:self-auto">
-            <button
+          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start md:self-auto gap-1">
+            <Button
+              variant={mode === "swap" ? "primary" : "ghost"}
+              size="sm"
               onClick={() => setMode("swap")}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all select-none flex items-center gap-1.5 ${
-                mode === "swap"
-                  ? "bg-[#2563EB] text-[#FFFFFF] font-bold shadow-sm"
-                  : "text-[#475569] hover:text-[#0F172A]"
-              }`}
+              leftIcon={<FiRepeat className="w-3.5 h-3.5" />}
             >
-              <FiRepeat className="w-3.5 h-3.5" />
               Swap / Trade-In
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={mode === "sell" ? "primary" : "ghost"}
+              size="sm"
               onClick={() => setMode("sell")}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all select-none flex items-center gap-1.5 ${
-                mode === "sell"
-                  ? "bg-[#2563EB] text-[#FFFFFF] font-bold shadow-sm"
-                  : "text-[#475569] hover:text-[#0F172A]"
-              }`}
+              leftIcon={<FiDollarSign className="w-3.5 h-3.5" />}
             >
-              <FiDollarSign className="w-3.5 h-3.5" />
               Sell Direct for Cash
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -110,7 +104,7 @@ export default function SellOrSwapPage() {
                 {/* Selected Car Preview Pill */}
                 <div className="flex items-center gap-3 bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0]">
                   <div className="relative w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-[#E2E8F0]">
-                    <Image src={targetVehicle.image} alt={targetVehicle.model} fill className="object-cover" />
+                    <Image src={targetVehicle.image} alt={targetVehicle.model} fill sizes="80px" className="object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold text-[#0F172A] truncate">

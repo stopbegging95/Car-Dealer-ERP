@@ -3,6 +3,7 @@
 import React from "react";
 import { FiLock, FiShield, FiArrowRight, FiCheckCircle } from "react-icons/fi";
 import { RoleDefinition } from "@/data/roles";
+import { Button } from "@/components/ui";
 
 export interface AccessRestrictedGuardProps {
   attemptedModule: string;
@@ -53,39 +54,43 @@ export const AccessRestrictedGuard: React.FC<AccessRestrictedGuardProps> = ({
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {activeRole.allowedModules.map((mod) => (
-            <button
+            <Button
               key={mod}
+              variant="outline"
+              size="sm"
               onClick={() => onReturnToAllowedModule(mod)}
-              className="flex items-center justify-between p-2 rounded-md bg-[#F8FAFC] hover:bg-[#EFF6FF] border border-[#E2E8F0] hover:border-[#2563EB] text-xs font-semibold text-[#0F172A] hover:text-[#2563EB] transition-all cursor-pointer text-left"
+              className="flex items-center justify-between p-2 text-xs font-semibold text-[#0F172A] hover:text-[#2563EB] text-left w-full"
             >
               <span className="flex items-center gap-1.5 truncate">
                 <FiCheckCircle className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
                 <span className="truncate">{mod}</span>
               </span>
               <FiArrowRight className="w-3 h-3 text-[#64748B] shrink-0" />
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       {/* Action CTA Buttons */}
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <button
+        <Button
+          variant="primary"
+          size="md"
           onClick={() => onReturnToAllowedModule(activeRole.defaultModule)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-md text-xs sm:text-sm font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-[#FFFFFF] shadow-md shadow-[#2563EB]/25 transition-all cursor-pointer"
+          rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
         >
-          <span>Return to Primary Desk ({activeRole.defaultModule})</span>
-          <FiArrowRight className="w-4 h-4" />
-        </button>
+          Return to Primary Desk ({activeRole.defaultModule})
+        </Button>
 
         {onSwitchRole && (
-          <button
+          <Button
+            variant="outline"
+            size="md"
             onClick={() => onSwitchRole("admin")}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-md text-xs sm:text-sm font-bold bg-[#FFFFFF] hover:bg-[#F8FAFC] text-[#0F172A] border border-[#CBD5E1] shadow-xs transition-all cursor-pointer"
+            leftIcon={<FiShield className="w-4 h-4 text-[#2563EB]" />}
           >
-            <FiShield className="w-4 h-4 text-[#2563EB]" />
-            <span>Elevate to Super Admin</span>
-          </button>
+            Elevate to Super Admin
+          </Button>
         )}
       </div>
     </div>

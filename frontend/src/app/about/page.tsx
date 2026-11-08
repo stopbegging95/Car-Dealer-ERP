@@ -13,6 +13,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa6";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui";
 
 export default function AboutPage() {
   const [selectedShowroom, setSelectedShowroom] = useState<"lagos" | "abuja">("lagos");
@@ -113,26 +114,20 @@ export default function AboutPage() {
             </div>
 
             <div className="flex items-center bg-[#F1F5F9] p-1 rounded-xl border border-[#CBD5E1]">
-              <button
+              <Button
+                variant={selectedShowroom === "lagos" ? "primary" : "ghost"}
+                size="sm"
                 onClick={() => setSelectedShowroom("lagos")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  selectedShowroom === "lagos"
-                    ? "bg-[#2563EB] text-[#FFFFFF] font-bold shadow-xs"
-                    : "text-[#475569] hover:text-[#0F172A]"
-                }`}
               >
                 Lagos Flagship
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={selectedShowroom === "abuja" ? "primary" : "ghost"}
+                size="sm"
                 onClick={() => setSelectedShowroom("abuja")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  selectedShowroom === "abuja"
-                    ? "bg-[#2563EB] text-[#FFFFFF] font-bold shadow-xs"
-                    : "text-[#475569] hover:text-[#0F172A]"
-                }`}
               >
                 Abuja Executive Suite
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -171,10 +166,14 @@ export default function AboutPage() {
                   href="https://wa.me/2348001234567"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#16A34A] text-[#FFFFFF] hover:bg-[#15803D] font-semibold text-xs shadow-xs transition-colors"
                 >
-                  <FaWhatsapp className="w-4 h-4" />
-                  <span>Chat with Showroom Concierge</span>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    leftIcon={<FaWhatsapp className="w-4 h-4" />}
+                  >
+                    Chat with Showroom Concierge
+                  </Button>
                 </a>
               </div>
             </div>
@@ -184,6 +183,7 @@ export default function AboutPage() {
                 src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80"
                 alt={currentShowroom.name}
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 unoptimized
                 className="object-cover"
               />

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { useParams } from "next/navigation";
-import { CustomerPortalContent } from "../page";
+import { CustomerPortalContent } from "@/components/CustomerPortalContent";
 
 const TAB_MAPPING: Record<string, string> = {
   dashboard: "Overview",
@@ -15,7 +15,7 @@ const TAB_MAPPING: Record<string, string> = {
   profile: "KYC & Verification",
 };
 
-export default function CustomerPortalTabPage() {
+function CustomerPortalTabContent() {
   const params = useParams();
   const tabSlug = typeof params?.tab === "string" ? params.tab : "dashboard";
 
@@ -24,5 +24,13 @@ export default function CustomerPortalTabPage() {
   }, [tabSlug]);
 
   return <CustomerPortalContent key={resolvedTab} initialTab={resolvedTab} />;
+}
+
+export default function CustomerPortalTabPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
+      <CustomerPortalTabContent />
+    </React.Suspense>
+  );
 }
 

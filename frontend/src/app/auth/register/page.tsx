@@ -12,7 +12,7 @@ import {
   FiArrowLeft,
   FiShield,
 } from "react-icons/fi";
-import { Button, Input, Dropdown } from "@/components/ui";
+import { Button, Input, Dropdown, Checkbox } from "@/components/ui";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -22,6 +22,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [preferredCurrency, setPreferredCurrency] = useState("USD");
   const [clientType, setClientType] = useState("Private Collector");
+  const [agreeTerms, setAgreeTerms] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,6 +43,7 @@ export default function RegisterPage() {
           <span className="font-bold text-[#64748B] group-hover:text-[#2563EB] text-xs transition-colors">
             Return to Public Website
           </span>
+          
         </Link>
 
         <div className="flex items-center gap-2">
@@ -152,16 +154,12 @@ export default function RegisterPage() {
                 required
               />
 
-              <div className="flex items-start gap-2 pt-1 text-[#64748B] text-xs">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  required
-                  className="mt-0.5 border-[#CBD5E1] rounded focus:ring-[#2563EB] text-[#2563EB] cursor-pointer"
+              <div className="pt-1 text-[#64748B] text-xs">
+                <Checkbox
+                  checked={agreeTerms}
+                  onChange={setAgreeTerms}
+                  label="I agree to the LuxAuto VIP Terms of Service and authorize confidential SMS and WhatsApp vehicle status updates."
                 />
-                <label htmlFor="terms" className="leading-tight cursor-pointer select-none">
-                  I agree to the LuxAuto VIP Terms of Service and authorize confidential SMS and WhatsApp vehicle status updates.
-                </label>
               </div>
 
               <Button
@@ -177,15 +175,23 @@ export default function RegisterPage() {
             </form>
           </div>
 
-          <div className="text-[#64748B] text-xs text-center">
-            Need dealership staff or admin access?{" "}
-            <Link href="/erp" className="font-bold text-[#2563EB] hover:underline">
-              Dealership Staff ERP Console &rarr;
-            </Link>
+          <div className="space-y-1 text-xs text-center">
+            <p className="text-[#64748B]">
+              Looking for Dealership Department Dashboard Access?
+            </p>
+            <p className="text-[#94A3B8] text-[11px]">
+              Department staff accounts are strictly provisioned by the Super Admin. Self-registration is restricted to VIP Clients.
+            </p>
+            <div className="pt-1">
+              <Link href="/auth/login" className="font-bold text-[#2563EB] hover:underline">
+                Sign in with Staff Credentials &rarr;
+              </Link>
+            </div>
           </div>
         </div>
       </main>
     </div>
   );
 }
+
 

@@ -15,6 +15,7 @@ import {
   FiMail,
 } from "react-icons/fi";
 import { FaAward } from "react-icons/fa6";
+import { Button } from "./ui";
 
 export interface DashboardMenuItem {
   name: string;
@@ -268,16 +269,25 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 onChange={handleSearchChange}
                 className="bg-transparent outline-none w-28 sm:w-44 text-[#0F172A] text-xs placeholder-[#94A3B8]"
               />
-              <button className="bg-[#FFFFFF] px-2 py-0.5 sm:px-2.5 sm:py-1 border border-[#CBD5E1] rounded font-semibold text-[#0F172A] hover:text-[#2563EB] text-[11px] sm:text-xs shadow-xs cursor-pointer">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="px-2 py-0.5 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs"
+              >
                 Search
-              </button>
+              </Button>
             </div>
 
             {/* Notification Bell */}
-            <button className="relative flex justify-center items-center bg-[#FFFFFF] border border-[#CBD5E1] rounded-full w-8 h-8 text-[#64748B] hover:text-[#2563EB] shadow-xs cursor-pointer">
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Notifications"
+              className="relative rounded-full w-8 h-8 text-[#64748B] hover:text-[#2563EB]"
+            >
               <FiBell className="w-3.5 h-3.5" />
               <span className="top-1.5 right-1.5 absolute bg-[#2563EB] rounded-full w-1.5 h-1.5" />
-            </button>
+            </Button>
 
             {/* Profile Avatar Pill & Dropdown (Email, Name, Profile, Logout) */}
             <div className="relative">

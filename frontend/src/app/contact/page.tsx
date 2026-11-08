@@ -12,7 +12,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa6";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button, Input, Dropdown, Modal } from "@/components/ui";
+import { Button, Input, Textarea, Dropdown, Modal } from "@/components/ui";
 
 export default function ContactPage() {
   const [enquiryType, setEnquiryType] = useState("Vehicle Acquisition");
@@ -145,17 +145,12 @@ export default function ContactPage() {
 
               <Input label="Email Address" type="email" placeholder="alexander@company.com" required />
 
-              <div>
-                <label className="text-xs font-medium text-[#0F172A] block mb-1.5">
-                  Message Details / Vehicle Specifications
-                </label>
-                <textarea
-                  rows={4}
-                  placeholder="Tell us about the vehicle you are interested in, your timeframe, or specific customs clearance request..."
-                  className="w-full bg-[#FFFFFF] text-xs text-[#0F172A] placeholder-[#94A3B8] rounded-xl p-3 border border-[#CBD5E1] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] outline-none resize-none shadow-xs"
-                  required
-                />
-              </div>
+              <Textarea
+                label="Message Details / Vehicle Specifications"
+                rows={4}
+                placeholder="Tell us about the vehicle you are interested in, your timeframe, or specific customs clearance request..."
+                required
+              />
 
               <Button variant="primary" size="md" fullWidth type="submit">
                 Transmit Enquiry to Concierge

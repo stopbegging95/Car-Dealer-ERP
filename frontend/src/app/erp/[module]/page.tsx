@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { ERPConsoleContent } from "../page";
+import { ERPConsoleContent } from "@/components/ERPConsoleContent";
 
 const MODULE_MAPPING: Record<string, string> = {
   dashboard: "Dashboard",
@@ -19,6 +19,7 @@ const MODULE_MAPPING: Record<string, string> = {
   "trade-ins": "Trade-In & Swap",
   crm: "CRM Pipeline & 360",
   finance: "Accounting & Finance",
+  accounting: "Accounting & Finance",
   hr: "HR & Recruitment",
   roles: "Roles & RBAC",
   documents: "Document Vault",
@@ -44,6 +45,7 @@ const MODULE_TO_ROLE: Record<string, string> = {
   "trade-ins": "trade-ins",
   crm: "crm",
   finance: "finance",
+  accounting: "finance",
   hr: "hr",
   roles: "admin",
   documents: "admin",
@@ -54,7 +56,7 @@ const MODULE_TO_ROLE: Record<string, string> = {
   "session-history": "admin",
 };
 
-export default function ERPConsoleModulePage() {
+function ERPConsoleModuleContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const moduleSlug = typeof params?.module === "string" ? params.module : "dashboard";
@@ -75,5 +77,13 @@ export default function ERPConsoleModulePage() {
       initialModule={resolvedModule}
       initialRole={resolvedRole}
     />
+  );
+}
+
+export default function ERPConsoleModulePage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
+      <ERPConsoleModuleContent />
+    </React.Suspense>
   );
 }

@@ -112,15 +112,17 @@ export default function CompareCarsPage() {
                     <th key={car.stockId} className="p-4 align-top w-64 border-l border-[#E2E8F0]">
                       <div className="space-y-2.5">
                         <div className="relative w-full h-36 rounded-xl overflow-hidden bg-[#0F172A] border border-[#E2E8F0]">
-                          <Image src={car.image} alt={car.model} fill className="object-cover" />
+                          <Image src={car.image} alt={car.model} fill sizes="(max-width: 768px) 100vw, 256px" className="object-cover" />
                           {selectedVehicles.length > 1 && (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={() => handleRemove(car.stockId)}
                               aria-label="Remove vehicle"
-                              className="absolute top-2 right-2 p-1 rounded-full bg-[#0F172A]/85 text-[#FFFFFF] hover:text-red-400 border border-white/20 transition-colors cursor-pointer"
+                              className="absolute top-2 right-2 p-1 rounded-full bg-[#0F172A]/85 text-[#FFFFFF] hover:text-red-400 border border-white/20"
                             >
                               <FiX className="w-3.5 h-3.5" />
-                            </button>
+                            </Button>
                           )}
                         </div>
 

@@ -100,24 +100,24 @@ export default function LoanCalculatorPage() {
           </div>
 
           {/* Currency Switcher */}
-          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start md:self-auto">
+          <div className="flex items-center bg-[#FFFFFF] p-1 rounded-xl border border-[#CBD5E1] shadow-xs self-start md:self-auto gap-1">
             <span className="text-xs text-[#64748B] px-2 font-medium">Currency:</span>
-            <button
+            <Button
+              variant={currency === "USD" ? "primary" : "ghost"}
+              size="sm"
               onClick={() => setCurrency("USD")}
-              className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                currency === "USD" ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs" : "text-[#64748B] hover:text-[#0F172A]"
-              }`}
+              className="font-mono text-xs px-3 py-1"
             >
               $ USD
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={currency === "NGN" ? "primary" : "ghost"}
+              size="sm"
               onClick={() => setCurrency("NGN")}
-              className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                currency === "NGN" ? "bg-[#2563EB] text-[#FFFFFF] shadow-xs" : "text-[#64748B] hover:text-[#0F172A]"
-              }`}
+              className="font-mono text-xs px-3 py-1"
             >
               ₦ NGN
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -132,21 +132,14 @@ export default function LoanCalculatorPage() {
 
             {/* Vehicle Purchase Price Input */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <span className="text-[#0F172A] font-semibold">Vehicle Purchase Price:</span>
-                <span className="font-mono font-bold text-[#1D4ED8]">
-                  {currencySymbol}{Math.round(currentPrice).toLocaleString()}
-                </span>
-              </div>
-              <input
+              <Input
+                label="Vehicle Purchase Price"
                 type="number"
                 value={vehiclePrice}
                 onChange={(e) => setVehiclePrice(Math.max(10000, Number(e.target.value)))}
-                className="w-full bg-[#F8FAFC] text-sm text-[#0F172A] font-mono px-3.5 py-2.5 rounded-xl border border-[#CBD5E1] focus:border-[#2563EB] outline-none shadow-xs"
+                className="font-mono"
+                helperText={`Default: $165,000 (Mercedes-Benz S-Class S580 Executive) • Displayed: ${currencySymbol}${Math.round(currentPrice).toLocaleString()}`}
               />
-              <span className="text-[10px] text-[#64748B] block">
-                Default: $165,000 (Mercedes-Benz S-Class S580 Executive)
-              </span>
             </div>
 
             {/* Down Payment Slider */}
@@ -183,18 +176,16 @@ export default function LoanCalculatorPage() {
               </div>
               <div className="grid grid-cols-6 gap-1.5">
                 {[12, 24, 36, 48, 60, 72].map((m) => (
-                  <button
+                  <Button
                     key={m}
                     type="button"
+                    variant={loanTermMonths === m ? "primary" : "outline"}
+                    size="sm"
                     onClick={() => setLoanTermMonths(m)}
-                    className={`py-2 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer ${
-                      loanTermMonths === m
-                        ? "bg-[#2563EB] text-[#FFFFFF] border-[#2563EB] shadow-xs"
-                        : "bg-[#FFFFFF] text-[#475569] border-[#CBD5E1] hover:border-[#2563EB]"
-                    }`}
+                    className="font-mono text-xs py-2"
                   >
                     {m}M
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

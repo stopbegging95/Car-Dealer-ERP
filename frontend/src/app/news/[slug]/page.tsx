@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -19,9 +19,11 @@ import { Button, Badge, VehicleCard } from "@/components/ui";
 import { NEWS_ARTICLES, NewsArticle } from "@/data/news";
 import { VEHICLES } from "@/data/vehicles";
 
-export default function NewsArticleDetailPage() {
+function NewsArticleDetailContent() {
   const params = useParams();
   const slug = typeof params?.slug === "string" ? params.slug : "";
+
+  const [isCopied, setIsCopied] = useState(false);
 
   const article: NewsArticle = useMemo(() => {
     return (
@@ -38,7 +40,8 @@ export default function NewsArticleDetailPage() {
   const handleShare = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(window.location.href);
-      alert("Article link copied to clipboard!");
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 3000);
     }
   };
 
@@ -57,13 +60,14 @@ export default function NewsArticleDetailPage() {
             <span>Back to All News & Releases</span>
           </Link>
 
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleShare}
-            className="inline-flex items-center gap-1.5 bg-[#FFFFFF] shadow-xs px-3 py-1.5 border border-[#CBD5E1] hover:border-[#2563EB] rounded-xl font-semibold text-[#0F172A] text-xs transition-colors cursor-pointer"
+            leftIcon={isCopied ? <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600" /> : <FiShare2 className="w-3.5 h-3.5 text-[#2563EB]" />}
           >
-            <FiShare2 className="w-3.5 h-3.5 text-[#2563EB]" />
-            <span>Share Release</span>
-          </button>
+            {isCopied ? "Link Copied" : "Share Release"}
+          </Button>
         </div>
 
         {/* Article Header (Clean, elegant, no forced banner) */}
@@ -103,6 +107,7 @@ export default function NewsArticleDetailPage() {
             src={article.image}
             alt={article.title}
             fill
+            sizes="(max-width: 1024px) 100vw, 1024px"
             unoptimized
             priority
             className="object-center object-cover"
@@ -146,6 +151,7 @@ export default function NewsArticleDetailPage() {
                       src={img}
                       alt={`Gallery view ${gi + 1}`}
                       fill
+                      sizes="(max-width: 640px) 100vw, 33vw"
                       unoptimized
                       className="object-cover hover:scale-105 transition-transform duration-500"
                     />
@@ -225,6 +231,14 @@ export default function NewsArticleDetailPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function NewsArticleDetailPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
+      <NewsArticleDetailContent />
+    </React.Suspense>
   );
 }
 

@@ -12,7 +12,7 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
-import { Button, Input } from "@/components/ui";
+import { Button, Input, Checkbox } from "@/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,7 +28,30 @@ export default function LoginPage() {
     setTimeout(() => {
       setIsSubmitting(false);
       if (accountType === "staff") {
-        router.push("/erp");
+        const lowerEmail = email.toLowerCase();
+        let targetRole = "admin";
+        if (lowerEmail.includes("accountant") || lowerEmail.includes("finance")) {
+          targetRole = "finance";
+        } else if (lowerEmail.includes("sales")) {
+          targetRole = "sales";
+        } else if (lowerEmail.includes("service") || lowerEmail.includes("workshop")) {
+          targetRole = "service";
+        } else if (lowerEmail.includes("parts")) {
+          targetRole = "parts";
+        } else if (lowerEmail.includes("import") || lowerEmail.includes("logistics")) {
+          targetRole = "imports";
+        } else if (lowerEmail.includes("trade") || lowerEmail.includes("swap") || lowerEmail.includes("appraisal")) {
+          targetRole = "trade-ins";
+        } else if (lowerEmail.includes("recon") || lowerEmail.includes("detail")) {
+          targetRole = "recon";
+        } else if (lowerEmail.includes("crm")) {
+          targetRole = "crm";
+        } else if (lowerEmail.includes("hr")) {
+          targetRole = "hr";
+        } else if (lowerEmail.includes("cms")) {
+          targetRole = "cms";
+        }
+        router.push(`/erp?role=${targetRole}`);
       } else {
         router.push("/portal");
       }
@@ -83,31 +106,27 @@ export default function LoginPage() {
 
           {/* Account Type Toggle */}
           <div className="gap-1.5 grid grid-cols-2 bg-[#FFFFFF] shadow-xs p-1 border border-[#CBD5E1] rounded-lg">
-            <button
+            <Button
               type="button"
+              variant={accountType === "client" ? "primary" : "ghost"}
+              size="sm"
               onClick={() => setAccountType("client")}
-              className={`flex items-center justify-center gap-2 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                accountType === "client"
-                  ? "bg-[#000000] text-[#FFFFFF] shadow-md shadow-black/20"
-                  : "text-[#64748B] hover:text-[#0F172A]"
-              }`}
+              leftIcon={<FaCar className="w-3.5 h-3.5" />}
+              className="justify-center"
             >
-              <FaCar className="w-3.5 h-3.5" />
-              <span>Customer Portal</span>
-            </button>
+              Customer Portal
+            </Button>
 
-            <button
+            <Button
               type="button"
+              variant={accountType === "staff" ? "primary" : "ghost"}
+              size="sm"
               onClick={() => setAccountType("staff")}
-              className={`flex items-center justify-center gap-2 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                accountType === "staff"
-                  ? "bg-[#000000] text-[#FFFFFF] shadow-md shadow-black/20"
-                  : "text-[#64748B] hover:text-[#0F172A]"
-              }`}
+              leftIcon={<FiShield className="w-3.5 h-3.5" />}
+              className="justify-center"
             >
-              <FiShield className="w-3.5 h-3.5" />
-              <span>Dealership ERP</span>
-            </button>
+              Dealership ERP
+            </Button>
           </div>
 
           {/* Auth Card */}
@@ -156,17 +175,12 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-[#64748B] text-xs">
-                <input
-                  type="checkbox"
-                  id="remember"
+              <div className="flex items-center text-[#64748B] text-xs">
+                <Checkbox
                   checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="border-[#CBD5E1] rounded focus:ring-[#2563EB] text-[#2563EB] cursor-pointer"
+                  onChange={setRememberMe}
+                  label="Remember my session on this device"
                 />
-                <label htmlFor="remember" className="cursor-pointer select-none">
-                  Remember my session on this device
-                </label>
               </div>
 
               <Button
@@ -186,32 +200,77 @@ export default function LoginPage() {
             </form>
 
             {/* Quick Demo Pre-fills */}
-            <div className="flex justify-between items-center pt-3 border-[#E2E8F0] border-t text-[#64748B] text-[11px]">
-              <span>Demo Quick Sign-In:</span>
-              <div className="flex gap-2">
-                <button
+            <div className="pt-3 border-[#E2E8F0] border-t text-[#64748B] text-[11px] space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-[#0F172A]">Demo Quick Sign-In:</span>
+                <span className="text-[10px] text-[#64748B]">Auto-provisions department desk</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => {
                     setAccountType("client");
                     setEmail("alexander@vance.com");
                     setPassword("password123");
                   }}
-                  className="font-mono text-[#2563EB] hover:underline cursor-pointer"
+                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
                 >
-                  Client Demo
-                </button>
-                <span>&bull;</span>
-                <button
+                  VIP Client
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => {
                     setAccountType("staff");
-                    setEmail("admin@luxauto.com");
+                    setEmail("admin@luxauto.dealers.com");
                     setPassword("admin123");
                   }}
-                  className="font-mono text-[#2563EB] hover:underline cursor-pointer"
+                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
                 >
-                  ERP Staff Demo
-                </button>
+                  Super Admin
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setAccountType("staff");
+                    setEmail("chief.accountant@luxauto.dealers.com");
+                    setPassword("finance123");
+                  }}
+                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
+                >
+                  Accounting Dept
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setAccountType("staff");
+                    setEmail("sales.director@luxauto.dealers.com");
+                    setPassword("sales123");
+                  }}
+                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
+                >
+                  Sales Desk
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setAccountType("staff");
+                    setEmail("service.manager@luxauto.dealers.com");
+                    setPassword("service123");
+                  }}
+                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
+                >
+                  Workshop Desk
+                </Button>
               </div>
             </div>
           </div>
