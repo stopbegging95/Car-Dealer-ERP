@@ -493,8 +493,86 @@ COMPLETED MODULES & CAPABILITIES:
     - Zero TypeScript compilation errors (`tsc --noEmit` exited 0).
     - Production build verification: all 30 routes compiled and prerendered cleanly (`next build --webpack` exited 0).
 
+[COMPLETED] 25. DASHBOARD HEADER & FOOTER STREAMLINING & CONTEXTUAL GREETING
+- Files Refactored:
+  * frontend/src/components/DashboardLayout.tsx
+- Implemented:
+  * Header Decluttering:
+    - Completely removed the search bar input and button (`Search VIN, stock, client...`).
+    - Completely removed the currency badge (`₦ NGN (Nigerian Naira)`).
+    - Replaced the generic "Dashboard" title and "Dealership Master HQ (All Nodes)" pill with personalized authorized user greeting:
+      * When on Dashboard / Customer Portal: `Welcome back, <userName>` (e.g., `Welcome back, Chief Executive (Admin)`).
+      * When on module pages (e.g., Car Management): `<Module Name> • Welcome back, <userName>`.
+  * Footer Cleanup:
+    - Completely removed `"LuxAuto ERP v2.4 (Enterprise Edition)"`, bullet separator, `"User: Chief Executive (Admin) (admin@luxauto.dealers.com)"`, and `"Immutable Session Audit Active"`.
+    - Retained a clean, minimal, right-aligned copyright line: `© 2026 Premier Auto Group`.
+  * Quality Verification:
+    - Zero TypeScript errors (`tsc --noEmit` exited 0).
+    - Codebase validated.
+
+================================================================================
+SECTION 26: HOMEPAGE CONTENT MANAGEMENT SUITE & LIVE SYNCHRONIZATION
+================================================================================
+* Completed on 2026-11-09:
+  * Public Homepage Management Suite in Admin ERP (`/erp/cms` or `/erp` -> CMS Manager):
+    - Created `frontend/src/context/HomePageContext.tsx` providing universal, reactive state management with local storage persistence across sessions and tabs.
+    - Wrapped `RootLayout` in `frontend/src/app/layout.tsx` with `<HomePageProvider>`, enabling seamless synchronization between the Admin Console and the public-facing homepage (`http://localhost:3000`).
+    - Implemented 5 dedicated sub-tabs in `frontend/src/components/dashboards/admin/CMSPage.tsx`:
+      1. `Homepage Hero Slider` (`hero-slides`):
+         * Dedicated in-tab `+ Create Homepage Slide` button and `Reset Defaults` button.
+         * Support for all 5 luxury archetypes:
+           - `text-image`: Background image, headline, highlight text, description, CTAs, trust perks.
+           - `text-only`: Editorial prestige ambient gradient, headline, highlight text, description, 4 diagnostic features.
+           - `image-only`: Full-bleed exotic supercar showcase without text overlays.
+           - `text-video`: Autoplaying muted background video (YouTube / MP4), animated text overlay, CTAs.
+           - `video-only`: Pure full-bleed 4K track performance video with zero stacked text.
+         * Interactive Table with serial numbers (S/N), slide order, live thumbnail preview, badge, archetype, visibility toggle, edit modal, and delete confirmation modal.
+      2. `Brand Partners Bar` (`brand-partners`):
+         * Dedicated in-tab `+ Add Brand Partner` button.
+         * Table with S/N, official vector logo preview, brand name, make identifier, active toggle, edit modal, and delete confirmation modal.
+      3. `Announcement Ticker` (`promotions`):
+         * Real-time website preview card.
+         * In-tab `+ Update Announcement` button.
+         * Form controls for ticker toggle (enable/disable), badge text, message text, and target link.
+      4. `Advertising Campaigns & ROI` (`campaigns`): Multi-channel digital advertising tracking.
+      5. `Public Editorial Dispatches` (`articles`): Dealership newsroom articles.
+  * Public Homepage Dynamic Integration (`frontend/src/app/page.tsx`):
+    - Subscribed `App` to `useHomePageContent()`.
+    - Dynamic slide rendering adapting to active slides, slide count (`TOTAL_SLIDES`), and archetypes.
+    - Dynamic pagination dots and navigation controls.
+    - Dynamic top announcement ticker banner.
+    - Dynamic brand partner logo strip with brand filter capability and smooth scroll to `#inventory-section`.
+    - Safe YouTube embed URL formatter ensuring muted, autoplaying background loops without controls.
+  * Executive Cockpit Direct Access (`frontend/src/components/dashboards/admin/AdminOverviewPage.tsx`):
+    - Added "Homepage & CMS Suite" to the Departmental Oversight & Central Operations Grid in the Admin Overview Cockpit.
+  * Architecture & Quality Verification:
+    - Reusable UI component compliance (`Modal`, `Button`, `Table`, `Badge`, `Input`, `Dropdown`, `Card`, `KPICard`).
+    - Zero `window.alert` or `window.confirm` calls.
+    - Nigerian Naira (`₦`, `NGN`) platform currency strictly preserved.
+    - Full static build check: `npx next build --webpack` exited 0 across all 30 routes.
+    - TypeScript compilation check: `npx tsc --noEmit` exited 0.
+
+================================================================================
+SECTION 27: TAILWIND CSS PIPELINE & GLOBAL STYLESHEET RESOLUTION
+================================================================================
+* Completed on 2026-11-09:
+  * Issue Root Cause:
+    - On Windows, Windows Defender Application Control (WDAC) / Smart App Control blocked the native binary addon `tailwindcss-oxide.win32-x64-msvc.node` (`ERR_DLOPEN_FAILED`).
+    - Tailwind v4's WASI fallback was unable to access host disk files in Node 23, resulting in 0 utility classes generated and leaving `globals.css` without compiled utility styles.
+    - Missing `postcss.config.mjs` and deprecated experimental turbopack loader rules further prevented PostCSS execution.
+  * Resolution & Configuration:
+    - Switched to the robust, pure JavaScript PostCSS Tailwind engine (`tailwindcss@3.4.17` + `autoprefixer@10.4.20` + `postcss@8.4.49`), which requires zero native `.node` binaries and is immune to Windows application control policy blocks.
+    - Created standard `frontend/postcss.config.mjs` with `tailwindcss` and `autoprefixer` plugins.
+    - Created `frontend/tailwind.config.js` properly configured with `./src/**/*.{js,ts,jsx,tsx,mdx}` content glob and custom automotive theme extensions.
+    - Updated `frontend/src/app/globals.css` with `@tailwind base; @tailwind components; @tailwind utilities;`, preserving custom CSS variables and automotive theme classes.
+    - Cleaned up `frontend/next.config.ts` by removing deprecated Turbopack CSS loader rules.
+  * Verification:
+    - Compiled CSS verified: Output CSS increased from 5,632 bytes to 65,635 bytes with complete generation of all utility classes (`.flex`, `.grid`, `.hidden`, responsive modifiers, borders, colors).
+    - TypeScript check: `npx tsc --noEmit` exited 0 with 0 errors.
+    - Full production build: `npx next build --webpack` exited 0 across all 30 static and dynamic routes.
+
 ================================================================================
 ALL 17 MODULES, 12 BUSINESS RULES, DYNAMIC MASTER DATA TAXONOMY ENGINE,
-STRICT REUSABLE MODAL AUDIT, DEDICATED IN-DASHBOARD CRUD SECTIONS, AND
-IN-TAB CONTEXTUAL CREATION BUTTON RESTRUCTURING ARE 100% COMPLETED AND VERIFIED.
+STRICT REUSABLE MODAL AUDIT, DEDICATED IN-DASHBOARD CRUD SECTIONS, IN-TAB 
+CONVENTIONS, CLEAN HEADER/FOOTER, HOMEPAGE CMS, AND GLOBAL STYLESHEET ARE 100% COMPLETE.
 ================================================================================

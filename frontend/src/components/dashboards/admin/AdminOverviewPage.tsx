@@ -254,6 +254,16 @@ export const AdminOverviewPage: React.FC<AdminOverviewPageProps> = ({
       statusVariant: "gold" as const,
       detail: "Staff directory, commissions, payroll, and recruitment applicant pipeline.",
     },
+    {
+      name: "Homepage & CMS Suite",
+      module: "CMS Manager",
+      icon: <FiSliders className="w-4 h-4 text-[#2563EB]" />,
+      kpi: "Live Website Synced",
+      stat: "Hero Slides, Brands & Ticker",
+      status: "Public Portal Live",
+      statusVariant: "gold" as const,
+      detail: "Create, edit, and publish homepage slides across 5 luxury archetypes, brand partners, and promotional banners.",
+    },
   ];
 
   return (

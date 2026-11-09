@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   FiChevronLeft,
   FiLogOut,
-  FiSearch,
   FiBell,
   FiCheckCircle,
   FiChevronDown,
@@ -64,10 +63,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onSearch,
   children,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [activeCurrency] = useState<"NGN">("NGN");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([
     {
@@ -125,13 +122,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       read: true,
     },
   ]);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    if (onSearch) {
-      onSearch(e.target.value);
-    }
-  };
 
   return (
     <div className="flex bg-[#F8FAFC] selection:bg-[#2563EB] w-screen h-screen overflow-hidden font-sans text-[#0F172A] selection:text-[#FFFFFF]">
@@ -329,43 +319,22 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <header className="z-20 flex justify-between items-center bg-[#FFFFFF] px-4 sm:px-6 border-[#E2E8F0] border-b h-13 shrink-0 shadow-xs">
           <div className="flex items-center gap-3">
             <h2 className="font-bold text-[#0F172A] text-base sm:text-lg tracking-tight">
-              {title}
+              {title === "Dashboard" || title === "Customer Portal" ? (
+                <>
+                  Welcome back, <span className="text-[#2563EB]">{userName}</span>
+                </>
+              ) : (
+                <>
+                  <span>{title}</span>
+                  <span className="text-xs font-normal text-[#64748B] hidden sm:inline ml-2.5">
+                    &bull; Welcome back, <span className="text-[#2563EB] font-semibold">{userName}</span>
+                  </span>
+                </>
+              )}
             </h2>
-            <span className="bg-[#EFF6FF] px-2.5 py-0.5 border border-[#BFDBFE] rounded-md font-mono text-[#1D4ED8] text-[10px] font-bold hidden sm:inline">
-              {branchName}
-            </span>
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Search Bar */}
-            <div className="flex items-center bg-[#F8FAFC] p-0.5 pl-3 border border-[#CBD5E1] focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] rounded-md">
-              <FiSearch className="mr-2 w-3.5 h-3.5 text-[#94A3B8]" />
-              <input
-                type="text"
-                placeholder="Search VIN, stock, client..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="bg-transparent outline-none w-28 sm:w-44 text-[#0F172A] text-xs placeholder-[#94A3B8]"
-              />
-              <Button
-                variant="secondary"
-                size="sm"
-                className="px-2 py-0.5 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs"
-              >
-                Search
-              </Button>
-            </div>
-
-            {/* Platform Currency: Nigerian Naira (₦ NGN) */}
-            <div className="flex items-center gap-1.5 bg-[#EFF6FF] border border-[#BFDBFE] rounded-md px-2.5 py-1 text-xs">
-              <span className="font-bold text-[11px] text-[#2563EB] font-mono">
-                ₦ NGN
-              </span>
-              <span className="hidden sm:inline text-[10px] text-[#64748B] font-medium">
-                (Nigerian Naira)
-              </span>
-            </div>
-
             {/* Notification Bell & Interactive Drawer */}
             <div className="relative">
               <Button
@@ -586,23 +555,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </main>
 
         {/* FIXED FOOTER */}
-        <footer className="z-20 flex justify-between items-center bg-[#FFFFFF] px-4 sm:px-6 border-[#E2E8F0] border-t h-8 font-mono text-[#64748B] text-[11px] shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="bg-[#2563EB] rounded-full w-2 h-2 animate-pulse" />
-            <span className="text-[#334155] font-medium">
-              LuxAuto ERP v2.4 (Enterprise Edition)
-            </span>
-            <span className="text-[#CBD5E1]">&bull;</span>
-            <span className="text-[#2563EB] font-bold">User: {userName} ({userEmail})</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:inline flex items-center gap-1 text-[#64748B]">
-              <FiCheckCircle className="w-3 h-3 text-[#2563EB]" />
-              Immutable Session Audit Active
-            </span>
-            <span>&copy; 2026 Premier Auto Group</span>
-          </div>
+        <footer className="z-20 flex justify-end items-center bg-[#FFFFFF] px-4 sm:px-6 border-[#E2E8F0] border-t h-8 font-mono text-[#64748B] text-[11px] shrink-0">
+          <span>&copy; 2026 Premier Auto Group</span>
         </footer>
       </div>
 

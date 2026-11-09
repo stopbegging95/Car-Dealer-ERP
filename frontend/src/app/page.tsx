@@ -29,59 +29,11 @@ import {
 import { VEHICLES, Vehicle } from "@/data/vehicles";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-
-// Official vector logos for the dealership's flagship brand partners
-const BRAND_LOGOS = [
-  {
-    name: "BMW",
-    make: "BMW",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg",
-    width: 38,
-    height: 38,
-  },
-  {
-    name: "Mercedes-Benz",
-    make: "Mercedes-Benz",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg",
-    width: 40,
-    height: 40,
-  },
-  {
-    name: "Audi",
-    make: "Audi",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/92/Audi-Logo_2016.svg",
-    width: 56,
-    height: 28,
-  },
-  {
-    name: "Toyota",
-    make: "Toyota",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Toyota.svg",
-    width: 44,
-    height: 32,
-  },
-  {
-    name: "Lexus",
-    make: "Lexus",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Lexus_division_emblem.svg",
-    width: 46,
-    height: 32,
-  },
-  {
-    name: "Porsche",
-    make: "Porsche",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b7/Porsche_Wordmark_Logo_Black.svg",
-    width: 78,
-    height: 22,
-  },
-  {
-    name: "Land Rover",
-    make: "Land Rover",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Land_Rover_2023.svg",
-    width: 72,
-    height: 32,
-  },
-];
+import {
+  useHomePageContent,
+  INITIAL_SLIDES,
+  INITIAL_BRANDS,
+} from "@/context/HomePageContext";
 
 export default function App() {
   // Currency state
@@ -100,26 +52,59 @@ export default function App() {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const brandsRef = useRef<HTMLDivElement>(null);
 
-  // Banner Slider State (5 distinct luxury archetypes):
-  // Slide 0: Text + Image (Mercedes fleet + headline & CTAs)
-  // Slide 1: Text Only (Editorial prestige — gradient bg, no image)
-  // Slide 2: Image Only (Exotic supercar — full-bleed, no text)
-  // Slide 3: Text + Video (Autoplaying background video + animated overlay text, no pause/play controls)
-  // Slide 4: Video Only (Autoplaying full-bleed performance video without text stacked on it)
-  const TOTAL_SLIDES = 5;
+  // Consume dynamic homepage configuration from Admin CMS Context
+  const { activeSlides, activeBrands, promoBanner } = useHomePageContent();
+
+  const slidesToRender = activeSlides && activeSlides.length > 0 ? activeSlides : INITIAL_SLIDES;
+  const brandsToRender = activeBrands && activeBrands.length > 0 ? activeBrands : INITIAL_BRANDS;
+  const TOTAL_SLIDES = slidesToRender.length;
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Safe clamped index in case slides were modified in admin
+  const safeSlideIndex = currentSlide >= TOTAL_SLIDES ? 0 : currentSlide;
+
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || TOTAL_SLIDES <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % TOTAL_SLIDES);
     }, 6000);
     return () => clearInterval(timer);
-  }, [isPaused]);
+  }, [isPaused, TOTAL_SLIDES]);
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % TOTAL_SLIDES);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + TOTAL_SLIDES) % TOTAL_SLIDES);
+
+  const getEmbedUrl = (url: string, isCurrent: boolean): string => {
+    if (!isCurrent || !url) return "about:blank";
+    let videoId = "";
+    if (url.includes("youtube.com/watch?v=")) {
+      videoId = url.split("v=")[1]?.split("&")[0] || "";
+    } else if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1]?.split("?")[0] || "";
+    } else if (url.includes("/embed/")) {
+      videoId = url.split("/embed/")[1]?.split("?")[0] || "";
+    }
+
+    if (videoId) {
+      return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1`;
+    }
+    if (url.includes("autoplay=1")) return url;
+    return url.includes("?") ? `${url}&autoplay=1&mute=1&controls=0` : `${url}?autoplay=1&mute=1&controls=0`;
+  };
+
+  const handleCtaClick = (link: string) => {
+    if (!link) return;
+    if (link.startsWith("#")) {
+      const el = document.getElementById(link.replace("#", ""));
+      el?.scrollIntoView({ behavior: "smooth" });
+    } else if (link === "test-drive-modal") {
+      openTestDriveModal();
+    } else {
+      window.location.href = link;
+    }
+  };
 
   const scrollBrands = (direction: "left" | "right") => {
     if (brandsRef.current) {
@@ -184,6 +169,31 @@ export default function App() {
       {/* 1. Global Navigation Bar */}
       <Navbar onBookTestDrive={() => openTestDriveModal()} />
 
+      {/* Dynamic Top Announcement Ticker (Managed via Admin CMS) */}
+      {promoBanner?.enabled && promoBanner.message && (
+        <aside aria-label="dealership-announcement" className="bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0F172A] text-white border-b border-[#334155] px-4 py-2 sm:py-2.5">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 text-xs sm:text-sm">
+            <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+              {promoBanner.badge && (
+                <span className="bg-[#2563EB] text-white text-[10px] sm:text-xs font-bold uppercase px-2 py-0.5 rounded shadow-xs shrink-0">
+                  {promoBanner.badge}
+                </span>
+              )}
+              <span className="text-[#E2E8F0] font-medium truncate">{promoBanner.message}</span>
+            </div>
+            {promoBanner.linkText && (
+              <Link
+                href={promoBanner.linkUrl || "#"}
+                className="inline-flex items-center gap-1 text-[#60A5FA] hover:text-[#93C5FD] font-semibold text-xs shrink-0 underline underline-offset-2 transition-colors"
+              >
+                {promoBanner.linkText}
+                <FiArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
+          </div>
+        </aside>
+      )}
+
       {/* 2. HERO SLIDER BANNER SECTION */}
       <main className="flex-1 flex flex-col">
         <section className="relative overflow-visible pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#FFFFFF] via-[#F8FAFC] to-[#F1F5F9] border-b border-[#E2E8F0]">
@@ -193,343 +203,386 @@ export default function App() {
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            {/* ── SLIDE 0: Text + Image (Mercedes Premier Fleet) ── */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                currentSlide === 0
-                  ? "opacity-100 z-10 pointer-events-auto"
-                  : "opacity-0 z-0 pointer-events-none"
-              }`}
-            >
-              <Image
-                src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1920&q=80"
-                alt="Premier Luxury Fleet"
-                fill
-                sizes="100vw"
-                unoptimized
-                className="object-cover object-center"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
+            {/* Dynamic Archetype Slide Renderer */}
+            {slidesToRender.map((slide, index) => {
+              const isCurrent = safeSlideIndex === index;
 
-              <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
-                <div
-                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
-                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-pulse" />
-                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
-                    PREMIUM LUXURY CAR DEALERSHIP
-                  </span>
-                </div>
-
-                <h1
-                  className={`text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm transition-all duration-700 delay-150 ease-out transform ${
-                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  DRIVE YOUR <br />
-                  <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
-                    DREAM CAR
-                  </span>
-                </h1>
-
-                <p
-                  className={`text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow transition-all duration-700 delay-300 ease-out transform ${
-                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  Explore our prestigious collection of luxury and executive vehicles. Hand-selected, fully certified, and delivered with VIP concierge excellence.
-                </p>
-
-                <div
-                  className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
-                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={() => {
-                      const el = document.getElementById("inventory-section");
-                      el?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                    rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
-                  >
-                    View Inventory
-                  </Button>
-
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    onClick={() => openTestDriveModal()}
-                    leftIcon={<FiCalendar className="w-4 h-4 text-[#2563EB]" />}
-                  >
-                    Book a Test Drive
-                  </Button>
-                </div>
-
-                <div
-                  className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
-                    currentSlide === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  <span className="flex items-center gap-1.5">
-                    <FiShield className="w-3.5 h-3.5 text-[#60A5FA]" />
-                    150-Point Certified
-                  </span>
-                  <span>&bull;</span>
-                  <span className="flex items-center gap-1.5">
-                    <FiClock className="w-3.5 h-3.5 text-[#60A5FA]" />
-                    Fast-Track Port Clearance
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* ── SLIDE 1: Text Only (Editorial Prestige — gradient bg, no image) ── */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                currentSlide === 1
-                  ? "opacity-100 z-10 pointer-events-auto"
-                  : "opacity-0 z-0 pointer-events-none"
-              }`}
-            >
-              <div className="h-full w-full bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0B1120] text-white flex flex-col justify-center px-6 sm:px-12 md:px-16 py-8 relative overflow-hidden">
-                {/* Decorative background ambient glows */}
-                <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#2563EB]/15 blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#0284C7]/15 blur-3xl pointer-events-none" />
-
-                <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-5">
+              // Archetype 1: Text + Image
+              if (slide.archetype === "text-image") {
+                return (
                   <div
-                    className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/20 border border-[#38BDF8]/30 w-fit transition-all duration-700 ease-out transform ${
-                      currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    key={slide.id}
+                    className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                      isCurrent
+                        ? "opacity-100 z-10 pointer-events-auto"
+                        : "opacity-0 z-0 pointer-events-none"
                     }`}
                   >
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#38BDF8]">
-                      THE PINNACLE OF AUTOMOTIVE PRESTIGE
-                    </span>
+                    <Image
+                      src={
+                        slide.mediaUrl ||
+                        "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1920&q=80"
+                      }
+                      alt={slide.title}
+                      fill
+                      sizes="100vw"
+                      unoptimized
+                      className="object-cover object-center"
+                      priority={index === 0}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
+
+                    <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
+                      {slide.badge && (
+                        <div
+                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
+                            isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                          }`}
+                        >
+                          <span className="w-2 h-2 rounded-full bg-[#60A5FA] animate-pulse" />
+                          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
+                            {slide.badge}
+                          </span>
+                        </div>
+                      )}
+
+                      <h1
+                        className={`text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm transition-all duration-700 delay-150 ease-out transform ${
+                          isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                        }`}
+                      >
+                        {slide.headline} <br />
+                        {slide.highlightText && (
+                          <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
+                            {slide.highlightText}
+                          </span>
+                        )}
+                      </h1>
+
+                      {slide.description && (
+                        <p
+                          className={`text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow transition-all duration-700 delay-300 ease-out transform ${
+                            isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                          }`}
+                        >
+                          {slide.description}
+                        </p>
+                      )}
+
+                      <div
+                        className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
+                          isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                        }`}
+                      >
+                        {slide.primaryCtaText && (
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => handleCtaClick(slide.primaryCtaLink || "#inventory-section")}
+                            rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
+                          >
+                            {slide.primaryCtaText}
+                          </Button>
+                        )}
+
+                        {slide.secondaryCtaText && (
+                          <Button
+                            variant="secondary"
+                            size="md"
+                            onClick={() => handleCtaClick(slide.secondaryCtaLink || "test-drive-modal")}
+                            leftIcon={<FiCalendar className="w-4 h-4 text-[#2563EB]" />}
+                          >
+                            {slide.secondaryCtaText}
+                          </Button>
+                        )}
+                      </div>
+
+                      <div
+                        className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
+                          isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                        }`}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <FiShield className="w-3.5 h-3.5 text-[#60A5FA]" />
+                          150-Point Certified
+                        </span>
+                        <span>&bull;</span>
+                        <span className="flex items-center gap-1.5">
+                          <FiClock className="w-3.5 h-3.5 text-[#60A5FA]" />
+                          Fast-Track Port Clearance
+                        </span>
+                      </div>
+                    </div>
                   </div>
+                );
+              }
 
-                  <h2
-                    className={`text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight text-white transition-all duration-700 delay-150 ease-out transform ${
-                      currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                    }`}
-                  >
-                    CRAFTED FOR THE EXCEPTIONAL. <br />
-                    <span className="bg-gradient-to-r from-[#38BDF8] via-[#60A5FA] to-[#93C5FD] bg-clip-text text-transparent">
-                      UNCOMPROMISED LUXURY &amp; POWER.
-                    </span>
-                  </h2>
-
-                  <p
-                    className={`text-xs sm:text-sm md:text-base text-[#94A3B8] leading-relaxed max-w-2xl transition-all duration-700 delay-300 ease-out transform ${
-                      currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                    }`}
-                  >
-                    Premier Auto Motors redefines luxury vehicle ownership with verified provenance, bespoke international sourcing, zero-demurrage terminal logistics, and private showroom viewings across Lagos and Abuja.
-                  </p>
-
-                  {/* 4 Feature Value Highlights */}
+              // Archetype 2: Text Only (Editorial Prestige)
+              if (slide.archetype === "text-only") {
+                return (
                   <div
-                    className={`grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2 transition-all duration-700 delay-450 ease-out transform ${
-                      currentSlide === 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    key={slide.id}
+                    className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                      isCurrent
+                        ? "opacity-100 z-10 pointer-events-auto"
+                        : "opacity-0 z-0 pointer-events-none"
                     }`}
                   >
-                    <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
-                      <div className="text-base sm:text-lg font-black text-[#38BDF8]">150-Point</div>
-                      <div className="text-[10px] sm:text-xs text-[#CBD5E1]">Diagnostics Seal</div>
-                    </div>
-                    <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
-                      <div className="text-base sm:text-lg font-black text-[#38BDF8]">24 Hours</div>
-                      <div className="text-[10px] sm:text-xs text-[#CBD5E1]">Port Clearance</div>
-                    </div>
-                    <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
-                      <div className="text-base sm:text-lg font-black text-[#38BDF8]">100% Clean</div>
-                      <div className="text-[10px] sm:text-xs text-[#CBD5E1]">Carfax &amp; Title</div>
-                    </div>
-                    <div className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
-                      <div className="text-base sm:text-lg font-black text-[#38BDF8]">White-Glove</div>
-                      <div className="text-[10px] sm:text-xs text-[#CBD5E1]">Doorstep Delivery</div>
+                    <div className="h-full w-full bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0B1120] text-white flex flex-col justify-center px-6 sm:px-12 md:px-16 py-8 relative overflow-hidden">
+                      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#2563EB]/15 blur-3xl pointer-events-none" />
+                      <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#0284C7]/15 blur-3xl pointer-events-none" />
+
+                      <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-5">
+                        {slide.badge && (
+                          <div
+                            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/20 border border-[#38BDF8]/30 w-fit transition-all duration-700 ease-out transform ${
+                              isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                            }`}
+                          >
+                            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#38BDF8]">
+                              {slide.badge}
+                            </span>
+                          </div>
+                        )}
+
+                        <h2
+                          className={`text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight text-white transition-all duration-700 delay-150 ease-out transform ${
+                            isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                          }`}
+                        >
+                          {slide.headline} <br />
+                          {slide.highlightText && (
+                            <span className="bg-gradient-to-r from-[#38BDF8] via-[#60A5FA] to-[#93C5FD] bg-clip-text text-transparent">
+                              {slide.highlightText}
+                            </span>
+                          )}
+                        </h2>
+
+                        {slide.description && (
+                          <p
+                            className={`text-xs sm:text-sm md:text-base text-[#94A3B8] leading-relaxed max-w-2xl transition-all duration-700 delay-300 ease-out transform ${
+                              isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                            }`}
+                          >
+                            {slide.description}
+                          </p>
+                        )}
+
+                        <div
+                          className={`grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2 transition-all duration-700 delay-450 ease-out transform ${
+                            isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                          }`}
+                        >
+                          {(slide.features && slide.features.length > 0
+                            ? slide.features
+                            : [
+                                { title: "150-Point", subtitle: "Diagnostics Seal" },
+                                { title: "24 Hours", subtitle: "Port Clearance" },
+                                { title: "100% Clean", subtitle: "Carfax & Title" },
+                                { title: "White-Glove", subtitle: "Doorstep Delivery" },
+                              ]
+                          ).map((feat, fIdx) => (
+                            <div key={fIdx} className="bg-[#FFFFFF]/5 border border-white/10 rounded-md p-3 backdrop-blur-xs">
+                              <div className="text-base sm:text-lg font-black text-[#38BDF8]">{feat.title}</div>
+                              <div className="text-[10px] sm:text-xs text-[#CBD5E1]">{feat.subtitle}</div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 pt-2">
+                          {slide.primaryCtaText && (
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => handleCtaClick(slide.primaryCtaLink || "/services/auto-brokers")}
+                              rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
+                            >
+                              {slide.primaryCtaText}
+                            </Button>
+                          )}
+                          {slide.secondaryCtaText && (
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => handleCtaClick(slide.secondaryCtaLink || "/about")}
+                            >
+                              {slide.secondaryCtaText}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
+                );
+              }
 
-                  <div className="flex flex-wrap items-center gap-3 pt-2">
-                    <Link href="/services/auto-brokers">
-                      <Button variant="primary" size="sm" rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}>
-                        Explore Auto Broker Desk
-                      </Button>
-                    </Link>
-                    <Link href="/about">
-                      <Button variant="secondary" size="sm">
-                        About Dealership
-                      </Button>
-                    </Link>
+              // Archetype 3: Image Only (Exotic Supercar)
+              if (slide.archetype === "image-only") {
+                return (
+                  <div
+                    key={slide.id}
+                    className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                      isCurrent
+                        ? "opacity-100 z-10 pointer-events-auto"
+                        : "opacity-0 z-0 pointer-events-none"
+                    }`}
+                  >
+                    <Image
+                      src={
+                        slide.mediaUrl ||
+                        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"
+                      }
+                      alt={slide.title}
+                      fill
+                      sizes="100vw"
+                      unoptimized
+                      className="object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-[#0F172A]/25" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/55 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/15 via-transparent to-transparent" />
                   </div>
-                </div>
-              </div>
-            </div>
+                );
+              }
 
-            {/* ── SLIDE 2: Image Only (Exotic Supercar — full-bleed, no text) ── */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                currentSlide === 2
-                  ? "opacity-100 z-10 pointer-events-auto"
-                  : "opacity-0 z-0 pointer-events-none"
-              }`}
-            >
-              <Image
-                src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80"
-                alt="Exotic Supercar Collection"
-                fill
-                sizes="100vw"
-                unoptimized
-                className="object-cover object-center"
-              />
-              {/* Atmospheric overlays only — intentionally no text content */}
-              <div className="absolute inset-0 bg-[#0F172A]/25" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/55 via-transparent to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/15 via-transparent to-transparent" />
-            </div>
-
-            {/* ── SLIDE 3: Text + Video (Autoplaying video background + animated overlay text, no pause/play controls) ── */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                currentSlide === 3
-                  ? "opacity-100 z-10 pointer-events-auto"
-                  : "opacity-0 z-0 pointer-events-none"
-              }`}
-            >
-              {/* YouTube video background — autoplays automatically when slide is current, zero pause/play controls */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-[#0F172A]">
-                <iframe
-                  src={
-                    currentSlide === 3
-                      ? "https://www.youtube-nocookie.com/embed/YAFUyPp_238?autoplay=1&mute=1&loop=1&playlist=YAFUyPp_238&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1"
-                      : "about:blank"
-                  }
-                  title="Luxury Fleet Video Experience"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
-                  loading="lazy"
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
-                  tabIndex={-1}
-                />
-              </div>
-
-              {/* Gradient overlays for legibility */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/30 via-transparent to-transparent" />
-
-              {/* Animated text overlay — same layout pattern as Text+Image slide */}
-              <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
-                <div
-                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
-                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  <FiVideo className="w-3 h-3 text-[#60A5FA] animate-pulse" />
-                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
-                    LIVE PERFORMANCE EXPERIENCE
-                  </span>
-                </div>
-
-                <h2
-                  className={`text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm transition-all duration-700 delay-150 ease-out transform ${
-                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  FEEL EVERY <br />
-                  <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
-                    HEARTBEAT
-                  </span>
-                </h2>
-
-                <p
-                  className={`text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow transition-all duration-700 delay-300 ease-out transform ${
-                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  Raw power, precision engineering, and unrivalled driving dynamics — experience our fleet before you even set foot in the showroom.
-                </p>
-
-                <div
-                  className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
-                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={() => {
-                      const el = document.getElementById("inventory-section");
-                      el?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                    rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
+              // Archetype 4: Text + Video
+              if (slide.archetype === "text-video") {
+                return (
+                  <div
+                    key={slide.id}
+                    className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                      isCurrent
+                        ? "opacity-100 z-10 pointer-events-auto"
+                        : "opacity-0 z-0 pointer-events-none"
+                    }`}
                   >
-                    Browse Performance Fleet
-                  </Button>
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-[#0F172A]">
+                      <iframe
+                        src={getEmbedUrl(slide.mediaUrl, isCurrent)}
+                        title={slide.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
+                        loading="lazy"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
+                        tabIndex={-1}
+                      />
+                    </div>
 
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    onClick={() => openTestDriveModal()}
-                    leftIcon={<FiCalendar className="w-4 h-4 text-[#2563EB]" />}
-                  >
-                    Book Track Experience
-                  </Button>
-                </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/30 via-transparent to-transparent" />
 
-                {/* Sub-badge perks matching Text+Image Slide */}
+                    <div className="relative h-full flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl space-y-4 sm:space-y-5 text-white z-10">
+                      {slide.badge && (
+                        <div
+                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/25 backdrop-blur-md border border-[#BFDBFE]/30 w-fit transition-all duration-700 ease-out transform ${
+                            isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                          }`}
+                        >
+                          <FiVideo className="w-3 h-3 text-[#60A5FA] animate-pulse" />
+                          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#EFF6FF]">
+                            {slide.badge}
+                          </span>
+                        </div>
+                      )}
+
+                      <h2
+                        className={`text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-tight text-white drop-shadow-sm transition-all duration-700 delay-150 ease-out transform ${
+                          isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                        }`}
+                      >
+                        {slide.headline} <br />
+                        {slide.highlightText && (
+                          <span className="bg-gradient-to-r from-[#60A5FA] via-[#93C5FD] to-[#FFFFFF] bg-clip-text text-transparent">
+                            {slide.highlightText}
+                          </span>
+                        )}
+                      </h2>
+
+                      {slide.description && (
+                        <p
+                          className={`text-xs sm:text-sm md:text-base text-[#E2E8F0] leading-relaxed max-w-lg drop-shadow transition-all duration-700 delay-300 ease-out transform ${
+                            isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                          }`}
+                        >
+                          {slide.description}
+                        </p>
+                      )}
+
+                      <div
+                        className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-700 delay-450 ease-out transform ${
+                          isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                        }`}
+                      >
+                        {slide.primaryCtaText && (
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => handleCtaClick(slide.primaryCtaLink || "#inventory-section")}
+                            rightIcon={<FiArrowRight className="w-4 h-4 text-white" />}
+                          >
+                            {slide.primaryCtaText}
+                          </Button>
+                        )}
+
+                        {slide.secondaryCtaText && (
+                          <Button
+                            variant="secondary"
+                            size="md"
+                            onClick={() => handleCtaClick(slide.secondaryCtaLink || "test-drive-modal")}
+                            leftIcon={<FiCalendar className="w-4 h-4 text-[#2563EB]" />}
+                          >
+                            {slide.secondaryCtaText}
+                          </Button>
+                        )}
+                      </div>
+
+                      <div
+                        className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
+                          isCurrent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                        }`}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <FiShield className="w-3.5 h-3.5 text-[#60A5FA]" />
+                          Track-Tested &amp; Certified
+                        </span>
+                        <span>&bull;</span>
+                        <span className="flex items-center gap-1.5">
+                          <FiClock className="w-3.5 h-3.5 text-[#60A5FA]" />
+                          Dynamic Launch Demonstration
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              // Archetype 5: Video Only (Pure Live Performance Footage)
+              return (
                 <div
-                  className={`flex items-center gap-4 text-[11px] text-[#CBD5E1] pt-1 font-medium transition-all duration-700 delay-500 ease-out transform ${
-                    currentSlide === 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  key={slide.id}
+                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                    isCurrent
+                      ? "opacity-100 z-10 pointer-events-auto"
+                      : "opacity-0 z-0 pointer-events-none"
                   }`}
                 >
-                  <span className="flex items-center gap-1.5">
-                    <FiShield className="w-3.5 h-3.5 text-[#60A5FA]" />
-                    Track-Tested &amp; Certified
-                  </span>
-                  <span>&bull;</span>
-                  <span className="flex items-center gap-1.5">
-                    <FiClock className="w-3.5 h-3.5 text-[#60A5FA]" />
-                    Dynamic Launch Demonstration
-                  </span>
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-[#0F172A]">
+                    <iframe
+                      src={getEmbedUrl(slide.mediaUrl, isCurrent)}
+                      title={slide.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
+                      loading="lazy"
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
+                      tabIndex={-1}
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-[#0F172A]/20 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/50 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/20 via-transparent to-transparent pointer-events-none" />
                 </div>
-              </div>
-            </div>
-
-            {/* ── SLIDE 4: Video Only (Pure full-bleed live performance footage — zero text stacked) ── */}
-            <div
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                currentSlide === 4
-                  ? "opacity-100 z-10 pointer-events-auto"
-                  : "opacity-0 z-0 pointer-events-none"
-              }`}
-            >
-              {/* Full-bleed YouTube video background — autoplays automatically once current, no text stacked */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-[#0F172A]">
-                <iframe
-                  src={
-                    currentSlide === 4
-                      ? "https://www.youtube-nocookie.com/embed/YAFUyPp_238?autoplay=1&mute=1&loop=1&playlist=YAFUyPp_238&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1"
-                      : "about:blank"
-                  }
-                  title="Pure Supercar Performance Video"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
-                  loading="lazy"
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
-                  tabIndex={-1}
-                />
-              </div>
-
-              {/* Atmospheric subtle vignette overlay only — intentionally zero text content, pure video */}
-              <div className="absolute inset-0 bg-[#0F172A]/20 pointer-events-none" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/50 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/20 via-transparent to-transparent pointer-events-none" />
-            </div>
+              );
+            })}
 
             {/* Slider Navigation Arrows */}
             <Button
@@ -554,14 +607,14 @@ export default function App() {
 
             {/* Slide Pagination Indicators */}
             <div className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5 bg-[#0F172A]/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15">
-              {[0, 1, 2, 3, 4].map((idx) => (
+              {slidesToRender.map((_, idx) => (
                 <Button
                   key={idx}
                   variant="ghost"
                   onClick={() => setCurrentSlide(idx)}
                   aria-label={`Slide ${idx + 1}`}
                   className={`!h-2 sm:!h-2.5 !p-0 !min-w-0 rounded-full transition-all duration-300 ${
-                    currentSlide === idx
+                    safeSlideIndex === idx
                       ? "!w-7 sm:!w-8 bg-[#2563EB] shadow-xs shadow-[#2563EB]/50"
                       : "!w-2 sm:!w-2.5 bg-white/40 hover:bg-white/70"
                   }`}
@@ -630,11 +683,11 @@ export default function App() {
               ref={brandsRef}
               className="flex items-center justify-around flex-1 gap-2 sm:gap-4 overflow-x-auto scrollbar-none py-1 px-2 scroll-smooth"
             >
-              {BRAND_LOGOS.map((brand) => {
-                const isSelected = selectedBrand === brand.make;
+              {brandsToRender.map((brand) => {
+                const isSelected = selectedBrand?.toLowerCase() === brand.make.toLowerCase();
                 return (
                   <Button
-                    key={brand.name}
+                    key={brand.id || brand.name}
                     variant={isSelected ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => handleBrandClick(brand.make)}

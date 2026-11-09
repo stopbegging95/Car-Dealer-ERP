@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   /* Strictly 5-Color Automotive Theme Palette: 
@@ -24,23 +26,6 @@
   --border: #E2E8F0;
   --accent: #2563EB;
   --accent-secondary: #1D4ED8;
-}
-
-@theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-canvas: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-dark: #0F172A;
-  --color-light: #F8FAFC;
-  --color-blue: #2563EB;
-  --color-blue-deep: #1D4ED8;
-  --color-blue-light: #EFF6FF;
-
-  --color-primary-dark: #0F172A;
-  --color-primary-light: #F8FAFC;
-  --color-accent-blue: #2563EB;
-  --color-accent-deep: #1D4ED8;
 }
 
 body {

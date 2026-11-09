@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { MasterDataProvider } from "@/context/MasterDataContext";
+import { HomePageProvider } from "@/context/HomePageContext";
 
 export const metadata: Metadata = {
   title: "CarDeals CMS",
@@ -21,7 +22,9 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
       </head>
       <body className="min-h-full flex flex-col font-sans">
-        <MasterDataProvider>{children}</MasterDataProvider>
+        <MasterDataProvider>
+          <HomePageProvider>{children}</HomePageProvider>
+        </MasterDataProvider>
       </body>
     </html>
   );
