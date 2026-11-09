@@ -91,7 +91,7 @@ export const BiometricFaceCaptureModal: React.FC<BiometricFaceCaptureModalProps>
             console.warn("Webcam access error:", err);
             setIsLoadingCamera(false);
             setCameraError(
-              "Camera hardware unattached or permission denied in browser. You can simulate biometric capture or upload a verification snapshot below."
+              "Camera hardware unattached or permission denied in browser. Please grant camera permission or upload a verification snapshot below."
             );
           });
       } else {
@@ -121,7 +121,6 @@ export const BiometricFaceCaptureModal: React.FC<BiometricFaceCaptureModalProps>
   // Capture face snapshot from video stream
   const handleCaptureSnapshot = () => {
     if (!videoRef.current || !canvasRef.current) {
-      handleSimulateBiometricCapture();
       return;
     }
 
@@ -146,53 +145,6 @@ export const BiometricFaceCaptureModal: React.FC<BiometricFaceCaptureModalProps>
     ctx.font = "bold 12px monospace";
     const stamp = `${currentTimeCode} | ${user.role} [${mode.toUpperCase()}]`;
     ctx.fillText(stamp, 12, height - 12);
-
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
-    setCapturedPhoto(dataUrl);
-    setCapturedTimestamp(currentTimeCode);
-    stopStream();
-  };
-
-  // Fallback simulator for headless / sandbox environments without physical webcam
-  const handleSimulateBiometricCapture = () => {
-    const canvas = canvasRef.current || document.createElement("canvas");
-    canvas.width = 480;
-    canvas.height = 360;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Draw luxury executive biometric background
-    const gradient = ctx.createLinearGradient(0, 0, 480, 360);
-    gradient.addColorStop(0, "#0F172A");
-    gradient.addColorStop(0.5, "#1E293B");
-    gradient.addColorStop(1, "#0B1120");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 480, 360);
-
-    // Draw stylized biometric avatar head silhouette
-    ctx.fillStyle = "#2563EB";
-    ctx.beginPath();
-    ctx.arc(240, 140, 55, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(240, 290, 95, 0, Math.PI, true);
-    ctx.fill();
-
-    // Biometric scanning reticle lines
-    ctx.strokeStyle = "#60A5FA";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(140, 60, 200, 240);
-
-    // Timestamp & hash seal
-    ctx.fillStyle = "#10B981";
-    ctx.font = "bold 13px monospace";
-    ctx.fillText("BIOMETRIC FACE LANDMARKS DETECTED", 110, 40);
-
-    ctx.fillStyle = "#CBD5E1";
-    ctx.font = "11px monospace";
-    ctx.fillText(`STAFF: ${user.name.toUpperCase()}`, 30, 330);
-    ctx.fillText(`TIME: ${currentTimeCode}`, 30, 345);
 
     const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
     setCapturedPhoto(dataUrl);
@@ -333,20 +285,11 @@ export const BiometricFaceCaptureModal: React.FC<BiometricFaceCaptureModalProps>
                     <Button
                       size="sm"
                       variant="primary"
-                      onClick={handleSimulateBiometricCapture}
-                      className="text-xs"
-                      leftIcon={<FiShield className="w-3.5 h-3.5" />}
-                    >
-                      Simulate Biometric Verification
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
                       onClick={() => fileInputRef.current?.click()}
-                      className="text-xs text-slate-200 border-slate-700 hover:bg-slate-800"
+                      className="text-xs text-white bg-[#2563EB] hover:bg-[#1D4ED8]"
                       leftIcon={<FiUpload className="w-3.5 h-3.5" />}
                     >
-                      Upload Snapshot
+                      Upload Verification Snapshot
                     </Button>
                   </div>
                 </div>
@@ -411,15 +354,6 @@ export const BiometricFaceCaptureModal: React.FC<BiometricFaceCaptureModalProps>
                 </span>
               )}
               <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSimulateBiometricCapture}
-                  className="text-xs text-[#475569]"
-                  title="Simulate instant biometric verification"
-                >
-                  Quick Verify
-                </Button>
                 <Button
                   variant="primary"
                   size="sm"

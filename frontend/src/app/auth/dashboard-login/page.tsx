@@ -152,8 +152,8 @@ function DashboardLoginContent() {
   const [email, setEmail] = useState<string>(
     DEPARTMENT_CREDENTIALS[requestedRole]?.email || "admin@luxauto.dealers.com"
   );
-  const [password, setPassword] = useState<string>("Password123!");
-  const [securityPin, setSecurityPin] = useState<string>("8821");
+  const [password, setPassword] = useState<string>("");
+  const [securityPin, setSecurityPin] = useState<string>("");
   const [showroomNode, setShowroomNode] = useState<string>("lagos-hq");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberTerminal, setRememberTerminal] = useState<boolean>(true);
@@ -173,7 +173,8 @@ function DashboardLoginContent() {
     const creds = DEPARTMENT_CREDENTIALS[deptKey];
     if (creds) {
       setEmail(creds.email);
-      setPassword("Password123!");
+      setPassword("");
+      setSecurityPin("");
     }
   };
 
@@ -412,16 +413,16 @@ function DashboardLoginContent() {
 
                 <div>
                   <label className="block mb-1.5 font-bold text-[#CBD5E1] text-xs">
-                    Department 2FA PIN (Demo: 8821)
+                    Department 2FA PIN
                   </label>
                   <div className="relative flex items-center">
                     <div className="absolute left-3.5 flex items-center pointer-events-none text-[#64748B]">
                       <FiKey className="w-4 h-4" />
                     </div>
                     <input
-                      type="text"
+                      type="password"
                       maxLength={6}
-                      placeholder="8821"
+                      placeholder="Enter 4-digit PIN"
                       value={securityPin}
                       onChange={(e) => setSecurityPin(e.target.value)}
                       className="h-10.5 bg-[#0F172A] pl-10 pr-3 py-2.5 border border-[#475569] focus:border-[#2563EB] rounded-lg w-full font-sans text-[#F8FAFC] text-xs placeholder-[#64748B] focus:outline-hidden transition-colors"

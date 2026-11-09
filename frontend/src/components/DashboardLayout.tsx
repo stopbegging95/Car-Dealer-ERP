@@ -509,22 +509,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     <div className="flex items-center gap-1.5">
                       <button
                         type="button"
-                        onClick={() => {
-                          setIsPlayingAudioAlert(true);
-                          play4SecondNotificationSound().finally(() => setIsPlayingAudioAlert(false));
-                        }}
-                        className={`text-[9px] font-bold px-2 py-0.5 rounded border transition-colors flex items-center gap-1 cursor-pointer ${
-                          isPlayingAudioAlert
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-300 ring-1 ring-emerald-400"
-                            : "bg-[#EFF6FF] text-[#2563EB] border-[#BFDBFE] hover:bg-[#DBEAFE]"
-                        }`}
-                        title="Test 4-second notification audio chime alert"
-                      >
-                        <FiBell className="w-2.5 h-2.5" />
-                        <span>{isPlayingAudioAlert ? "Playing 4s..." : "Test 4s Sound"}</span>
-                      </button>
-                      <button
-                        type="button"
                         onClick={() =>
                           setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
                         }

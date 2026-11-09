@@ -98,3 +98,81 @@ export function play4SecondNotificationSound(): Promise<void> {
   });
 }
 
+/**
+ * Synthesizes and plays a 1-second crisp chat notification chime
+ * using the Web Audio API without requiring any external audio files.
+ */
+export function play1SecondChatSound(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") {
+      resolve();
+      return;
+    }
+
+    try {
+      const AudioCtxClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+
+      if (!AudioCtxClass) {
+        resolve();
+        return;
+      }
+
+      const audioCtx = new AudioCtxClass();
+
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+
+      const now = audioCtx.currentTime;
+      const totalDuration = 1.0; // Exactly 1.0 second for chat messages
+
+      const masterGain = audioCtx.createGain();
+      masterGain.gain.setValueAtTime(0.001, now);
+      masterGain.connect(audioCtx.destination);
+
+      // Smooth 1-second envelope
+      masterGain.gain.linearRampToValueAtTime(0.2, now + 0.03);
+      masterGain.gain.setValueAtTime(0.2, now + 0.7);
+      masterGain.gain.exponentialRampToValueAtTime(0.0001, now + totalDuration);
+
+      // 2-tone melodic chat ping: E5 (659.25Hz) -> B5 (987.77Hz)
+      const notes = [
+        { freq: 659.25, offset: 0.0, dur: 0.35 },
+        { freq: 987.77, offset: 0.12, dur: 0.75 },
+      ];
+
+      notes.forEach(({ freq, offset, dur }) => {
+        const t = now + offset;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, t);
+
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.28, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start(t);
+        osc.stop(t + dur);
+      });
+
+      setTimeout(() => {
+        try {
+          audioCtx.close();
+        } catch {
+          // ignore
+        }
+        resolve();
+      }, 1050);
+    } catch {
+      resolve();
+    }
+  });
+}
+
+

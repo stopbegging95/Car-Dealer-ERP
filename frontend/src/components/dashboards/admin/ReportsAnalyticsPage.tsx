@@ -277,7 +277,7 @@ export const ReportsAnalyticsPage: React.FC<{ showToast?: (msg: string) => void 
               </span>
             </div>
             <p className="text-[10px] text-[#64748B] mt-1">
-              Simulated across recommended procurement batches with pre-hedged NGN liquidity forward rates.
+              Modeled across recommended procurement batches with pre-hedged NGN liquidity forward rates.
             </p>
           </div>
 

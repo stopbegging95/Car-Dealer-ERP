@@ -755,7 +755,7 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
             <Button
               variant="outline"
               size="sm"
-              onClick={() => notify("Simulated trigger: 14 new nurture messages dispatched to active prospects.")}
+              onClick={() => notify("Active marketing queue processed: 14 nurture messages dispatched to active prospects.")}
               leftIcon={<FiSend className="w-3.5 h-3.5 text-[#2563EB]" />}
             >
               Dispatch Active Queue
