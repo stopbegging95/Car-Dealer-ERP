@@ -61,8 +61,12 @@ const ADMIN_PAGE_MAPPING: Record<string, string> = {
   documents: "Document Vault",
   vault: "Document Vault",
   legal: "Document Vault",
-  cms: "CMS Manager",
-  marketing: "CMS Manager",
+  "home-banner": "Home Banner",
+  "home-banners": "Home Banner",
+  banner: "Home Banner",
+  banners: "Home Banner",
+  cms: "Home Banner",
+  marketing: "Home Banner",
   settings: "Settings",
   "master-data": "Master Data & Dropdowns",
   dropdowns: "Master Data & Dropdowns",
@@ -72,6 +76,9 @@ const ADMIN_PAGE_MAPPING: Record<string, string> = {
   profile: "My Profile",
   sessions: "Session History",
   "session-history": "Session History",
+  chat: "Staff Team Chat",
+  "team-chat": "Staff Team Chat",
+  "staff-chat": "Staff Team Chat",
 };
 
 function AdminSubPageContent() {

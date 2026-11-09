@@ -24,8 +24,9 @@ const seedDatabase = async () => {
         // =========================================================================
         const existingUsersCount = await User_js_1.User.countDocuments();
         if (existingUsersCount === 0) {
-            console.log("Seeding all 17 departmental staff and executive accounts...");
+            console.log("Seeding strictly 1 authorized account per dashboard (14 accounts total)...");
             const staffAccounts = [
+                // 01. Super Admin HQ Dashboard
                 {
                     name: "Chief Executive (Admin)",
                     email: "admin@luxauto.dealers.com",
@@ -35,33 +36,17 @@ const seedDatabase = async () => {
                     branch: "Victoria Island HQ, Lagos",
                     phone: "+234 802 000 0001",
                 },
+                // 02. VIP Customer Portal Dashboard
                 {
-                    name: "Chief Accountant",
-                    email: "chief.accountant@luxauto.dealers.com",
+                    name: "Chief Alexander Vance",
+                    email: "vance@luxuryinvest.com",
                     password: "Password123!",
-                    role: "accounting",
-                    department: "Accounting & Audit Operations",
+                    role: "customer",
+                    department: "Private Client VIP Suite",
                     branch: "Victoria Island HQ, Lagos",
-                    phone: "+234 802 000 0002",
+                    phone: "+234 803 111 2233",
                 },
-                {
-                    name: "Commercial Billing Officer",
-                    email: "invoices.payments@luxauto.dealers.com",
-                    password: "Password123!",
-                    role: "accounting",
-                    department: "Accounting & Commercial Billing",
-                    branch: "Victoria Island HQ, Lagos",
-                    phone: "+234 802 000 0003",
-                },
-                {
-                    name: "Senior Loan Underwriter",
-                    email: "financing.officer@luxauto.dealers.com",
-                    password: "Password123!",
-                    role: "financing",
-                    department: "Automotive Financing & Bank Liaison",
-                    branch: "Victoria Island HQ, Lagos",
-                    phone: "+234 802 000 0004",
-                },
+                // 03. Showroom Sales & Orders Dashboard
                 {
                     name: "Senior Sales Liaison",
                     email: "sales.liaison@luxauto.dealers.com",
@@ -71,6 +56,7 @@ const seedDatabase = async () => {
                     branch: "Victoria Island HQ, Lagos",
                     phone: "+234 802 000 0005",
                 },
+                // 04. Service & Bay Workshop Dashboard
                 {
                     name: "Workshop Bay Supervisor",
                     email: "workshop.lead@luxauto.dealers.com",
@@ -80,51 +66,77 @@ const seedDatabase = async () => {
                     branch: "Victoria Island HQ, Lagos",
                     phone: "+234 802 000 0006",
                 },
+                // 05. OEM Parts Depot Dashboard
                 {
                     name: "Warehouse Logistics Lead",
                     email: "parts.specialist@luxauto.dealers.com",
                     password: "Password123!",
                     role: "parts",
                     department: "OEM Parts & Warehouse Depot",
-                    branch: "Ikeja GRA Logistics Depot",
+                    branch: "Ikeja Central Logistics Depot",
                     phone: "+234 802 000 0007",
                 },
+                // 06. Automotive Financing Dashboard
+                {
+                    name: "Senior Loan Underwriter",
+                    email: "financing.officer@luxauto.dealers.com",
+                    password: "Password123!",
+                    role: "financing",
+                    department: "Automotive Financing & Bank Underwriting",
+                    branch: "Victoria Island HQ, Lagos",
+                    phone: "+234 802 000 0004",
+                },
+                // 07. Detailing & Recon Dashboard
                 {
                     name: "Detailing Center Lead",
                     email: "recon.lead@luxauto.dealers.com",
                     password: "Password123!",
                     role: "recon",
                     department: "Vehicle Detailing & Reconditioning",
-                    branch: "Ikeja GRA Logistics Depot",
+                    branch: "Ikeja Central Logistics Depot",
                     phone: "+234 802 000 0008",
                 },
+                // 08. 150-Point QA Diagnostic Inspection Dashboard
+                {
+                    name: "Lead Quality Inspector",
+                    email: "qa.lead@luxauto.dealers.com",
+                    password: "Password123!",
+                    role: "inspection",
+                    department: "Vehicle Inspection & Quality Assurance (QA)",
+                    branch: "Victoria Island HQ, Lagos",
+                    phone: "+234 802 000 0016",
+                },
+                // 09. Import Logistics & Port Customs Dashboard
                 {
                     name: "Port Operations Officer",
                     email: "imports.clearing@luxauto.dealers.com",
                     password: "Password123!",
                     role: "imports",
-                    department: "Port Clearing & Inbound Freight",
+                    department: "Port Clearing & Inbound Maritime Freight",
                     branch: "Tin Can Island Port Holding Bay",
                     phone: "+234 802 000 0009",
                 },
+                // 10. Trade-In Appraisals & Vehicle Exchange Dashboard
                 {
                     name: "Lead Swap Appraiser",
                     email: "tradein.valuer@luxauto.dealers.com",
                     password: "Password123!",
-                    role: "tradeins",
-                    department: "Trade-In & Vehicle Exchange",
+                    role: "trade-ins",
+                    department: "Trade-In & Vehicle Exchange Desk",
                     branch: "Victoria Island HQ, Lagos",
                     phone: "+234 802 000 0010",
                 },
+                // 11. VIP Client Relations & Concierge (CRM) Dashboard
                 {
                     name: "VIP Concierge Lead",
                     email: "crm.concierge@luxauto.dealers.com",
                     password: "Password123!",
                     role: "crm",
-                    department: "Client Relationship Management",
+                    department: "Client Relationship Management & Concierge",
                     branch: "Ikoyi VIP Lounge",
                     phone: "+234 802 000 0011",
                 },
+                // 12. Human Resources & Talent Recruitment Dashboard
                 {
                     name: "Head of People & Culture",
                     email: "hr.director@luxauto.dealers.com",
@@ -134,6 +146,7 @@ const seedDatabase = async () => {
                     branch: "Victoria Island HQ, Lagos",
                     phone: "+234 802 000 0012",
                 },
+                // 13. Procurement & International Sourcing Dashboard
                 {
                     name: "Head of International Sourcing",
                     email: "procurement.lead@luxauto.dealers.com",
@@ -143,57 +156,21 @@ const seedDatabase = async () => {
                     branch: "Victoria Island HQ, Lagos",
                     phone: "+234 802 000 0013",
                 },
+                // 14. Accounting, General Ledger & Landed Margins Dashboard
                 {
-                    name: "Yard & Logistics Controller",
-                    email: "transfers.yard@luxauto.dealers.com",
+                    name: "Dealership Chief Accountant",
+                    email: "chief.accountant@luxauto.dealers.com",
                     password: "Password123!",
-                    role: "operations",
-                    department: "Multi-Location Inventory Operations",
-                    branch: "Central Distribution Warehouse",
-                    phone: "+234 802 000 0014",
-                },
-                {
-                    name: "Legal Registry Officer",
-                    email: "legal.registry@luxauto.dealers.com",
-                    password: "Password123!",
-                    role: "compliance",
-                    department: "Legal & Regulatory Compliance",
+                    role: "accounting",
+                    department: "Accounting, Tax & Audit Operations",
                     branch: "Victoria Island HQ, Lagos",
-                    phone: "+234 802 000 0015",
-                },
-                {
-                    name: "Lead Quality Inspector",
-                    email: "inspection@luxauto.dealers.com",
-                    password: "Password123!",
-                    role: "inspection",
-                    department: "Vehicle Inspection & Quality Assurance (QA)",
-                    branch: "Victoria Island HQ, Lagos",
-                    phone: "+234 802 000 0016",
-                },
-                {
-                    name: "Digital Marketing Specialist",
-                    email: "marketing@luxauto.dealers.com",
-                    password: "Password123!",
-                    role: "marketing",
-                    department: "Digital Content & CMS Marketing",
-                    branch: "Victoria Island HQ, Lagos",
-                    phone: "+234 802 000 0017",
-                },
-                // VIP Customer Demo Account
-                {
-                    name: "Dr. K. Somoye (Private Client)",
-                    email: "client@somoye.ng",
-                    password: "Password123!",
-                    role: "customer",
-                    department: "Private Client VIP",
-                    branch: "Victoria Island HQ, Lagos",
-                    phone: "+234 803 111 2233",
+                    phone: "+234 802 000 0002",
                 },
             ];
             for (const account of staffAccounts) {
                 await User_js_1.User.create(account);
             }
-            console.log(`✅ ${staffAccounts.length} Staff and client accounts seeded.`);
+            console.log(`✅ Exactly ${staffAccounts.length} dashboard accounts seeded (1 per dashboard).`);
         }
         // =========================================================================
         // 2. SEED ALL MASTER DATA TAXONOMY DROPDOWNS (12 CATEGORIES)

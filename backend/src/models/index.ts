@@ -17,4 +17,5 @@ export * from "./BranchTransfer.js";
 export * from "./DocumentVault.js";
 export * from "./CMSContent.js";
 export * from "./AuditLog.js";
+export * from "./ChatMessage.js";
 

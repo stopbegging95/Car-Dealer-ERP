@@ -90,10 +90,10 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
   const [slideHighlightText, setSlideHighlightText] = useState("DREAM CAR");
   const [slideDescription, setSlideDescription] = useState("");
   const [slideMediaUrl, setSlideMediaUrl] = useState("");
-  const [slidePrimaryCtaText, setSlidePrimaryCtaText] = useState("View Inventory");
-  const [slidePrimaryCtaLink, setSlidePrimaryCtaLink] = useState("#inventory-section");
-  const [slideSecondaryCtaText, setSlideSecondaryCtaText] = useState("Book a Test Drive");
-  const [slideSecondaryCtaLink, setSlideSecondaryCtaLink] = useState("test-drive-modal");
+  const [slidePrimaryCtaText, setSlidePrimaryCtaText] = useState("");
+  const [slidePrimaryCtaLink, setSlidePrimaryCtaLink] = useState("");
+  const [slideSecondaryCtaText, setSlideSecondaryCtaText] = useState("");
+  const [slideSecondaryCtaLink, setSlideSecondaryCtaLink] = useState("");
   const [slideOrder, setSlideOrder] = useState<number>(1);
   const [slideActive, setSlideActive] = useState(true);
 
@@ -209,10 +209,10 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
     setSlideHighlightText("DREAM CAR");
     setSlideDescription("Explore our prestigious collection of luxury and executive vehicles. Hand-selected, fully certified, and delivered with VIP concierge excellence.");
     setSlideMediaUrl("https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1920&q=80");
-    setSlidePrimaryCtaText("View Inventory");
-    setSlidePrimaryCtaLink("#inventory-section");
-    setSlideSecondaryCtaText("Book a Test Drive");
-    setSlideSecondaryCtaLink("test-drive-modal");
+    setSlidePrimaryCtaText("");
+    setSlidePrimaryCtaLink("");
+    setSlideSecondaryCtaText("");
+    setSlideSecondaryCtaLink("");
     setSlideOrder(slides.length + 1);
     setSlideActive(true);
     setIsSlideModalOpen(true);
@@ -228,10 +228,10 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
     setSlideHighlightText(slide.highlightText);
     setSlideDescription(slide.description);
     setSlideMediaUrl(slide.mediaUrl);
-    setSlidePrimaryCtaText(slide.primaryCtaText);
-    setSlidePrimaryCtaLink(slide.primaryCtaLink);
-    setSlideSecondaryCtaText(slide.secondaryCtaText);
-    setSlideSecondaryCtaLink(slide.secondaryCtaLink);
+    setSlidePrimaryCtaText(slide.primaryCtaText || "");
+    setSlidePrimaryCtaLink(slide.primaryCtaLink || "");
+    setSlideSecondaryCtaText(slide.secondaryCtaText || "");
+    setSlideSecondaryCtaLink(slide.secondaryCtaLink || "");
     setSlideOrder(slide.order);
     setSlideActive(slide.active);
     setIsSlideModalOpen(true);
@@ -450,7 +450,7 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
             onClick={() => setActiveTab("hero-slides")}
             className="text-xs font-bold"
           >
-            Homepage Hero Slider ({slides.length} Slides)
+            Home Banner & Hero Slider ({slides.length} Slides)
           </Button>
           <Button
             variant={activeTab === "brand-partners" ? "primary" : "ghost"}
@@ -496,7 +496,7 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-                  Homepage Hero Slider & Dynamic Banners (http://localhost:3000)
+                  Home Banner & Hero Slider Manager (http://localhost:3000)
                 </h3>
                 <Badge variant="gold" size="sm">Live Homepage Sync</Badge>
               </div>
@@ -578,16 +578,28 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
                 render: (s) => (
                   <div className="text-[11px] text-[#475569] max-w-[180px] truncate">
                     {s.mediaUrl ? (
-                      <a
-                        href={s.mediaUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[#2563EB] hover:underline flex items-center gap-1 truncate"
-                        title={s.mediaUrl}
-                      >
-                        <FiExternalLink className="w-3 h-3 shrink-0" />
-                        <span className="truncate">{s.mediaUrl}</span>
-                      </a>
+                      s.mediaUrl.startsWith("data:video") ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                          <FiVideo className="w-3 h-3 text-purple-600 shrink-0" />
+                          Local Video File
+                        </span>
+                      ) : s.mediaUrl.startsWith("data:image") ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                          <FiImage className="w-3 h-3 text-blue-600 shrink-0" />
+                          Local Image File
+                        </span>
+                      ) : (
+                        <a
+                          href={s.mediaUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[#2563EB] hover:underline flex items-center gap-1 truncate"
+                          title={s.mediaUrl}
+                        >
+                          <FiExternalLink className="w-3 h-3 shrink-0" />
+                          <span className="truncate">{s.mediaUrl}</span>
+                        </a>
+                      )
                     ) : (
                       <span className="text-[#94A3B8] italic">Ambient Gradient (No Media)</span>
                     )}
@@ -1135,7 +1147,7 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Input
               label={
                 slideArchetype === "text-video" || slideArchetype === "video-only"
@@ -1144,14 +1156,80 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
               }
               placeholder={
                 slideArchetype === "text-video" || slideArchetype === "video-only"
-                  ? "https://www.youtube-nocookie.com/embed/YAFUyPp_238"
-                  : "https://images.unsplash.com/photo-... or upload below"
+                  ? "https://www.youtube-nocookie.com/embed/YAFUyPp_238 or upload local video below"
+                  : "https://images.unsplash.com/photo-... or upload local image below"
               }
               value={slideMediaUrl}
               onChange={(e) => setSlideMediaUrl(e.target.value)}
             />
 
-            {slideArchetype !== "text-video" && slideArchetype !== "video-only" && (
+            {slideArchetype === "text-video" || slideArchetype === "video-only" ? (
+              <div className="p-3 bg-[#F8FAFC] border border-[#CBD5E1] rounded-md space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#0F172A] flex items-center gap-1.5">
+                    <FiVideo className="w-3.5 h-3.5 text-[#2563EB]" />
+                    <span>Upload Slide Video File (Local Computer Storage)</span>
+                  </label>
+                  <span className="text-[10px] text-[#64748B]">MP4, WEBM, MOV (Max 50MB)</span>
+                </div>
+                <input
+                  type="file"
+                  accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 50 * 1024 * 1024) {
+                        showToast("Video file exceeds 50MB limit. Please select an optimized MP4/WEBM video.");
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setSlideMediaUrl(reader.result as string);
+                        showToast(`Local video "${file.name}" loaded for slide.`);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="block w-full text-xs text-[#475569] file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#2563EB] file:text-white hover:file:bg-[#1D4ED8] file:cursor-pointer cursor-pointer"
+                />
+                {slideMediaUrl && (
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-[#64748B] font-semibold">Video Preview:</span>
+                      <button
+                        type="button"
+                        onClick={() => setSlideMediaUrl("")}
+                        className="text-[10px] text-red-600 hover:underline font-semibold"
+                      >
+                        Clear Video
+                      </button>
+                    </div>
+                    {slideMediaUrl.startsWith("data:video") ||
+                    slideMediaUrl.endsWith(".mp4") ||
+                    slideMediaUrl.endsWith(".webm") ||
+                    slideMediaUrl.endsWith(".mov") ||
+                    slideMediaUrl.includes("/videos/") ? (
+                      <video
+                        src={slideMediaUrl}
+                        controls
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full max-h-48 rounded bg-black object-contain border border-[#CBD5E1]"
+                      />
+                    ) : (
+                      <div className="p-2 bg-slate-100 rounded text-[11px] text-slate-600 truncate">
+                        External video embed: <span className="font-mono text-slate-800">{slideMediaUrl}</span>
+                      </div>
+                    )}
+                    <span className="text-[10px] text-emerald-600 font-semibold block">
+                      ✓ Video asset ready for homepage hero slider
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
               <div className="p-3 bg-[#F8FAFC] border border-[#CBD5E1] rounded-md space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-[11px] font-bold text-[#0F172A] flex items-center gap-1.5">
@@ -1181,14 +1259,23 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
                   className="block w-full text-xs text-[#475569] file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#2563EB] file:text-white hover:file:bg-[#1D4ED8] file:cursor-pointer cursor-pointer"
                 />
                 {slideMediaUrl && (
-                  <div className="flex items-center gap-2 pt-1">
-                    <span className="text-[10px] text-[#64748B]">Preview:</span>
-                    <div className="relative w-16 h-10 rounded border border-[#CBD5E1] overflow-hidden bg-slate-100">
-                      <img src={slideMediaUrl} alt="Slide Preview" className="w-full h-full object-cover" />
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-[#64748B]">Preview:</span>
+                      <div className="relative w-16 h-10 rounded border border-[#CBD5E1] overflow-hidden bg-slate-100">
+                        <img src={slideMediaUrl} alt="Slide Preview" className="w-full h-full object-cover" />
+                      </div>
+                      <span className="text-[10px] text-emerald-600 font-semibold truncate max-w-xs">
+                        ✓ Media asset ready for homepage banner
+                      </span>
                     </div>
-                    <span className="text-[10px] text-emerald-600 font-semibold truncate max-w-xs">
-                      Media asset ready for homepage banner
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSlideMediaUrl("")}
+                      className="text-[10px] text-red-600 hover:underline font-semibold"
+                    >
+                      Clear Image
+                    </button>
                   </div>
                 )}
               </div>
@@ -1197,14 +1284,14 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Primary CTA Text"
-              placeholder="e.g. View Inventory"
+              label="Primary CTA Text (Optional)"
+              placeholder="e.g. View Inventory (Optional)"
               value={slidePrimaryCtaText}
               onChange={(e) => setSlidePrimaryCtaText(e.target.value)}
             />
             <Input
-              label="Primary CTA Target Link"
-              placeholder="e.g. #inventory-section or /inventory"
+              label="Primary CTA Target Link (Optional)"
+              placeholder="e.g. #inventory-section or /inventory (Optional)"
               value={slidePrimaryCtaLink}
               onChange={(e) => setSlidePrimaryCtaLink(e.target.value)}
             />
@@ -1212,14 +1299,14 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Secondary CTA Text"
-              placeholder="e.g. Book a Test Drive"
+              label="Secondary CTA Text (Optional)"
+              placeholder="e.g. Book a Test Drive (Optional)"
               value={slideSecondaryCtaText}
               onChange={(e) => setSlideSecondaryCtaText(e.target.value)}
             />
             <Input
-              label="Secondary CTA Target Link"
-              placeholder="e.g. test-drive-modal or /services/auto-brokers"
+              label="Secondary CTA Target Link (Optional)"
+              placeholder="e.g. test-drive-modal or /about (Optional)"
               value={slideSecondaryCtaLink}
               onChange={(e) => setSlideSecondaryCtaLink(e.target.value)}
             />

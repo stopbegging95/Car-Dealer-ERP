@@ -31,6 +31,7 @@ import vaultRoutes from "./routes/vaultRoutes.js";
 import cmsRoutes from "./routes/cmsRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import auditRoutes from "./routes/auditRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 const app: Express = express();
 
@@ -100,6 +101,7 @@ app.use("/api/vault", vaultRoutes);
 app.use("/api/cms", cmsRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/audit", auditRoutes);
+app.use("/api/chat", chatRoutes);
 
 // 404 Catch-all handler
 app.all("*", (req: Request, res: Response, next: NextFunction) => {

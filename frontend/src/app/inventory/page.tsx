@@ -90,7 +90,7 @@ export default function InventoryPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#2563EB] selection:text-[#FFFFFF]">
-      <Navbar onBookTestDrive={() => openTestDrive(VEHICLES[0])} />
+      <Navbar onBookTestDrive={() => openTestDrive(vehicleList[0] || VEHICLES[0])} />
 
       <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
         {/* Public Inventory Hero Banner */}

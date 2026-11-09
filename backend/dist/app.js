@@ -34,6 +34,7 @@ const vaultRoutes_js_1 = __importDefault(require("./routes/vaultRoutes.js"));
 const cmsRoutes_js_1 = __importDefault(require("./routes/cmsRoutes.js"));
 const paymentRoutes_js_1 = __importDefault(require("./routes/paymentRoutes.js"));
 const auditRoutes_js_1 = __importDefault(require("./routes/auditRoutes.js"));
+const chatRoutes_js_1 = __importDefault(require("./routes/chatRoutes.js"));
 const app = (0, express_1.default)();
 // Security HTTP headers
 app.use((0, helmet_1.default)());
@@ -92,6 +93,7 @@ app.use("/api/vault", vaultRoutes_js_1.default);
 app.use("/api/cms", cmsRoutes_js_1.default);
 app.use("/api/payments", paymentRoutes_js_1.default);
 app.use("/api/audit", auditRoutes_js_1.default);
+app.use("/api/chat", chatRoutes_js_1.default);
 // 404 Catch-all handler
 app.all("*", (req, res, next) => {
     next(new apiResponse_js_1.ApiError(404, `Cannot ${req.method} ${req.originalUrl} - Route not found on Car Deals ERP server.`));

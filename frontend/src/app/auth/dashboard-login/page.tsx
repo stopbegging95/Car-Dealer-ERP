@@ -21,6 +21,8 @@ import { FaCar } from "react-icons/fa6";
 import { Button, Input, Dropdown, Checkbox, Badge } from "@/components/ui";
 import { DEALERSHIP_ROLES } from "@/data/roles";
 import { authApi, setStoredToken, setStoredUser } from "@/lib/api";
+import { BiometricFaceCaptureModal } from "@/components/BiometricFaceCaptureModal";
+import { recordLoginBiometric } from "@/utils/sessionAuditHelper";
 
 const DEPARTMENT_CREDENTIALS: Record<
   string,
@@ -35,31 +37,15 @@ const DEPARTMENT_CREDENTIALS: Record<
 > = {
   admin: {
     roleId: "admin",
-    label: "Super Admin / Executive Management",
+    label: "Super Admin HQ Dashboard",
     email: "admin@luxauto.dealers.com",
     name: "Chief Executive (Admin)",
     defaultPath: "/admin",
     department: "Executive Dealership Management",
   },
-  accounting: {
-    roleId: "accounting",
-    label: "Accounting Department",
-    email: "chief.accountant@luxauto.dealers.com",
-    name: "Chief Accountant",
-    defaultPath: "/accounting",
-    department: "Accounting & Audit Operations",
-  },
-  financing: {
-    roleId: "financing",
-    label: "Finance Department (Auto Loans & Mortgages)",
-    email: "financing.officer@luxauto.dealers.com",
-    name: "Senior Loan Underwriter",
-    defaultPath: "/erp/financing",
-    department: "Automotive Financing & Bank Liaison",
-  },
   sales: {
     roleId: "sales",
-    label: "Sales & Showroom Floor Desk",
+    label: "Showroom Sales & Orders Dashboard",
     email: "sales.liaison@luxauto.dealers.com",
     name: "Senior Sales Liaison",
     defaultPath: "/erp/sales",
@@ -67,7 +53,7 @@ const DEPARTMENT_CREDENTIALS: Record<
   },
   service: {
     roleId: "service",
-    label: "Service & Bay Workshop Operations",
+    label: "Service Workshop & Bay Operations Dashboard",
     email: "workshop.lead@luxauto.dealers.com",
     name: "Workshop Bay Supervisor",
     defaultPath: "/erp/service",
@@ -75,23 +61,39 @@ const DEPARTMENT_CREDENTIALS: Record<
   },
   parts: {
     roleId: "parts",
-    label: "OEM Spares Depot & Inventory",
+    label: "OEM Parts Depot & Inventory Dashboard",
     email: "parts.specialist@luxauto.dealers.com",
     name: "Warehouse Logistics Lead",
     defaultPath: "/erp/parts",
     department: "OEM Parts & Warehouse Depot",
   },
+  financing: {
+    roleId: "financing",
+    label: "Auto Loans & Financing Dashboard",
+    email: "financing.officer@luxauto.dealers.com",
+    name: "Senior Loan Underwriter",
+    defaultPath: "/erp/financing",
+    department: "Automotive Financing & Bank Liaison",
+  },
   recon: {
     roleId: "recon",
-    label: "Detailing & Reconditioning Center",
+    label: "Detailing & Recon Dashboard",
     email: "recon.lead@luxauto.dealers.com",
     name: "Detailing Center Lead",
     defaultPath: "/erp/recon",
     department: "Vehicle Detailing & Reconditioning",
   },
+  inspection: {
+    roleId: "inspection",
+    label: "150-Point QA Inspection Dashboard",
+    email: "qa.lead@luxauto.dealers.com",
+    name: "Lead Quality Inspector",
+    defaultPath: "/erp/inspection",
+    department: "Vehicle Inspection & Quality Assurance (QA)",
+  },
   imports: {
     roleId: "imports",
-    label: "Port Customs & Logistics Depot",
+    label: "Import Logistics & Customs Clearing Dashboard",
     email: "imports.clearing@luxauto.dealers.com",
     name: "Port Operations Officer",
     defaultPath: "/erp/imports",
@@ -99,7 +101,7 @@ const DEPARTMENT_CREDENTIALS: Record<
   },
   "trade-ins": {
     roleId: "trade-ins",
-    label: "Trade-In & Vehicle Exchange Desk",
+    label: "Trade-In & Vehicle Exchange Dashboard",
     email: "tradein.valuer@luxauto.dealers.com",
     name: "Lead Swap Appraiser",
     defaultPath: "/erp/trade-ins",
@@ -107,7 +109,7 @@ const DEPARTMENT_CREDENTIALS: Record<
   },
   crm: {
     roleId: "crm",
-    label: "VIP Client Relations & Concierge",
+    label: "VIP Client Relations & Concierge (CRM) Dashboard",
     email: "crm.concierge@luxauto.dealers.com",
     name: "VIP Concierge Lead",
     defaultPath: "/erp/crm",
@@ -115,7 +117,7 @@ const DEPARTMENT_CREDENTIALS: Record<
   },
   hr: {
     roleId: "hr",
-    label: "People Operations & HR Recruitment",
+    label: "HR & People Operations Dashboard",
     email: "hr.director@luxauto.dealers.com",
     name: "Head of People & Culture",
     defaultPath: "/erp/hr",
@@ -123,43 +125,19 @@ const DEPARTMENT_CREDENTIALS: Record<
   },
   procurement: {
     roleId: "procurement",
-    label: "Procurement & Sourcing Department",
+    label: "Procurement & Sourcing Dashboard",
     email: "procurement.lead@luxauto.dealers.com",
     name: "Head of International Sourcing",
     defaultPath: "/erp/procurement",
     department: "Procurement & International Sourcing",
   },
-  invoices: {
+  accounting: {
     roleId: "accounting",
-    label: "Invoices & Payments Control",
-    email: "invoices.payments@luxauto.dealers.com",
-    name: "Commercial Billing Officer",
-    defaultPath: "/erp/invoices",
-    department: "Accounting & Commercial Billing",
-  },
-  analytics: {
-    roleId: "admin",
-    label: "Reports & Performance Analytics",
-    email: "analytics.lead@luxauto.dealers.com",
-    name: "BI & Performance Analyst",
-    defaultPath: "/erp/analytics",
-    department: "Executive Strategy & Analytics",
-  },
-  transfers: {
-    roleId: "parts",
-    label: "Branch Transfers & Yard Operations",
-    email: "transfers.yard@luxauto.dealers.com",
-    name: "Yard & Logistics Controller",
-    defaultPath: "/erp/transfers",
-    department: "Multi-Location Inventory Operations",
-  },
-  documents: {
-    roleId: "admin",
-    label: "Legal, Risk & Document Vault",
-    email: "legal.registry@luxauto.dealers.com",
-    name: "Legal Registry Officer",
-    defaultPath: "/erp/documents",
-    department: "Legal & Regulatory Compliance",
+    label: "Accounting & Financial Audit Dashboard",
+    email: "chief.accountant@luxauto.dealers.com",
+    name: "Dealership Chief Accountant",
+    defaultPath: "/accounting",
+    department: "Accounting & Audit Operations",
   },
 };
 
@@ -174,20 +152,28 @@ function DashboardLoginContent() {
   const [email, setEmail] = useState<string>(
     DEPARTMENT_CREDENTIALS[requestedRole]?.email || "admin@luxauto.dealers.com"
   );
-  const [password, setPassword] = useState<string>("admin123");
+  const [password, setPassword] = useState<string>("Password123!");
   const [securityPin, setSecurityPin] = useState<string>("8821");
   const [showroomNode, setShowroomNode] = useState<string>("lagos-hq");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberTerminal, setRememberTerminal] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isBiometricModalOpen, setIsBiometricModalOpen] = useState<boolean>(false);
+  const [pendingAuthTarget, setPendingAuthTarget] = useState<{
+    defaultPath: string;
+    name: string;
+    email: string;
+    role: string;
+    department: string;
+  } | null>(null);
 
   const handleDepartmentChange = (deptKey: string) => {
     setSelectedDept(deptKey);
     const creds = DEPARTMENT_CREDENTIALS[deptKey];
     if (creds) {
       setEmail(creds.email);
-      setPassword(deptKey === "admin" ? "admin123" : "staff2026");
+      setPassword("Password123!");
     }
   };
 
@@ -231,7 +217,16 @@ function DashboardLoginContent() {
           department: targetConfig.department,
         });
       }
-      router.push(targetConfig.defaultPath);
+
+      // Open mandatory facial biometric verification before granting entry to dashboard
+      setPendingAuthTarget({
+        defaultPath: targetConfig.defaultPath,
+        name: targetConfig.name,
+        email,
+        role: targetConfig.label,
+        department: targetConfig.department,
+      });
+      setIsBiometricModalOpen(true);
     } catch {
       setIsSubmitting(false);
       const targetConfig = DEPARTMENT_CREDENTIALS[selectedDept] || DEPARTMENT_CREDENTIALS.admin;
@@ -243,7 +238,16 @@ function DashboardLoginContent() {
         role: targetConfig.roleId,
         department: targetConfig.department,
       });
-      router.push(targetConfig.defaultPath);
+
+      // Open mandatory facial biometric verification before granting entry to dashboard
+      setPendingAuthTarget({
+        defaultPath: targetConfig.defaultPath,
+        name: targetConfig.name,
+        email,
+        role: targetConfig.label,
+        department: targetConfig.department,
+      });
+      setIsBiometricModalOpen(true);
     }
   };
 
@@ -322,7 +326,7 @@ function DashboardLoginContent() {
                 <select
                   value={selectedDept}
                   onChange={(e) => handleDepartmentChange(e.target.value)}
-                  className="bg-[#0F172A] px-3 py-2.5 border border-[#475569] focus:border-[#2563EB] rounded-lg w-full font-sans text-[#F8FAFC] text-xs focus:outline-hidden"
+                  className="h-10.5 bg-[#0F172A] px-3 py-2.5 border border-[#475569] focus:border-[#2563EB] rounded-lg w-full font-sans text-[#F8FAFC] text-xs focus:outline-hidden transition-colors"
                 >
                   <option value="admin">Super Admin / Executive Management</option>
                   <option value="accounting">Accounting Department (AP/AR & Landed Costs)</option>
@@ -340,16 +344,24 @@ function DashboardLoginContent() {
 
               {/* Staff Email & Node */}
               <div className="gap-3.5 grid grid-cols-1 sm:grid-cols-2">
-                <Input
-                  label="Staff / Employee Email"
-                  type="email"
-                  placeholder="staff@luxauto.dealers.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  leftIcon={<FiMail className="w-4 h-4 text-[#64748B]" />}
-                  className="bg-[#0F172A] border-[#475569] text-[#FFFFFF]"
-                  required
-                />
+                <div>
+                  <label className="block mb-1.5 font-bold text-[#CBD5E1] text-xs">
+                    Staff / Employee Email
+                  </label>
+                  <div className="relative flex items-center">
+                    <div className="absolute left-3.5 flex items-center pointer-events-none text-[#64748B]">
+                      <FiMail className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="email"
+                      placeholder="staff@luxauto.dealers.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="h-10.5 bg-[#0F172A] pl-10 pr-3 py-2.5 border border-[#475569] focus:border-[#2563EB] rounded-lg w-full font-sans text-[#F8FAFC] text-xs placeholder-[#64748B] focus:outline-hidden transition-colors"
+                    />
+                  </div>
+                </div>
 
                 <div>
                   <label className="block mb-1.5 font-bold text-[#CBD5E1] text-xs">
@@ -358,7 +370,7 @@ function DashboardLoginContent() {
                   <select
                     value={showroomNode}
                     onChange={(e) => setShowroomNode(e.target.value)}
-                    className="bg-[#0F172A] px-3 py-2.5 border border-[#475569] focus:border-[#2563EB] rounded-lg w-full font-sans text-[#F8FAFC] text-xs focus:outline-hidden"
+                    className="h-10.5 bg-[#0F172A] px-3 py-2.5 border border-[#475569] focus:border-[#2563EB] rounded-lg w-full font-sans text-[#F8FAFC] text-xs focus:outline-hidden transition-colors"
                   >
                     <option value="lagos-hq">Master HQ Executive Suite, Lagos</option>
                     <option value="vi-flagship">Victoria Island Flagship Showroom</option>
@@ -371,37 +383,51 @@ function DashboardLoginContent() {
 
               {/* Password & PIN */}
               <div className="gap-3.5 grid grid-cols-1 sm:grid-cols-2">
-                <div className="relative">
-                  <Input
-                    label="Access Key / Password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    leftIcon={<FiLock className="w-4 h-4 text-[#64748B]" />}
-                    className="bg-[#0F172A] border-[#475569] text-[#FFFFFF]"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="top-8 right-3 absolute text-[#94A3B8] hover:text-[#FFFFFF]"
-                    aria-label="Toggle password visibility"
-                  >
-                    {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
-                  </button>
+                <div>
+                  <label className="block mb-1.5 font-bold text-[#CBD5E1] text-xs">
+                    Access Key / Password
+                  </label>
+                  <div className="relative flex items-center">
+                    <div className="absolute left-3.5 flex items-center pointer-events-none text-[#64748B]">
+                      <FiLock className="w-4 h-4" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="h-10.5 bg-[#0F172A] pl-10 pr-10 py-2.5 border border-[#475569] focus:border-[#2563EB] rounded-lg w-full font-sans text-[#F8FAFC] text-xs placeholder-[#64748B] focus:outline-hidden transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 flex items-center text-[#94A3B8] hover:text-[#FFFFFF] cursor-pointer transition-colors"
+                      aria-label="Toggle password visibility"
+                    >
+                      {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
-                <Input
-                  label="Department 2FA PIN (Demo: 8821)"
-                  type="text"
-                  maxLength={6}
-                  placeholder="8821"
-                  value={securityPin}
-                  onChange={(e) => setSecurityPin(e.target.value)}
-                  leftIcon={<FiKey className="w-4 h-4 text-[#64748B]" />}
-                  className="bg-[#0F172A] border-[#475569] text-[#FFFFFF]"
-                />
+                <div>
+                  <label className="block mb-1.5 font-bold text-[#CBD5E1] text-xs">
+                    Department 2FA PIN (Demo: 8821)
+                  </label>
+                  <div className="relative flex items-center">
+                    <div className="absolute left-3.5 flex items-center pointer-events-none text-[#64748B]">
+                      <FiKey className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      placeholder="8821"
+                      value={securityPin}
+                      onChange={(e) => setSecurityPin(e.target.value)}
+                      className="h-10.5 bg-[#0F172A] pl-10 pr-3 py-2.5 border border-[#475569] focus:border-[#2563EB] rounded-lg w-full font-sans text-[#F8FAFC] text-xs placeholder-[#64748B] focus:outline-hidden transition-colors"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-between items-center pt-1 text-xs">
@@ -431,11 +457,11 @@ function DashboardLoginContent() {
               </Button>
             </form>
 
-            {/* Quick Demo Department Selector Grid */}
+            {/* Department Desk Selector Grid */}
             <div className="pt-4 border-[#334155] border-t space-y-2">
               <div className="flex justify-between items-center text-[11px]">
-                <span className="font-bold text-[#CBD5E1]">Quick-Select Department Demo Credential:</span>
-                <span className="text-[#94A3B8]">Click to switch role</span>
+                <span className="font-bold text-[#CBD5E1]">Authorized Department Workspaces:</span>
+                <span className="text-[#94A3B8]">Click to switch department</span>
               </div>
 
               <div className="gap-1.5 grid grid-cols-2 sm:grid-cols-3">
@@ -489,6 +515,38 @@ function DashboardLoginContent() {
           </div>
         </div>
       </main>
+
+      {/* Mandatory Facial Capture on Staff Login Gate */}
+      {pendingAuthTarget && (
+        <BiometricFaceCaptureModal
+          isOpen={isBiometricModalOpen}
+          mode="login"
+          isMandatory={true}
+          user={{
+            name: pendingAuthTarget.name,
+            email: pendingAuthTarget.email,
+            role: pendingAuthTarget.role,
+            department: pendingAuthTarget.department,
+          }}
+          onCaptureSuccess={(photo, timestamp) => {
+            recordLoginBiometric(
+              {
+                name: pendingAuthTarget.name,
+                email: pendingAuthTarget.email,
+                role: pendingAuthTarget.role,
+                department: pendingAuthTarget.department,
+              },
+              photo,
+              timestamp
+            );
+            setIsBiometricModalOpen(false);
+            router.push(pendingAuthTarget.defaultPath);
+          }}
+          onCancel={() => {
+            setIsBiometricModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

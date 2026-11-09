@@ -13,9 +13,14 @@ import {
   FiClock,
   FiGlobe,
   FiMail,
+  FiMessageSquare,
 } from "react-icons/fi";
 import { FaAward } from "react-icons/fa6";
 import { Button, Modal } from "./ui";
+import { play4SecondNotificationSound } from "@/utils/audioAlert";
+import { BiometricFaceCaptureModal } from "@/components/BiometricFaceCaptureModal";
+import { recordLogoutBiometric, clearBiometricVerification } from "@/utils/sessionAuditHelper";
+import { clearStoredToken } from "@/lib/api";
 
 export interface DashboardMenuItem {
   name: string;
@@ -66,8 +71,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isBiometricLogoutOpen, setIsBiometricLogoutOpen] = useState(false);
+  const [isPlayingAudioAlert, setIsPlayingAudioAlert] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  // Listen for notification audio events and play 4-second executive chime
+  React.useEffect(() => {
+    const handleTriggerAudio = () => {
+      setIsPlayingAudioAlert(true);
+      play4SecondNotificationSound().finally(() => setIsPlayingAudioAlert(false));
+    };
+    window.addEventListener("cardeals_notification_sound", handleTriggerAudio);
+    return () => window.removeEventListener("cardeals_notification_sound", handleTriggerAudio);
+  }, []);
   const [notifications, setNotifications] = useState([
     {
       id: "NOTIF-01",
@@ -367,6 +384,34 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </span>
                 )}
               </button>
+
+              {/* Internal Staff-to-Staff Team Chat (Strictly hidden for customers) */}
+              {userRole !== "Customer" && userRole !== "user" && (
+                <button
+                  type="button"
+                  onClick={() => onSelectModule("Staff Team Chat")}
+                  title="Internal Staff Comms & Chat"
+                  className={`w-full flex items-center rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                    isSidebarCollapsed
+                      ? "justify-center p-2.5"
+                      : "justify-between px-3 py-2"
+                  } ${
+                    activeModule === "Staff Team Chat" || activeModule === "Staff Chat" || activeModule === "Team Chat"
+                      ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/25"
+                      : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#2563EB]"
+                  }`}
+                >
+                  <div className={`flex items-center gap-2.5 ${isSidebarCollapsed ? "justify-center" : "truncate"}`}>
+                    <FiMessageSquare className="w-4 h-4 shrink-0 text-[#2563EB]" />
+                    {!isSidebarCollapsed && <span className="truncate">Staff Team Chat</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold shrink-0">
+                      Live
+                    </span>
+                  )}
+                </button>
+              )}
             </nav>
           </div>
         </div>
@@ -461,15 +506,33 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         {notifications.filter((n) => !n.read).length} new
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
-                      }
-                      className="text-[10px] text-[#2563EB] hover:underline font-semibold cursor-pointer"
-                    >
-                      Mark all read
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsPlayingAudioAlert(true);
+                          play4SecondNotificationSound().finally(() => setIsPlayingAudioAlert(false));
+                        }}
+                        className={`text-[9px] font-bold px-2 py-0.5 rounded border transition-colors flex items-center gap-1 cursor-pointer ${
+                          isPlayingAudioAlert
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-300 ring-1 ring-emerald-400"
+                            : "bg-[#EFF6FF] text-[#2563EB] border-[#BFDBFE] hover:bg-[#DBEAFE]"
+                        }`}
+                        title="Test 4-second notification audio chime alert"
+                      >
+                        <FiBell className="w-2.5 h-2.5" />
+                        <span>{isPlayingAudioAlert ? "Playing 4s..." : "Test 4s Sound"}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+                        }
+                        className="text-[10px] text-[#2563EB] hover:underline font-semibold cursor-pointer"
+                      >
+                        Mark all read
+                      </button>
+                    </div>
                   </div>
 
                   <div className="max-h-80 overflow-y-auto divide-y divide-[#E2E8F0] my-1">
@@ -681,12 +744,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               size="sm"
               onClick={() => {
                 setIsLogoutModalOpen(false);
-                window.location.href = "/auth/login";
+                const isCustomer = userRole === "Customer" || userRole === "user";
+                if (isCustomer) {
+                  clearStoredToken();
+                  clearBiometricVerification();
+                  window.location.href = "/auth/login";
+                } else {
+                  // Open mandatory biometric face capture for staff logout
+                  setIsBiometricLogoutOpen(true);
+                }
               }}
               className="bg-red-600 hover:bg-red-700 text-white"
               leftIcon={<FiLogOut className="w-3.5 h-3.5 text-white" />}
             >
-              Confirm Sign Out
+              {userRole === "Customer" || userRole === "user" ? "Confirm Sign Out" : "Verify Face & Sign Out"}
             </Button>
           </div>
         }
@@ -697,10 +768,35 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </p>
           <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8] flex items-start gap-2">
             <FiCheckCircle className="w-4 h-4 shrink-0 text-[#2563EB] mt-0.5" />
-            <span>Session revocation telemetry and audit trail will be cryptographically written to the immutable ledger.</span>
+            <span>
+              {userRole === "Customer" || userRole === "user"
+                ? "Session tokens will be safely cleared."
+                : "Staff security protocol requires camera face capture to finalize official departure and write departure timestamp into the WORM audit ledger."}
+            </span>
           </div>
         </div>
       </Modal>
+
+      {/* Staff Mandatory Logout Biometric Face Capture Modal */}
+      <BiometricFaceCaptureModal
+        isOpen={isBiometricLogoutOpen}
+        mode="logout"
+        isMandatory={false}
+        user={{
+          name: userName,
+          email: userEmail,
+          role: userRole,
+          department: departmentName,
+        }}
+        onCaptureSuccess={(photo, timestamp) => {
+          recordLogoutBiometric(photo, timestamp);
+          clearStoredToken();
+          clearBiometricVerification();
+          setIsBiometricLogoutOpen(false);
+          window.location.href = "/auth/dashboard-login";
+        }}
+        onCancel={() => setIsBiometricLogoutOpen(false)}
+      />
     </div>
   );
 };

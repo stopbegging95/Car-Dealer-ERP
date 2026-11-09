@@ -33,3 +33,4 @@ __exportStar(require("./BranchTransfer.js"), exports);
 __exportStar(require("./DocumentVault.js"), exports);
 __exportStar(require("./CMSContent.js"), exports);
 __exportStar(require("./AuditLog.js"), exports);
+__exportStar(require("./ChatMessage.js"), exports);

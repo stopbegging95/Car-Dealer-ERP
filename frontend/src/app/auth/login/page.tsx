@@ -79,9 +79,9 @@ export default function LoginPage() {
           } else if (lowerEmail.includes("hr")) {
             targetRole = "hr";
             targetPath = "/erp/hr";
-          } else if (lowerEmail.includes("cms")) {
+          } else if (lowerEmail.includes("cms") || lowerEmail.includes("banner")) {
             targetRole = "cms";
-            targetPath = "/erp/cms";
+            targetPath = "/erp/home-banner";
           }
           const fallbackToken = `staff-auth-token-${targetRole}-${Date.now()}`;
           setStoredToken(fallbackToken);
@@ -94,7 +94,7 @@ export default function LoginPage() {
         } else {
           const fallbackToken = `client-auth-token-${Date.now()}`;
           setStoredToken(fallbackToken);
-          setStoredUser({ email, role: "customer", name: "VIP Private Client" });
+          setStoredUser({ email: email || "vance@luxuryinvest.com", role: "customer", name: "Chief Alexander Vance (VIP Client)" });
           router.push("/portal");
         }
       }
@@ -254,94 +254,6 @@ export default function LoginPage() {
                   : "Enter Customer Portal"}
               </Button>
             </form>
-
-            {/* Quick Demo Pre-fills */}
-            <div className="pt-3 border-[#E2E8F0] border-t text-[#64748B] text-[11px] space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-[#0F172A]">Demo Quick Sign-In:</span>
-                <span className="text-[10px] text-[#64748B]">Auto-provisions department desk</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setAccountType("client");
-                    setEmail("alexander@vance.com");
-                    setPassword("password123");
-                  }}
-                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
-                >
-                  VIP Client
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setAccountType("staff");
-                    setEmail("admin@luxauto.dealers.com");
-                    setPassword("admin123");
-                  }}
-                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
-                >
-                  Super Admin
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setAccountType("staff");
-                    setEmail("chief.accountant@luxauto.dealers.com");
-                    setPassword("finance123");
-                  }}
-                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
-                >
-                  Accounting Dept
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setAccountType("staff");
-                    setEmail("finance@luxauto.dealers.com");
-                    setPassword("finance123");
-                  }}
-                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
-                >
-                  Finance Dept
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setAccountType("staff");
-                    setEmail("sales.director@luxauto.dealers.com");
-                    setPassword("sales123");
-                  }}
-                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
-                >
-                  Sales Desk
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setAccountType("staff");
-                    setEmail("service.manager@luxauto.dealers.com");
-                    setPassword("service123");
-                  }}
-                  className="font-mono text-[#2563EB] bg-[#EFF6FF] hover:bg-[#DBEAFE] px-2 py-0.5 text-[10px]"
-                >
-                  Workshop Desk
-                </Button>
-              </div>
-            </div>
           </div>
 
           {/* Footer Registration & Staff Dashboard Links */}

@@ -15,6 +15,9 @@ export interface SessionAuditLog {
   mfaMethod: string;
   checksum: string;
   immutableSeal: boolean;
+  loginFaceSnapshot?: string;
+  logoutFaceSnapshot?: string;
+  biometricVerified?: boolean;
 }
 
 export const INITIAL_SESSION_LOGS: SessionAuditLog[] = [
@@ -56,8 +59,8 @@ export const INITIAL_SESSION_LOGS: SessionAuditLog[] = [
   },
   {
     id: "SES-2026-9922-ABJ",
-    userName: "VIP Concierge Specialist",
-    email: "concierge@luxauto.dealers.com",
+    userName: "VIP Concierge Lead",
+    email: "crm.concierge@luxauto.dealers.com",
     role: "Client Relations",
     department: "Customer Relations & VIP Concierge",
     loginTime: "2026-11-06 10:15:40 WAT",

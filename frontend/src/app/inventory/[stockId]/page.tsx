@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -33,16 +33,65 @@ import {
   PageBanner,
 } from "@/components/ui";
 import { VEHICLES, Vehicle } from "@/data/vehicles";
+import { vehiclesApi } from "@/lib/api";
 
 function VehicleDetailContent() {
   const params = useParams();
   const stockId = typeof params?.stockId === "string" ? params.stockId : "STK-2026-001";
 
-  const vehicle: Vehicle = useMemo(() => {
+  const fallbackVehicle: Vehicle = useMemo(() => {
     return VEHICLES.find((v) => v.stockId === stockId) || VEHICLES[0];
   }, [stockId]);
 
-  const [activePhoto, setActivePhoto] = useState<string>(vehicle.image);
+  const [vehicle, setVehicle] = useState<Vehicle>(fallbackVehicle);
+  const [activePhoto, setActivePhoto] = useState<string>(fallbackVehicle.image);
+
+  useEffect(() => {
+    let isMounted = true;
+    vehiclesApi.getById(stockId)
+      .then((res: any) => {
+        const v = res?.data?.vehicle || res?.data || res;
+        if (v && (v.stockId || v.vin) && isMounted) {
+          const apiVehicle: Vehicle = {
+            stockId: v.stockId || stockId,
+            vin: v.vin || fallbackVehicle.vin,
+            category: (v.category as any) || fallbackVehicle.category,
+            make: v.make || fallbackVehicle.make,
+            model: v.modelName || v.model || fallbackVehicle.model,
+            trim: v.trim || fallbackVehicle.trim,
+            year: Number(v.year) || fallbackVehicle.year,
+            mileage: Number(v.mileageKm ?? v.mileage) || fallbackVehicle.mileage,
+            condition: (v.condition as any) || fallbackVehicle.condition,
+            transmission: (v.specifications?.transmission as any) || (v.transmission as any) || fallbackVehicle.transmission,
+            fuel: (v.specifications?.fuel as any) || (v.fuel as any) || fallbackVehicle.fuel,
+            exteriorColor: v.colorExterior || v.exteriorColor || fallbackVehicle.exteriorColor,
+            interiorColor: v.colorInterior || v.interiorColor || fallbackVehicle.interiorColor,
+            purchaseCost: Number(v.costs?.purchasePriceUSD ?? v.purchaseCost) || fallbackVehicle.purchaseCost,
+            landedCost: Number(v.costs?.landedCostUSD ?? v.landedCost) || fallbackVehicle.landedCost,
+            priceUSD: Number(v.pricing?.listingUSD ?? v.priceUSD) || fallbackVehicle.priceUSD,
+            priceNGN: Number(v.listingPriceNGN ?? v.priceNGN) || fallbackVehicle.priceNGN,
+            status: (v.status as any) || fallbackVehicle.status,
+            location: (v.currentHub as any) || (v.location as any) || fallbackVehicle.location,
+            image: (v.mediaUrls && v.mediaUrls[0]) || v.image || fallbackVehicle.image,
+            gallery: Array.isArray(v.mediaUrls) && v.mediaUrls.length > 0 ? v.mediaUrls : fallbackVehicle.gallery,
+            features: Array.isArray(v.features) && v.features.length > 0 ? v.features : fallbackVehicle.features,
+            horsepower: Number(v.specifications?.powerBhp ?? v.horsepower) || fallbackVehicle.horsepower,
+            engine: v.specifications?.displacement || v.engine || fallbackVehicle.engine,
+            description: v.notes || v.description || fallbackVehicle.description,
+            featured: v.isFeatured ?? fallbackVehicle.featured,
+          };
+          setVehicle(apiVehicle);
+          setActivePhoto(apiVehicle.image);
+        }
+      })
+      .catch(() => {
+        // Fallback already set
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [stockId, fallbackVehicle]);
   const currency: "NGN" = "NGN";
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
   const [isTestDriveConfirmedOpen, setIsTestDriveConfirmedOpen] = useState(false);

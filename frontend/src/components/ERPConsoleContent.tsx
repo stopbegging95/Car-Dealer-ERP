@@ -53,6 +53,12 @@ import {
 import { AccessRestrictedGuard } from "@/components/AccessRestrictedGuard";
 import { INITIAL_SESSION_LOGS, SessionAuditLog } from "@/data/sessionAuditLogs";
 import { downloadOrderAsPdf, downloadVaultDocumentPdf } from "@/utils/pdfGenerator";
+import { BiometricFaceCaptureModal } from "@/components/BiometricFaceCaptureModal";
+import {
+  getActiveBiometricVerification,
+  recordLoginBiometric,
+  getAllSessionAuditLogs,
+} from "@/utils/sessionAuditHelper";
 import {
   AdminDashboard,
   DepartmentPortalsDashboard,
@@ -79,6 +85,7 @@ import {
   ReportsAnalyticsDashboard,
   InspectionQADashboard,
   PersonalStaffDashboard,
+  StaffChatPage,
   OrderItem,
 } from "@/components/dashboards";
 import { MasterDataPage } from "@/components/dashboards/admin/MasterDataPage";
@@ -160,13 +167,18 @@ export const MODULE_TO_SLUG: Record<string, string> = {
   "HR & Recruitment": "hr",
   "Department Portals & Accounts": "department-portals",
   "Document Vault": "documents",
-  "CMS Manager": "cms",
+  "Home Banner": "home-banner",
+  "Home Banners": "home-banner",
+  "CMS Manager": "home-banner",
   "Reports & Analytics": "reports",
   "Settings": "settings",
   "Master Data & Dropdowns": "master-data",
   "Personal Staff Dashboard": "staff",
   "My Profile": "profile",
   "Session History": "sessions",
+  "Staff Team Chat": "chat",
+  "Staff Chat": "chat",
+  "Team Chat": "chat",
 };
 
 export function ERPConsoleContent({
@@ -205,6 +217,21 @@ export function ERPConsoleContent({
       }
     }
   }, [router]);
+
+  // Biometric Facial Security Gate Check for Staff (Customer is exempted)
+  const [isBiometricGateOpen, setIsBiometricGateOpen] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isCustomer = activeRoleId === "customer" || activeRoleId === "user";
+      if (!isCustomer) {
+        const verified = getActiveBiometricVerification();
+        if (!verified || !verified.verified) {
+          setIsBiometricGateOpen(true);
+        }
+      }
+    }
+  }, [activeRoleId]);
 
   // Keep activeModule in sync if initialModule changes
   React.useEffect(() => {
@@ -343,7 +370,7 @@ export function ERPConsoleContent({
   const [newStaffName, setNewStaffName] = useState<string>("");
   const [newStaffEmail, setNewStaffEmail] = useState<string>("");
   const [newStaffDept, setNewStaffDept] = useState<string>("finance");
-  const [newStaffPassword, setNewStaffPassword] = useState<string>("Pass#2026@Lux");
+  const [newStaffPassword, setNewStaffPassword] = useState<string>("Password123!");
   const [newStaffBranch, setNewStaffBranch] = useState<string>("Victoria Island Flagship Showroom");
   const [newStaffClearance, setNewStaffClearance] = useState<
     "Department Head / Director" | "Senior Specialist / Closer" | "Associate Specialist / Auditor"
@@ -477,8 +504,17 @@ export function ERPConsoleContent({
     showToast("Staff account access status updated.");
   };
 
+  const [sessionLogs, setSessionLogs] = useState<SessionAuditLog[]>(() => getAllSessionAuditLogs());
+
+  // Refresh session logs when entering session module or on interval
+  React.useEffect(() => {
+    if (activeModule === "Session History") {
+      setSessionLogs(getAllSessionAuditLogs());
+    }
+  }, [activeModule]);
+
   const filteredSessions = useMemo(() => {
-    return INITIAL_SESSION_LOGS.filter((s) => {
+    return sessionLogs.filter((s) => {
       const matchesSearch =
         s.id.toLowerCase().includes(sessionSearch.toLowerCase()) ||
         s.userName.toLowerCase().includes(sessionSearch.toLowerCase()) ||
@@ -488,7 +524,7 @@ export function ERPConsoleContent({
       if (sessionFilter === "terminated") return matchesSearch && !!s.logoutTime;
       return matchesSearch;
     });
-  }, [sessionSearch, sessionFilter]);
+  }, [sessionLogs, sessionSearch, sessionFilter]);
 
   const handleDownloadOrderPdf = (order: OrderItem) => {
     downloadOrderAsPdf({
@@ -554,7 +590,7 @@ export function ERPConsoleContent({
       { name: "Department Portals & Accounts", icon: <FiUserPlus className="w-4 h-4 shrink-0" />, badge: "Admin" },
       { name: "Reports & Analytics", icon: <FiTrendingUp className="w-4 h-4 shrink-0" /> },
       { name: "Document Vault", icon: <FiFileText className="w-4 h-4 shrink-0" /> },
-      { name: "CMS Manager", icon: <FiEdit3 className="w-4 h-4 shrink-0" /> },
+      { name: "Home Banner", icon: <FiEdit3 className="w-4 h-4 shrink-0" /> },
       { name: "Roles & RBAC", icon: <FiShield className="w-4 h-4 shrink-0" /> },
       { name: "Master Data & Dropdowns", icon: <FiDatabase className="w-4 h-4 shrink-0" /> },
       { name: "Settings", icon: <FiSettings className="w-4 h-4 shrink-0" /> },
@@ -793,7 +829,7 @@ export function ERPConsoleContent({
             />
           )}
 
-          {(activeModule === "CMS Manager" || activeModule === "Marketing & Media") && (
+          {(activeModule === "Home Banner" || activeModule === "Home Banners" || activeModule === "CMS Manager" || activeModule === "Marketing & Media") && (
             <CMSDashboard showToast={showToast} />
           )}
 
@@ -818,12 +854,24 @@ export function ERPConsoleContent({
           {activeModule === "Session History" && (
             <SessionsDashboard
               sessions={filteredSessions}
-              allSessionsCount={INITIAL_SESSION_LOGS.length}
+              allSessionsCount={sessionLogs.length}
               sessionSearch={sessionSearch}
               onSearchChange={setSessionSearch}
               sessionFilter={sessionFilter}
               onFilterChange={setSessionFilter}
               onInspectSession={(session) => setSelectedSessionForInspection(session as any)}
+            />
+          )}
+
+          {(activeModule === "Staff Team Chat" || activeModule === "Staff Chat" || activeModule === "Team Chat") && (
+            <StaffChatPage
+              currentStaff={{
+                name: activeRole.userName,
+                email: activeRole.email,
+                role: activeRole.name,
+                department: activeRole.department,
+                initials: activeRole.userInitials,
+              }}
             />
           )}
         </div>
@@ -1020,7 +1068,7 @@ export function ERPConsoleContent({
         <div className="space-y-3">
           <Dropdown
             label="Select Vehicle from Stock"
-            options={VEHICLES.map((v) => ({ label: `${v.stockId} - ${v.make} ${v.model}`, value: v.stockId }))}
+            options={stockList.map((v) => ({ label: `${v.stockId} - ${v.make} ${v.model}`, value: v.stockId }))}
             onChange={() => {}}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1480,6 +1528,98 @@ export function ERPConsoleContent({
               </div>
             </div>
 
+            {/* Biometric Facial Telemetry (Login & Logout Snapshots) */}
+            <div className="p-3.5 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] shadow-xs space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] flex items-center gap-1.5">
+                  <FiShield className="w-3.5 h-3.5 text-[#2563EB]" />
+                  <span>Biometric Facial Telemetry &bull; Ingress &amp; Egress Pictures</span>
+                </span>
+                <span className="text-[9px] font-mono bg-blue-50 text-[#2563EB] font-bold px-1.5 py-0.5 rounded border border-blue-200">
+                  Checkpoint Verified
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Login Biometric Snapshot */}
+                <div className="p-2.5 bg-[#F8FAFC] rounded border border-[#CBD5E1] space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-bold text-[#0F172A] flex items-center gap-1">
+                      <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                      Login Verification Picture
+                    </span>
+                    <span className="font-mono text-[9px] text-[#64748B]">INGRESS</span>
+                  </div>
+                  {selectedSessionForInspection.loginFaceSnapshot ? (
+                    <div className="relative aspect-4/3 w-full rounded overflow-hidden bg-black border border-[#94A3B8]">
+                      <img
+                        src={selectedSessionForInspection.loginFaceSnapshot}
+                        alt="Staff Login Biometric Capture"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute bottom-0 inset-x-0 bg-black/70 backdrop-blur-xs p-1 text-[9px] font-mono text-emerald-400 truncate">
+                        {selectedSessionForInspection.loginTime}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="aspect-4/3 w-full rounded bg-slate-100 border border-dashed border-[#CBD5E1] flex flex-col items-center justify-center text-center p-2 text-[10px] text-[#64748B]">
+                      <FiShield className="w-6 h-6 text-[#94A3B8] mb-1" />
+                      <span>Standard Credential Clearance (Pre-Biometric Record)</span>
+                    </div>
+                  )}
+                  <div className="text-[10px] text-[#475569] font-mono">
+                    Timestamp: <strong className="text-[#0F172A]">{selectedSessionForInspection.loginTime}</strong>
+                  </div>
+                </div>
+
+                {/* Logout Biometric Snapshot */}
+                <div className="p-2.5 bg-[#F8FAFC] rounded border border-[#CBD5E1] space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-bold text-[#0F172A] flex items-center gap-1">
+                      {selectedSessionForInspection.logoutTime ? (
+                        <FiCheckCircle className="w-3.5 h-3.5 text-blue-600" />
+                      ) : (
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      )}
+                      Logout Verification Picture
+                    </span>
+                    <span className="font-mono text-[9px] text-[#64748B]">EGRESS</span>
+                  </div>
+                  {selectedSessionForInspection.logoutFaceSnapshot ? (
+                    <div className="relative aspect-4/3 w-full rounded overflow-hidden bg-black border border-[#94A3B8]">
+                      <img
+                        src={selectedSessionForInspection.logoutFaceSnapshot}
+                        alt="Staff Logout Biometric Capture"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute bottom-0 inset-x-0 bg-black/70 backdrop-blur-xs p-1 text-[9px] font-mono text-blue-400 truncate">
+                        {selectedSessionForInspection.logoutTime}
+                      </div>
+                    </div>
+                  ) : selectedSessionForInspection.logoutTime ? (
+                    <div className="aspect-4/3 w-full rounded bg-slate-100 border border-dashed border-[#CBD5E1] flex flex-col items-center justify-center text-center p-2 text-[10px] text-[#64748B]">
+                      <FiCheckCircle className="w-6 h-6 text-slate-400 mb-1" />
+                      <span>Terminated Normally</span>
+                    </div>
+                  ) : (
+                    <div className="aspect-4/3 w-full rounded bg-emerald-50/60 border border-dashed border-emerald-300 flex flex-col items-center justify-center text-center p-2 text-[10px] text-emerald-800">
+                      <span className="w-3 h-3 rounded-full bg-emerald-500 animate-ping mb-2" />
+                      <span className="font-bold">Active Live Session</span>
+                      <span className="text-[9px] text-emerald-600 mt-1">
+                        Camera capture will execute upon clicking Sign Out
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-[10px] text-[#475569] font-mono">
+                    Timestamp:{" "}
+                    <strong className="text-[#0F172A]">
+                      {selectedSessionForInspection.logoutTime || "Session In Progress"}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="p-3.5 bg-[#FFFFFF] rounded-md border border-[#E2E8F0] shadow-xs space-y-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] block">Session Timestamps & Duration</span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono text-[11px]">
@@ -1738,6 +1878,34 @@ export function ERPConsoleContent({
           </div>
         </Modal>
       )}
+
+      {/* Staff Mandatory Login Biometric Face Capture Security Gate */}
+      <BiometricFaceCaptureModal
+        isOpen={isBiometricGateOpen}
+        mode="login"
+        isMandatory={true}
+        user={{
+          name: activeRole.userName,
+          email: activeRole.email,
+          role: activeRole.name,
+          department: activeRole.department,
+        }}
+        onCaptureSuccess={(photo, timestamp) => {
+          recordLoginBiometric(
+            {
+              name: activeRole.userName,
+              email: activeRole.email,
+              role: activeRole.name,
+              department: activeRole.department,
+            },
+            photo,
+            timestamp
+          );
+          setIsBiometricGateOpen(false);
+          setSessionLogs(getAllSessionAuditLogs());
+          showToast("Biometric facial verification confirmed. Dashboard access authorized.");
+        }}
+      />
     </DashboardLayout>
   );
 }

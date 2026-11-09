@@ -31,6 +31,9 @@ export interface SessionRecord {
   mfaMethod: string;
   checksum: string;
   immutableSeal: boolean;
+  loginFaceSnapshot?: string;
+  logoutFaceSnapshot?: string;
+  biometricVerified?: boolean;
 }
 
 export interface SessionsPageProps {
@@ -221,16 +224,28 @@ export const SessionsPage: React.FC<SessionsPageProps> = ({
           },
           {
             key: "mfaMethod",
-            header: "MFA Status",
-            render: (session) =>
-              session.mfaMethod ? (
-                <span className="inline-flex items-center gap-1 bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded font-bold text-[10px] text-emerald-700" title={session.mfaMethod}>
-                  <FiCheckCircle className="w-3 h-3 text-emerald-600 shrink-0" />
-                  FIDO2 Verified
-                </span>
-              ) : (
-                <span className="text-[#94A3B8] text-[10px]">Standard</span>
-              ),
+            header: "Biometric & MFA",
+            render: (session) => (
+              <div className="space-y-1">
+                {session.loginFaceSnapshot ? (
+                  <div className="flex items-center gap-1.5">
+                    <img
+                      src={session.loginFaceSnapshot}
+                      alt="Login snapshot"
+                      className="w-6 h-6 rounded-full object-cover border border-[#2563EB] shrink-0"
+                    />
+                    <span className="inline-flex items-center gap-1 bg-blue-50 px-1.5 py-0.5 border border-blue-200 rounded font-bold text-[9px] text-[#2563EB]">
+                      Face Verified
+                    </span>
+                  </div>
+                ) : (
+                  <span className="inline-flex items-center gap-1 bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded font-bold text-[10px] text-emerald-700" title={session.mfaMethod}>
+                    <FiCheckCircle className="w-3 h-3 text-emerald-600 shrink-0" />
+                    FIDO2 Verified
+                  </span>
+                )}
+              </div>
+            ),
           },
           {
             key: "action",

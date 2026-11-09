@@ -13,6 +13,7 @@ export * from "./hr";
 export * from "./user";
 export * from "./inspection/InspectionQADashboard";
 export * from "./staff/PersonalStaffDashboard";
+export * from "./staff/StaffChatPage";
 
 // Backward-compatible aliases
 export { DepartmentPortalsPage as DepartmentPortalsDashboard } from "./admin";

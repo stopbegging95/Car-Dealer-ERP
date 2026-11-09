@@ -14,10 +14,10 @@ export interface HomePageSlide {
   highlightText: string;
   description: string;
   mediaUrl: string;
-  primaryCtaText: string;
-  primaryCtaLink: string;
-  secondaryCtaText: string;
-  secondaryCtaLink: string;
+  primaryCtaText?: string;
+  primaryCtaLink?: string;
+  secondaryCtaText?: string;
+  secondaryCtaLink?: string;
   order: number;
   active: boolean;
   features?: Array<{ title: string; subtitle: string }>;

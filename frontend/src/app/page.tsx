@@ -47,7 +47,8 @@ export default function App() {
   const [testDriveDate, setTestDriveDate] = useState("2026-11-15");
   const [testDriveLocation, setTestDriveLocation] = useState("Lagos Showroom");
 
-  // Filter state for public page
+  // Live inventory state from database
+  const [allVehicles, setAllVehicles] = useState<Vehicle[]>(VEHICLES);
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>(VEHICLES);
 
   // Load live vehicle inventory from MongoDB
@@ -83,6 +84,7 @@ export default function App() {
             engine: v.engineCapacity || "4.0L V8 Bi-Turbo",
             description: v.notes || `${v.year} ${v.make} ${v.modelName}`,
           }));
+          setAllVehicles(apiVehicles);
           setFilteredVehicles(apiVehicles);
         }
       }
@@ -158,11 +160,11 @@ export default function App() {
   const handleBrandClick = (make: string) => {
     if (selectedBrand === make) {
       setSelectedBrand(null);
-      setFilteredVehicles(VEHICLES);
+      setFilteredVehicles(allVehicles);
     } else {
       setSelectedBrand(make);
-      const result = VEHICLES.filter((v) => v.make.toLowerCase() === make.toLowerCase());
-      setFilteredVehicles(result.length > 0 ? result : VEHICLES);
+      const result = allVehicles.filter((v) => v.make.toLowerCase() === make.toLowerCase());
+      setFilteredVehicles(result.length > 0 ? result : allVehicles);
     }
     const el = document.getElementById("inventory-section");
     el?.scrollIntoView({ behavior: "smooth" });
@@ -170,7 +172,7 @@ export default function App() {
 
   // Handle Search on Public FilterBar
   const handleFilterSearch = (filters: FilterState) => {
-    let result = [...VEHICLES];
+    let result = [...allVehicles];
     if (filters.make) {
       result = result.filter((v) => v.make.toLowerCase() === filters.make.toLowerCase());
     }
@@ -500,14 +502,29 @@ export default function App() {
                     }`}
                   >
                     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-[#0F172A]">
-                      <iframe
-                        src={getEmbedUrl(slide.mediaUrl, isCurrent)}
-                        title={slide.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
-                        loading="lazy"
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
-                        tabIndex={-1}
-                      />
+                      {slide.mediaUrl?.startsWith("data:video") ||
+                      slide.mediaUrl?.endsWith(".mp4") ||
+                      slide.mediaUrl?.endsWith(".webm") ||
+                      slide.mediaUrl?.endsWith(".mov") ||
+                      slide.mediaUrl?.includes("/videos/") ? (
+                        <video
+                          src={slide.mediaUrl}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="w-full h-full object-cover pointer-events-none"
+                        />
+                      ) : (
+                        <iframe
+                          src={getEmbedUrl(slide.mediaUrl, isCurrent)}
+                          title={slide.title}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
+                          loading="lazy"
+                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
+                          tabIndex={-1}
+                        />
+                      )}
                     </div>
 
                     <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/90 via-[#0F172A]/75 to-transparent sm:w-4/5 md:w-3/4" />
@@ -610,14 +627,29 @@ export default function App() {
                   }`}
                 >
                   <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-[#0F172A]">
-                    <iframe
-                      src={getEmbedUrl(slide.mediaUrl, isCurrent)}
-                      title={slide.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
-                      loading="lazy"
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
-                      tabIndex={-1}
-                    />
+                    {slide.mediaUrl?.startsWith("data:video") ||
+                    slide.mediaUrl?.endsWith(".mp4") ||
+                    slide.mediaUrl?.endsWith(".webm") ||
+                    slide.mediaUrl?.endsWith(".mov") ||
+                    slide.mediaUrl?.includes("/videos/") ? (
+                      <video
+                        src={slide.mediaUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover pointer-events-none"
+                      />
+                    ) : (
+                      <iframe
+                        src={getEmbedUrl(slide.mediaUrl, isCurrent)}
+                        title={slide.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; compute-pressure"
+                        loading="lazy"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340%] h-[340%] sm:w-[175%] sm:h-[175%] min-w-full min-h-full pointer-events-none border-0"
+                        tabIndex={-1}
+                      />
+                    )}
                   </div>
                   <div className="absolute inset-0 bg-[#0F172A]/20 pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/50 via-transparent to-transparent pointer-events-none" />
@@ -833,10 +865,10 @@ export default function App() {
                     onClick={() => {
                       setActiveCategoryTab(tab.id);
                       if (tab.id === "all") {
-                        setFilteredVehicles(VEHICLES);
+                        setFilteredVehicles(allVehicles);
                       } else {
                         setFilteredVehicles(
-                          VEHICLES.filter(
+                          allVehicles.filter(
                             (v) => v.category.toLowerCase().replace(/[\s&]+/g, "-") === tab.id
                           )
                         );
