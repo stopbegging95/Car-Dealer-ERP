@@ -15,6 +15,7 @@ import {
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, Table, KPICard } from "@/components/ui";
 import { TaxonomyManagerSection } from "../admin/MasterDataPage";
+import { inspectionApi } from "@/lib/api";
 
 export interface InspectionRecord {
   id: string;
@@ -92,6 +93,32 @@ export const InspectionQADashboard: React.FC<InspectionQADashboardProps> = ({ sh
     },
   ]);
 
+  // Fetch live inspection records from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    inspectionApi.getAll().then((res) => {
+      if (res.success && res.data?.inspections && Array.isArray(res.data.inspections) && res.data.inspections.length > 0) {
+        if (isMounted) {
+          const apiInspections: InspectionRecord[] = res.data.inspections.map((i: any) => ({
+            id: i.inspectionNumber || i._id,
+            stockId: i.stockId || "STK-2026-001",
+            vehicle: i.vehicleDetails || i.vehicleTitle || "Luxury Vehicle",
+            vin: i.vin || "VIN-PENDING",
+            inspector: i.inspectorName || "Engr. Tunde Bakare (Master Tech)",
+            date: new Date(i.createdAt || Date.now()).toISOString().split("T")[0],
+            status: i.status || "Approved for Sale",
+            grade: i.overallGrade || "Grade A (Pristine)",
+            score: i.diagnosticScore || 98,
+            systemsPassed: i.systemsPassedCount || 10,
+            dispatchedTo: i.dispatchedTo || "None",
+          }));
+          setInspections(apiInspections);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [activeTab, setActiveTab] = useState<"pending" | "completed" | "defects" | "taxonomies">("pending");
   const [selectedInspection, setSelectedInspection] = useState<InspectionRecord | null>(null);
   const [isDiagnosticModalOpen, setIsDiagnosticModalOpen] = useState(false);
@@ -153,6 +180,22 @@ export const InspectionQADashboard: React.FC<InspectionQADashboardProps> = ({ sh
       : dispatchTarget !== "None"
       ? "Defects Logged - Service Req"
       : "Pending Inspection";
+
+    // Save/Update in Database
+    inspectionApi.create({
+      inspectionNumber: selectedInspection.id,
+      stockId: selectedInspection.stockId,
+      vehicleDetails: selectedInspection.vehicle,
+      vin: selectedInspection.vin,
+      inspectorName: selectedInspection.inspector,
+      status: updatedStatus,
+      overallGrade: diagnosticGrade,
+      diagnosticScore: scoreVal,
+      systemsPassedCount: passedCount,
+      checklist,
+      defectNotes: diagnosticNotes,
+      dispatchedTo: dispatchTarget,
+    }).catch(() => {});
 
     setInspections((prev) =>
       prev.map((i) =>

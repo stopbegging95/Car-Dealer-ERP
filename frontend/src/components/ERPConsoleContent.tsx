@@ -41,7 +41,8 @@ import {
   MasterDropdown,
 } from "@/components/ui";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { VEHICLES, Vehicle } from "@/data/vehicles";
+import { VEHICLES, Vehicle, VehicleCategory } from "@/data/vehicles";
+import { vehiclesApi, ordersApi, transfersApi } from "@/lib/api";
 import {
   DEALERSHIP_ROLES,
   getRoleById,
@@ -160,6 +161,76 @@ export function ERPConsoleContent({
   });
 
   const [stockList, setStockList] = useState<Vehicle[]>(VEHICLES);
+
+  // Fetch live inventory from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    vehiclesApi.getAll().then((res) => {
+      if (res.success && res.data?.vehicles && Array.isArray(res.data.vehicles) && res.data.vehicles.length > 0) {
+        if (isMounted) {
+          const apiVehicles: Vehicle[] = res.data.vehicles.map((v: any) => ({
+            stockId: v.stockId,
+            vin: v.vin,
+            category: (v.category || "Executive Class") as VehicleCategory,
+            make: v.make,
+            model: v.modelName || v.model,
+            trim: v.trim || "",
+            year: v.year,
+            mileage: v.mileageKm || 0,
+            condition: (v.condition === "Brand New" ? "Brand-new" : v.condition?.includes("Foreign") ? "Foreign-used" : "Locally-used") as any,
+            transmission: v.transmission,
+            fuel: v.fuelType,
+            exteriorColor: v.exteriorColor,
+            interiorColor: v.interiorColor,
+            purchaseCost: Math.round(v.acquisitionCostNGN / 1550),
+            landedCost: Math.round(v.landedCostNGN / 1550),
+            priceUSD: Math.round(v.listingPriceNGN / 1550),
+            priceNGN: v.listingPriceNGN,
+            status: (v.status === "Showroom Ready" ? "Available" : v.status) as any,
+            location: (v.currentHub || "Lagos Showroom") as any,
+            image: v.thumbnail || v.images?.[0] || "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80",
+            gallery: v.images || [],
+            features: v.features || [],
+            horsepower: v.specifications?.horsepower || 500,
+            engine: v.engineCapacity || "4.0L V8 Bi-Turbo",
+            description: v.notes || `${v.year} ${v.make} ${v.modelName}`,
+          }));
+          setStockList(apiVehicles);
+        }
+      }
+    }).catch(() => {});
+
+    return () => { isMounted = false; };
+  }, []);
+
+  const [ordersList, setOrdersList] = useState<OrderItem[]>(SALES_ORDERS);
+
+  // Fetch live sales orders from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    ordersApi.getAll().then((res) => {
+      if (res.success && res.data?.orders && Array.isArray(res.data.orders) && res.data.orders.length > 0) {
+        if (isMounted) {
+          const apiOrders: OrderItem[] = res.data.orders.map((o: any) => ({
+            id: o.orderNumber || o._id,
+            client: o.clientName,
+            car: o.vehicleDetails || o.vehicleTitle,
+            amount: `₦${(o.finalPriceNGN || o.totalAmountNGN || 0).toLocaleString()}`,
+            status: o.status || "Payment Confirmed",
+            stage: o.workflowStage || "Registration & Armor",
+            rep: o.salesRep || "Emeka O.",
+            vin: o.vin || "VIN-PENDING",
+            deposit: `₦${(o.depositPaidNGN || 0).toLocaleString()}`,
+            balance: `₦${(o.balanceDueNGN || 0).toLocaleString()}`,
+            deliveryDate: o.estimatedDeliveryDate ? new Date(o.estimatedDeliveryDate).toISOString().split("T")[0] : "2026-11-20",
+          }));
+          setOrdersList(apiOrders);
+        }
+      }
+    }).catch(() => {});
+
+    return () => { isMounted = false; };
+  }, []);
   const [isAddVehicleOpen, setIsAddVehicleOpen] = useState<boolean>(false);
   const [newVehMake, setNewVehMake] = useState<string>("");
   const [newVehModel, setNewVehModel] = useState<string>("");
@@ -532,7 +603,7 @@ export function ERPConsoleContent({
 
           {(activeModule === "Orders & Sales" || activeModule === "Sales & Orders") && (
             <SalesDashboard
-              orders={SALES_ORDERS}
+              orders={ordersList}
               onPreviewOrder={(order) => setSelectedOrderForPreview(order)}
               onInspectOrder={(order) => setSelectedOrderForInspection(order)}
               onDownloadPdf={handleDownloadOrderPdf}
@@ -753,6 +824,20 @@ export function ERPConsoleContent({
                 setStockList([newVeh, ...stockList]);
                 setIsAddVehicleOpen(false);
                 showToast(`New vehicle product ${newStockId} (${newVehMake} ${newVehModel}) added to showroom stock!`);
+
+                // Persist to MongoDB backend
+                vehiclesApi.create({
+                  vin: newVehVin || `VIN-${Date.now()}`,
+                  stockId: newStockId,
+                  make: newVehMake,
+                  modelName: newVehModel,
+                  year: parseInt(newVehYear, 10) || 2026,
+                  listingPriceNGN: priceNGN,
+                  acquisitionCostNGN: Math.round(priceNGN * 0.78),
+                  currentHub: newVehLocation,
+                  features: ["VIP Lounge Seating", "360 Surround View", "Active Lane Assist"],
+                }).catch((e) => console.warn("Could not sync vehicle to backend:", e));
+
                 setNewVehMake("");
                 setNewVehModel("");
                 setNewVehVin("");
@@ -850,6 +935,15 @@ export function ERPConsoleContent({
               onClick={() => {
                 showToast("Carrier dispatch authorized. Tracking number assigned.");
                 setIsTransferModalOpen(false);
+                transfersApi.create({
+                  vehicleId: "660000000000000000000001",
+                  vin: "WDD2230631A987654",
+                  sourceHub: transferSource,
+                  destinationHub: transferDest,
+                  carrierDriverName: "Musa Danladi",
+                  carrierDriverPhone: "+234 803 111 2222",
+                  truckPlateNumber: "LAG-882-AB",
+                }).catch((e) => console.warn("Could not sync transfer to backend:", e));
               }}
               leftIcon={<FiTruck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >

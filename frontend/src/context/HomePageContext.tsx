@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { cmsApi } from "@/lib/api";
 
 export type SlideArchetype = "text-image" | "text-only" | "image-only" | "text-video" | "video-only";
 
@@ -242,27 +243,95 @@ export const HomePageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [promoBanner, setPromoBanner] = useState<PromoBanner>(INITIAL_PROMO);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load from localStorage on mount
+  // Load from backend API with localStorage backup
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed: HomePageContentData = JSON.parse(stored);
-        if (Array.isArray(parsed.slides) && parsed.slides.length > 0) {
-          setSlides(parsed.slides);
+    let isMounted = true;
+    const fetchRemoteContent = async () => {
+      try {
+        const res = await cmsApi.getPublic();
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          const remoteSlides: HomePageSlide[] = [];
+          const remoteBrands: BrandPartner[] = [];
+          let remotePromo: PromoBanner | null = null;
+
+          res.data.forEach((item: any) => {
+            if (item.contentType === "Hero Slide") {
+              remoteSlides.push({
+                id: item._id || item.id,
+                title: item.title,
+                archetype: item.metadata?.archetype || "text-image",
+                badge: item.badgeText || "PREMIUM DEALERSHIP",
+                headline: item.metadata?.headline || item.title,
+                highlightText: item.metadata?.highlightText || "",
+                description: item.subtitle || "",
+                mediaUrl: item.imageUrl || "",
+                primaryCtaText: item.ctaText || "View Inventory",
+                primaryCtaLink: item.ctaLink || "#inventory-section",
+                secondaryCtaText: item.secondaryCtaText || "",
+                secondaryCtaLink: item.secondaryCtaLink || "",
+                order: item.orderIndex || 1,
+                active: item.isActive !== false,
+              });
+            } else if (item.contentType === "Brand Partner") {
+              remoteBrands.push({
+                id: item._id || item.id,
+                name: item.title,
+                make: item.metadata?.make || item.title,
+                logo: item.imageUrl,
+                width: 140,
+                height: 48,
+                active: item.isActive !== false,
+              });
+            } else if (item.contentType === "Announcement Ticker" && !remotePromo) {
+              remotePromo = {
+                enabled: item.isActive !== false,
+                badge: item.badgeText || "Announcement",
+                message: item.subtitle || item.title,
+                linkText: item.ctaText || "View Details",
+                linkUrl: item.ctaLink || "/inventory",
+              };
+            }
+          });
+
+          if (isMounted) {
+            if (remoteSlides.length > 0) setSlides(remoteSlides);
+            if (remoteBrands.length > 0) setBrands(remoteBrands);
+            if (remotePromo) setPromoBanner(remotePromo);
+            setIsInitialized(true);
+            return;
+          }
         }
-        if (Array.isArray(parsed.brands) && parsed.brands.length > 0) {
-          setBrands(parsed.brands);
-        }
-        if (parsed.promoBanner) {
-          setPromoBanner(parsed.promoBanner);
-        }
+      } catch (err) {
+        console.warn("Backend CMS API not reachable, using cached store:", err);
       }
-    } catch {
-      // Fallback to initial
-    } finally {
-      setIsInitialized(true);
-    }
+
+      // Fallback to localStorage
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored && isMounted) {
+          const parsed: HomePageContentData = JSON.parse(stored);
+          if (Array.isArray(parsed.slides) && parsed.slides.length > 0) {
+            setSlides(parsed.slides);
+          }
+          if (Array.isArray(parsed.brands) && parsed.brands.length > 0) {
+            setBrands(parsed.brands);
+          }
+          if (parsed.promoBanner) {
+            setPromoBanner(parsed.promoBanner);
+          }
+        }
+      } catch {
+        // Fallback to initial
+      } finally {
+        if (isMounted) setIsInitialized(true);
+      }
+    };
+
+    fetchRemoteContent();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Save to localStorage when state changes

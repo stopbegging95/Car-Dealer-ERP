@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
+import { masterDataApi } from "@/lib/api";
 
 export interface MasterOption {
   id: string;
@@ -231,21 +232,59 @@ export const MasterDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [store, setStore] = useState<Record<string, MasterOption[]>>(getInitialStore);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load from localStorage on client mount
+  // Load from backend API with localStorage backup
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Ensure all defined categories exist even if local storage has an older version
-        const merged: Record<string, MasterOption[]> = { ...getInitialStore(), ...parsed };
-        setStore(merged);
+    let isMounted = true;
+    const fetchRemoteData = async () => {
+      try {
+        const res = await masterDataApi.getAll();
+        if (res.success && res.data?.items && Array.isArray(res.data.items) && res.data.items.length > 0) {
+          const remoteStore: Record<string, MasterOption[]> = getInitialStore();
+          res.data.items.forEach((item: any) => {
+            const cat = item.category?.toLowerCase();
+            if (cat) {
+              if (!remoteStore[cat]) remoteStore[cat] = [];
+              remoteStore[cat].push({
+                id: item._id || item.id,
+                label: item.label,
+                value: item.value,
+                description: item.description,
+                isSystem: false,
+              });
+            }
+          });
+          if (isMounted) {
+            setStore(remoteStore);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteStore));
+            } catch {}
+          }
+          return;
+        }
+      } catch (err) {
+        console.warn("Backend API not reachable for master data, falling back to local store:", err);
       }
-    } catch (e) {
-      console.warn("Failed to read master data from localStorage:", e);
-    } finally {
-      setIsLoaded(true);
-    }
+
+      // Fallback to local storage if API is offline
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved && isMounted) {
+          const parsed = JSON.parse(saved);
+          const merged: Record<string, MasterOption[]> = { ...getInitialStore(), ...parsed };
+          setStore(merged);
+        }
+      } catch (e) {
+        console.warn("Failed to read master data from localStorage:", e);
+      } finally {
+        if (isMounted) setIsLoaded(true);
+      }
+    };
+
+    fetchRemoteData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Save to localStorage on state change
@@ -313,6 +352,17 @@ export const MasterDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       };
 
       saveStore(updatedStore);
+
+      // Async write to backend API
+      masterDataApi.createOption({
+        category: categoryKey.toLowerCase().trim(),
+        code: cleanValue.toUpperCase().replace(/\s+/g, "_").trim(),
+        label: cleanLabel,
+        value: cleanValue,
+        description: option.description?.trim(),
+        department: "general",
+      }).catch((e) => console.warn("Could not sync option to backend:", e));
+
       return newOption;
     },
     [store, saveStore]
@@ -336,6 +386,14 @@ export const MasterDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         ...store,
         [categoryKey]: updatedList,
       });
+
+      // Async sync update to backend API
+      masterDataApi.updateOption(id, {
+        label: updates.label,
+        value: updates.value,
+        description: updates.description,
+      }).catch((e) => console.warn("Could not sync update to backend:", e));
+
       return true;
     },
     [store, saveStore]
@@ -351,6 +409,9 @@ export const MasterDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         ...store,
         [categoryKey]: filtered,
       });
+
+      // Async sync delete to backend API
+      masterDataApi.deleteOption(id).catch((e) => console.warn("Could not sync delete to backend:", e));
       return true;
     },
     [store, saveStore]

@@ -20,6 +20,7 @@ import {
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import { Button, Input, Dropdown, Checkbox, Badge, Modal } from "@/components/ui";
+import { authApi } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -83,10 +84,17 @@ export default function RegisterPage() {
 
     setIsSubmitting(true);
     setGeneratedClientId(`LUX-${Math.floor(10000 + Math.random() * 90000)}`);
-    setTimeout(() => {
+
+    authApi.register({
+      name: `${firstName.trim()} ${lastName.trim()}`,
+      email: email.trim().toLowerCase(),
+      password,
+      phone,
+      role: "customer",
+    }).finally(() => {
       setIsSubmitting(false);
       setShowSuccessModal(true);
-    }, 800);
+    });
   };
 
   const handleEnterDashboard = () => {

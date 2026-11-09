@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
+import { serviceApi } from "@/lib/api";
 
 export interface ServiceJobItem {
   bay: string;
@@ -25,6 +26,27 @@ export const ServiceWorkshopPage: React.FC<ServiceWorkshopPageProps> = ({ showTo
     { bay: "Bay 4 (Tuning)", car: "2024 Mercedes-AMG G63 Magno", tech: "Engr. Tunde B.", task: "Exhaust Valve Solenoid Replacement", status: "In Progress (45%)", eta: "4 Hours" },
   ]);
 
+  // Fetch live service job cards from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    serviceApi.getAll().then((res) => {
+      if (res.success && res.data?.jobs && Array.isArray(res.data.jobs) && res.data.jobs.length > 0) {
+        if (isMounted) {
+          const apiJobs: ServiceJobItem[] = res.data.jobs.map((j: any) => ({
+            bay: j.assignedBay || "Bay 1 (Master Dyno)",
+            car: j.vehicleDetails || j.vehicleTitle || "Luxury Vehicle",
+            tech: j.technicianName || "Lead Technician",
+            task: j.serviceScope || j.description || "Diagnostics & Inspection",
+            status: j.status || "Job Card Opened",
+            eta: j.estimatedDuration || "2 Hours",
+          }));
+          setJobs(apiJobs);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bay, setBay] = useState("Bay 5 (PDI Bay)");
   const [car, setCar] = useState("2024 Mercedes-Maybach S580");
@@ -43,9 +65,21 @@ export const ServiceWorkshopPage: React.FC<ServiceWorkshopPageProps> = ({ showTo
       status: "Job Card Opened",
       eta,
     };
+
+    // Save to Database
+    serviceApi.create({
+      jobNumber: `JOB-${Date.now().toString().slice(-6)}`,
+      assignedBay: bay,
+      vehicleDetails: car,
+      technicianName: tech,
+      serviceScope: task,
+      status: "Job Card Opened",
+      estimatedDuration: eta,
+    }).catch(() => {});
+
     setJobs([newEntry, ...jobs]);
     setIsModalOpen(false);
-    showToast(`Service Job Card logged for ${bay} &bull; Assigned to ${tech}.`);
+    showToast(`Service Job Card logged for ${bay} • Assigned to ${tech}.`);
     setTask("");
   };
 

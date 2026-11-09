@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const hrController_js_1 = require("../controllers/hrController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "hr"), hrController_js_1.getEmployees);
+router.post("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "hr"), hrController_js_1.createEmployee);
+router.post("/:id/clock-in", auth_js_1.protect, hrController_js_1.clockInAttendance);
+exports.default = router;

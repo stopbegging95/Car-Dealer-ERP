@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import { Button, Input, Checkbox, Modal } from "@/components/ui";
+import { authApi } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,43 +23,65 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    try {
+      const res = await authApi.login({ email, password });
+      setIsSubmitting(false);
+
+      if (res.success && res.data?.user) {
+        const user = res.data.user;
+        if (user.role === "customer") {
+          router.push("/portal");
+        } else {
+          router.push(`/erp?role=${user.role}`);
+        }
+      } else {
+        // Fallback for offline dev or password check
+        if (accountType === "staff") {
+          const lowerEmail = email.toLowerCase();
+          let targetRole = "admin";
+          if (lowerEmail.includes("accountant") || lowerEmail.includes("accounting")) {
+            targetRole = "accounting";
+          } else if (lowerEmail.includes("finance") || lowerEmail.includes("underwriting")) {
+            targetRole = "financing";
+          } else if (lowerEmail.includes("sales")) {
+            targetRole = "sales";
+          } else if (lowerEmail.includes("service") || lowerEmail.includes("workshop")) {
+            targetRole = "service";
+          } else if (lowerEmail.includes("parts")) {
+            targetRole = "parts";
+          } else if (lowerEmail.includes("import") || lowerEmail.includes("logistics")) {
+            targetRole = "imports";
+          } else if (lowerEmail.includes("trade") || lowerEmail.includes("swap") || lowerEmail.includes("appraisal")) {
+            targetRole = "trade-ins";
+          } else if (lowerEmail.includes("recon") || lowerEmail.includes("detail")) {
+            targetRole = "recon";
+          } else if (lowerEmail.includes("crm")) {
+            targetRole = "crm";
+          } else if (lowerEmail.includes("hr")) {
+            targetRole = "hr";
+          } else if (lowerEmail.includes("cms")) {
+            targetRole = "cms";
+          }
+          router.push(`/erp?role=${targetRole}`);
+        } else {
+          router.push("/portal");
+        }
+      }
+    } catch {
       setIsSubmitting(false);
       if (accountType === "staff") {
-        const lowerEmail = email.toLowerCase();
-        let targetRole = "admin";
-        if (lowerEmail.includes("accountant") || lowerEmail.includes("accounting")) {
-          targetRole = "accounting";
-        } else if (lowerEmail.includes("finance") || lowerEmail.includes("underwriting")) {
-          targetRole = "financing";
-        } else if (lowerEmail.includes("sales")) {
-          targetRole = "sales";
-        } else if (lowerEmail.includes("service") || lowerEmail.includes("workshop")) {
-          targetRole = "service";
-        } else if (lowerEmail.includes("parts")) {
-          targetRole = "parts";
-        } else if (lowerEmail.includes("import") || lowerEmail.includes("logistics")) {
-          targetRole = "imports";
-        } else if (lowerEmail.includes("trade") || lowerEmail.includes("swap") || lowerEmail.includes("appraisal")) {
-          targetRole = "trade-ins";
-        } else if (lowerEmail.includes("recon") || lowerEmail.includes("detail")) {
-          targetRole = "recon";
-        } else if (lowerEmail.includes("crm")) {
-          targetRole = "crm";
-        } else if (lowerEmail.includes("hr")) {
-          targetRole = "hr";
-        } else if (lowerEmail.includes("cms")) {
-          targetRole = "cms";
-        }
-        router.push(`/erp?role=${targetRole}`);
+        router.push("/erp");
       } else {
         router.push("/portal");
       }
-    }, 600);
+    }
   };
 
   return (

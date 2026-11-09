@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const partsController_js_1 = require("../controllers/partsController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "parts", "service", "procurement"), partsController_js_1.getParts);
+router.post("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "parts"), partsController_js_1.createPart);
+router.patch("/:id/stock", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "parts", "service"), partsController_js_1.updatePartStock);
+exports.default = router;

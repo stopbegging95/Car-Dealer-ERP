@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const reconController_js_1 = require("../controllers/reconController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "recon", "operations", "sales"), reconController_js_1.getReconJobs);
+router.post("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "recon"), reconController_js_1.createReconJob);
+router.patch("/:id/stage", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "recon"), reconController_js_1.updateReconStage);
+exports.default = router;

@@ -19,6 +19,7 @@ import {
 } from "react-icons/fi";
 import { KPICard, Card, Button, Badge, Modal, Input, Dropdown, Table } from "@/components/ui";
 import { TaxonomyManagerSection } from "../admin/MasterDataPage";
+import { crmApi } from "@/lib/api";
 
 export type CustomerSegment =
   | "All"
@@ -130,6 +131,29 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
       ltvUSD: 1860000000,
     },
   ]);
+
+  // Fetch live CRM clients from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    crmApi.getAll().then((res) => {
+      if (res.success && res.data?.clients && Array.isArray(res.data.clients) && res.data.clients.length > 0) {
+        if (isMounted) {
+          const apiLeads: CRMLeadItem[] = res.data.clients.map((c: any) => ({
+            id: c.clientNumber || c._id,
+            name: c.fullName || c.name,
+            tier: (c.customerTier || "VIP & High-Net-Worth (HNWI)") as CustomerSegment,
+            car: c.interestedVehicle || c.car || "Luxury Vehicle",
+            budget: `₦${(c.budgetNGN || 250000000).toLocaleString()}`,
+            stage: c.pipelineStage || "Quote Review",
+            rep: c.assignedRep || "VIP Sales Desk",
+            ltvUSD: c.estimatedLtvUSD || Math.round((c.budgetNGN || 250000000) / 1550),
+          }));
+          setLeads(apiLeads);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   const [complaints, setComplaints] = useState<ComplaintTicket[]>([
     {
@@ -282,16 +306,31 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return;
+    const budgetNum = Number(budget.replace(/[^0-9]/g, "") || 0);
+    const leadId = `CRM-${107 + leads.length}`;
     const newEntry: CRMLeadItem = {
-      id: `CRM-${107 + leads.length}`,
+      id: leadId,
       name,
       tier,
       car,
-      budget: `₦${Number(budget.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      budget: `₦${budgetNum.toLocaleString()}`,
       stage,
       rep,
-      ltvUSD: Number(budget.replace(/[^0-9]/g, "") || 0) * 1.5,
+      ltvUSD: budgetNum * 1.5,
     };
+
+    // Save to Database
+    crmApi.create({
+      clientNumber: leadId,
+      fullName: name,
+      customerTier: tier,
+      interestedVehicle: car,
+      budgetNGN: budgetNum,
+      pipelineStage: stage,
+      assignedRep: rep,
+      estimatedLtvUSD: Math.round(budgetNum / 1550) * 1.5,
+    }).catch(() => {});
+
     setLeads([newEntry, ...leads]);
     setIsModalOpen(false);
     notify(`VIP Client dossier logged for ${name} (${car}).`);

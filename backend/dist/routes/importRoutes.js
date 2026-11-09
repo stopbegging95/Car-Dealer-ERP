@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const importController_js_1 = require("../controllers/importController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "imports", "operations", "procurement"), importController_js_1.getShipments);
+router.post("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "imports"), importController_js_1.createShipment);
+router.patch("/:id/status", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "imports"), importController_js_1.updateShipmentClearingStatus);
+exports.default = router;

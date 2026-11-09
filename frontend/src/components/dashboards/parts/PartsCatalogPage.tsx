@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table } from "@/components/ui";
+import { partsApi } from "@/lib/api";
 
 export interface PartCatalogItem {
   sku: string;
@@ -25,6 +26,27 @@ export const PartsCatalogPage: React.FC<PartsCatalogPageProps> = ({ showToast })
     { sku: "PRT-MB-3309", name: "G63 AMG Night Package II Radiator Grille", oem: "Mercedes-AMG", qty: "1 Unit Left", price: "₦5,890,000", status: "Reorder Triggered" },
   ]);
 
+  // Fetch live parts inventory from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    partsApi.getAll().then((res) => {
+      if (res.success && res.data?.parts && Array.isArray(res.data.parts) && res.data.parts.length > 0) {
+        if (isMounted) {
+          const apiParts: PartCatalogItem[] = res.data.parts.map((p: any) => ({
+            sku: p.partNumber || p.sku || `PRT-${Date.now().toString().slice(-4)}`,
+            name: p.partName || p.name,
+            oem: p.brand || p.oem || "Genuine OEM",
+            qty: `${p.quantityInStock || 0} Units in Stock`,
+            price: `₦${(p.unitPriceNGN || 0).toLocaleString()}`,
+            status: (p.quantityInStock || 0) > 3 ? "In Stock" : (p.quantityInStock || 0) > 0 ? "Low Stock Alert" : "Out of Stock",
+          }));
+          setParts(apiParts);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sku, setSku] = useState("");
   const [name, setName] = useState("");
@@ -35,14 +57,27 @@ export const PartsCatalogPage: React.FC<PartsCatalogPageProps> = ({ showToast })
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !price) return;
+    const priceNum = Number(price.replace(/[^0-9]/g, "") || 0);
+    const generatedSku = sku || `PRT-GEN-${Math.floor(1000 + Math.random() * 9000)}`;
     const newEntry: PartCatalogItem = {
-      sku: sku || `PRT-GEN-${Math.floor(1000 + Math.random() * 9000)}`,
+      sku: generatedSku,
       name,
       oem,
       qty: `${qty} Units in Stock`,
-      price: `₦${Number(price.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      price: `₦${priceNum.toLocaleString()}`,
       status: "In Stock",
     };
+
+    // Save to Database
+    partsApi.create({
+      partNumber: generatedSku,
+      partName: name,
+      brand: oem,
+      quantityInStock: Number(qty) || 1,
+      unitPriceNGN: priceNum,
+      category: "OEM Accessories",
+    }).catch(() => {});
+
     setParts([newEntry, ...parts]);
     setIsModalOpen(false);
     showToast(`Registered SKU ${newEntry.sku} (${name}) into parts inventory.`);

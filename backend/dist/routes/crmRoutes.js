@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const crmController_js_1 = require("../controllers/crmController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "crm", "sales"), crmController_js_1.getCRMClients);
+router.post("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "crm", "sales"), crmController_js_1.createCRMClient);
+router.post("/:id/interactions", auth_js_1.protect, crmController_js_1.addClientInquiryOrTicket);
+exports.default = router;

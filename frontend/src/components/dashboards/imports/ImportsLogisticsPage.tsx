@@ -19,6 +19,7 @@ import {
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
 import { TaxonomyManagerSection } from "../admin/MasterDataPage";
+import { importsApi } from "@/lib/api";
 
 export interface LandedCostBreakdown {
   fobUSD: number;
@@ -139,6 +140,46 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
     },
   ]);
 
+  // Fetch live import shipments from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    importsApi.getAll().then((res) => {
+      if (res.success && res.data?.shipments && Array.isArray(res.data.shipments) && res.data.shipments.length > 0) {
+        if (isMounted) {
+          const apiShipments: ShipmentItem[] = res.data.shipments.map((s: any) => ({
+            ref: s.shipmentReference || s.shipmentNumber || s._id,
+            car: s.vehicleDetails || s.vehicleTitle || "Luxury Vehicle",
+            vin: s.vin || "VIN-PENDING",
+            vessel: s.vesselName || "Grimaldi Lines",
+            route: `${s.originPort || "Antwerp"} -> ${s.destinationPort || "Tin Can Island, Lagos"}`,
+            container: s.containerNumber || "MSCU-9918234",
+            bol: s.billOfLadingNumber || "BOL-PENDING",
+            eta: s.estimatedArrival ? new Date(s.estimatedArrival).toLocaleDateString() : "In 4 Days",
+            sgdStatus: s.customsStatus || "SGD Assessed & Paid",
+            stagePct: s.progressPercentage ? `${s.progressPercentage}%` : "75%",
+            clearingAgent: s.clearingAgent || "Maritime Express Logistics",
+            freeTimeDays: s.demurrageFreeDaysRemaining ?? 5,
+            clearanceStep: s.currentClearanceStep || "Step 4: Physical Examination Cleared",
+            costBreakdown: {
+              fobUSD: s.costBreakdownUSD?.fobUSD || 118000,
+              oceanFreightUSD: s.costBreakdownUSD?.oceanFreightUSD || 3800,
+              marineInsuranceUSD: s.costBreakdownUSD?.marineInsuranceUSD || 1200,
+              customsDutySGD_USD: s.costBreakdownUSD?.customsDutySGD_USD || 9500,
+              portHandlingUSD: s.costBreakdownUSD?.portHandlingUSD || 1500,
+              demurrageUSD: s.costBreakdownUSD?.demurrageUSD || 0,
+              inlandHaulageUSD: s.costBreakdownUSD?.inlandHaulageUSD || 1000,
+              totalLandedUSD: s.costBreakdownUSD?.totalLandedUSD || 135000,
+            },
+            rolledUpToInventory: s.rolledUpToInventory ?? true,
+            associatedVins: s.associatedVins || [s.vin],
+          }));
+          setShipments(apiShipments);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [activeTab, setActiveTab] = useState<"shipments" | "containers" | "rollup" | "predictive" | "taxonomies">("shipments");
   const [selectedCostShipment, setSelectedCostShipment] = useState<ShipmentItem | null>(null);
 
@@ -244,6 +285,22 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
       rolledUpToInventory: false,
       associatedVins: [`WDD${Date.now().toString().slice(-10)}`],
     };
+
+    // Save to Database
+    importsApi.create({
+      shipmentReference: newEntry.ref,
+      vehicleDetails: newEntry.car,
+      vin: newEntry.vin,
+      vesselName: newEntry.vessel,
+      originPort: origin,
+      destinationPort: "Tin Can Island Terminal, Lagos",
+      containerNumber: newEntry.container,
+      billOfLadingNumber: newEntry.bol,
+      customsStatus: newEntry.sgdStatus,
+      progressPercentage: 35,
+      clearingAgent: newEntry.clearingAgent,
+      costBreakdownUSD: newEntry.costBreakdown,
+    }).catch(() => {});
 
     setShipments([newEntry, ...shipments]);
     setIsModalOpen(false);

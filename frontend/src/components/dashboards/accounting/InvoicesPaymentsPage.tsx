@@ -11,6 +11,7 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, KPICard, Table } from "@/components/ui";
+import { accountingApi } from "@/lib/api";
 
 export interface InvoiceRecord {
   id: string;
@@ -72,6 +73,30 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
     },
   ]);
 
+  // Fetch live invoices from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    accountingApi.getAll().then((res) => {
+      if (res.success && res.data?.invoices && Array.isArray(res.data.invoices) && res.data.invoices.length > 0) {
+        if (isMounted) {
+          const apiInvoices: InvoiceRecord[] = res.data.invoices.map((inv: any) => ({
+            id: inv.invoiceNumber || inv._id,
+            client: inv.clientName,
+            vehicle: inv.vehicleDetails || inv.vehicleTitle || "Luxury Vehicle",
+            invoiceType: (inv.invoiceType || "Commercial Sales Invoice") as any,
+            amountUSD: Math.round((inv.totalAmountNGN || 250000000) / 1550),
+            amountNGN: inv.totalAmountNGN || 250000000,
+            status: inv.status || "Awaiting Bank Wire",
+            dueDate: inv.dueDate ? new Date(inv.dueDate).toISOString().split("T")[0] : "2026-11-30",
+            wireReference: inv.wireReference || `REF-${Date.now().toString().slice(-4)}`,
+          }));
+          setInvoices(apiInvoices);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [newClient, setNewClient] = useState("");
   const [newVehicle, setNewVehicle] = useState("");
@@ -97,6 +122,18 @@ export const InvoicesPaymentsPage: React.FC<{ showToast?: (msg: string) => void 
       dueDate: newDueDate,
       wireReference: `PENDING-${Date.now().toString().slice(-4)}`,
     };
+
+    // Save to Database
+    accountingApi.create({
+      invoiceNumber: newId,
+      clientName: newClient,
+      vehicleDetails: newVehicle,
+      invoiceType: newType,
+      totalAmountNGN: priceNum,
+      status: "Awaiting Bank Wire",
+      dueDate: newDueDate,
+      wireReference: newInv.wireReference,
+    }).catch(() => {});
 
     setInvoices([newInv, ...invoices]);
     setIsIssueModalOpen(false);

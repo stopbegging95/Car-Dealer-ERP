@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, Table } from "@/components/ui";
+import { reconApi } from "@/lib/api";
 
 export interface ReconOrderItem {
   stock: string;
@@ -24,6 +25,27 @@ export const ReconPipelinePage: React.FC<ReconPipelinePageProps> = ({ showToast 
     { stock: "STK-2026-007", car: "Mercedes-AMG G63 Magno", currentStage: "Stage 2: 3-Step Paint Cut", tech: "Sola O.", finish: "Magno Matte Treatment", status: "In Progress" },
   ]);
 
+  // Fetch live recon orders from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    reconApi.getAll().then((res) => {
+      if (res.success && res.data?.reconOrders && Array.isArray(res.data.reconOrders) && res.data.reconOrders.length > 0) {
+        if (isMounted) {
+          const apiRecon: ReconOrderItem[] = res.data.reconOrders.map((r: any) => ({
+            stock: r.stockId,
+            car: r.vehicleDetails || r.vehicleTitle || "Luxury Vehicle",
+            currentStage: r.stage || r.currentStage || "Stage 1: Wash & Decontamination",
+            tech: r.detailerName || "Master Detailer",
+            finish: r.ceramicCoatingPass ? "9H Ceramic Cured (Pass)" : "Detailing In Progress",
+            status: r.status || "In Progress",
+          }));
+          setReconList(apiRecon);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stock, setStock] = useState("");
   const [car, setCar] = useState("2024 Mercedes-Maybach S580");
@@ -32,14 +54,26 @@ export const ReconPipelinePage: React.FC<ReconPipelinePageProps> = ({ showToast 
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    const stockId = stock || `STK-2026-00${reconList.length + 8}`;
     const newEntry: ReconOrderItem = {
-      stock: stock || `STK-2026-00${reconList.length + 8}`,
+      stock: stockId,
       car,
       currentStage: stage,
       tech,
       finish: "Detailing In Progress",
       status: "In Progress",
     };
+
+    // Save to Database
+    reconApi.create({
+      stockId,
+      vehicleDetails: car,
+      stage,
+      detailerName: tech,
+      status: "In Progress",
+      ceramicCoatingPass: stage.includes("Stage 5"),
+    }).catch(() => {});
+
     setReconList([newEntry, ...reconList]);
     setIsModalOpen(false);
     if (showToast) showToast(`Vehicle ${newEntry.stock} queued into ${stage}.`);

@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const procurementController_js_1 = require("../controllers/procurementController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "procurement", "accounting"), procurementController_js_1.getProcurements);
+router.post("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "procurement"), procurementController_js_1.createProcurement);
+router.patch("/:id/approve-high-value", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin"), procurementController_js_1.approveHighValueProcurement);
+exports.default = router;

@@ -15,6 +15,7 @@ import {
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, KPICard, Table } from "@/components/ui";
 import { TaxonomyManagerSection } from "../admin/MasterDataPage";
+import { procurementApi } from "@/lib/api";
 
 export interface PurchaseOrderItem {
   id: string;
@@ -109,6 +110,32 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
       executiveApproved: true,
     },
   ]);
+
+  // Fetch live purchase orders from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    procurementApi.getAll().then((res) => {
+      if (res.success && res.data?.procurements && Array.isArray(res.data.procurements) && res.data.procurements.length > 0) {
+        if (isMounted) {
+          const apiPOs: PurchaseOrderItem[] = res.data.procurements.map((p: any) => ({
+            id: p.poNumber || p._id,
+            supplier: p.supplierName,
+            country: p.originCountry || "Germany",
+            vehicle: p.vehicleTitle || p.vehicle,
+            vin: p.vin,
+            priceUSD: p.priceUSD || Math.round(p.acquisitionCostNGN / 1550),
+            status: p.status,
+            date: new Date(p.createdAt || Date.now()).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }),
+            deliveryPort: p.destinationPort || "Antwerp, Belgium",
+            requiresRule5Approval: p.requiresRule5Approval ?? (p.acquisitionCostNGN >= 150000000),
+            executiveApproved: p.executiveApproved ?? false,
+          }));
+          setPurchaseOrders(apiPOs);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   const [activeTab, setActiveTab] = useState<"orders" | "suppliers" | "auctions" | "compare" | "taxonomies">("orders");
 
@@ -212,6 +239,19 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
       executiveApproved: !isHighValue,
     };
 
+    // Save to Database
+    procurementApi.create({
+      poNumber: newId,
+      supplierName: newSupplier,
+      originCountry: newCountry,
+      vehicleTitle: newVehicle,
+      vin: newPO.vin,
+      acquisitionCostNGN: priceNum,
+      destinationPort: newPort,
+      status: newPO.status,
+      requiresRule5Approval: isHighValue,
+    }).catch(() => {});
+
     setPurchaseOrders([newPO, ...purchaseOrders]);
     setIsCreateModalOpen(false);
 
@@ -226,6 +266,7 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
   };
 
   const handleAuthorizeExecutivePO = (poId: string) => {
+    procurementApi.approveHighValue(poId, "Executive sign-off confirmed").catch(() => {});
     setPurchaseOrders((prev) =>
       prev.map((p) =>
         p.id === poId

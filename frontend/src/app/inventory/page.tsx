@@ -5,14 +5,57 @@ import { FiSearch, FiSliders, FiGrid, FiList, FiCheck, FiX } from "react-icons/f
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Tabs, Dropdown, VehicleCard, Modal, Input, DatePicker, Button, PageBanner } from "@/components/ui";
-import { VEHICLES, Vehicle, VEHICLE_CATEGORIES } from "@/data/vehicles";
+import { VEHICLES, Vehicle, VehicleCategory, VEHICLE_CATEGORIES } from "@/data/vehicles";
+import { vehiclesApi } from "@/lib/api";
 
 export default function InventoryPage() {
+  const [vehicleList, setVehicleList] = useState<Vehicle[]>(VEHICLES);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("price-desc");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const currency: "NGN" = "NGN";
+
+  // Fetch live vehicles from database API
+  React.useEffect(() => {
+    let isMounted = true;
+    vehiclesApi.getAll().then((res) => {
+      if (res.success && res.data?.vehicles && Array.isArray(res.data.vehicles) && res.data.vehicles.length > 0) {
+        if (isMounted) {
+          const apiVehicles: Vehicle[] = res.data.vehicles.map((v: any) => ({
+            stockId: v.stockId,
+            vin: v.vin,
+            category: (v.category || "Executive Class") as VehicleCategory,
+            make: v.make,
+            model: v.modelName || v.model,
+            trim: v.trim || "",
+            year: v.year,
+            mileage: v.mileageKm || 0,
+            condition: (v.condition === "Brand New" ? "Brand-new" : v.condition?.includes("Foreign") ? "Foreign-used" : "Locally-used") as any,
+            transmission: v.transmission,
+            fuel: v.fuelType,
+            exteriorColor: v.exteriorColor,
+            interiorColor: v.interiorColor,
+            purchaseCost: Math.round(v.acquisitionCostNGN / 1550),
+            landedCost: Math.round(v.landedCostNGN / 1550),
+            priceUSD: Math.round(v.listingPriceNGN / 1550),
+            priceNGN: v.listingPriceNGN,
+            status: (v.status === "Showroom Ready" ? "Available" : v.status) as any,
+            location: (v.currentHub || "Lagos Showroom") as any,
+            image: v.thumbnail || v.images?.[0] || "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80",
+            gallery: v.images || [],
+            features: v.features || [],
+            horsepower: v.specifications?.horsepower || 500,
+            engine: v.engineCapacity || "4.0L V8 Bi-Turbo",
+            description: v.notes || `${v.year} ${v.make} ${v.modelName}`,
+          }));
+          setVehicleList(apiVehicles);
+        }
+      }
+    }).catch(() => {});
+
+    return () => { isMounted = false; };
+  }, []);
 
   // Modal
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
@@ -22,7 +65,7 @@ export default function InventoryPage() {
   const [testDriveLocation, setTestDriveLocation] = useState("Lagos Showroom");
 
   // Filtered vehicles logic
-  const filteredVehicles = VEHICLES.filter((v) => {
+  const filteredVehicles = vehicleList.filter((v) => {
     const matchesCat =
       selectedCategory === "all" ||
       v.category.toLowerCase().replace(/[\s&]+/g, "-") === selectedCategory;

@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const vaultController_js_1 = require("../controllers/vaultController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "compliance", "operations", "sales"), vaultController_js_1.getVaultDocuments);
+router.post("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "compliance"), vaultController_js_1.createVaultDocument);
+exports.default = router;

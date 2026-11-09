@@ -15,6 +15,7 @@ import {
 } from "react-icons/fi";
 import { Badge, Card, Button, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
 import { TaxonomyManagerSection } from "../admin/MasterDataPage";
+import { hrApi } from "@/lib/api";
 
 export interface EmployeeProfile {
   id: string;
@@ -84,6 +85,30 @@ export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast 
     { id: "EMP-105", name: "Chibuike Alao", department: "Customs & Logistics", role: "Port Clearance Officer", branch: "Tin Can Port Node", contract: "Logistics Officer", manager: "Operations Director", status: "Active & Present", phone: "+234 807 778 5566" },
   ]);
 
+  // Fetch live HR employees from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    hrApi.getAll().then((res) => {
+      if (res.success && res.data?.employees && Array.isArray(res.data.employees) && res.data.employees.length > 0) {
+        if (isMounted) {
+          const apiEmployees: EmployeeProfile[] = res.data.employees.map((e: any) => ({
+            id: e.employeeId || e._id,
+            name: e.fullName || e.name,
+            department: e.department || "Sales & Marketing",
+            role: e.jobTitle || e.role,
+            branch: e.assignedBranch || "Victoria Island Flagship",
+            contract: e.employmentType || "Permanent Executive",
+            manager: e.reportsTo || "General Manager",
+            status: e.status || "Active & Present",
+            phone: e.phone || "+234 800 000 0000",
+          }));
+          setEmployees(apiEmployees);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([
     { empId: "EMP-101", name: "Emeka Okafor", shift: "Morning Executive (8:00am - 4:30pm)", clockIn: "07:48 AM", status: "Present & On-Time" },
     { empId: "EMP-102", name: "Aisha Mohammed", shift: "Diplomatic Suite (9:00am - 5:30pm)", clockIn: "08:52 AM", status: "Present & On-Time" },
@@ -120,8 +145,9 @@ export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast 
     e.preventDefault();
     if (!empName) return;
 
+    const empId = `EMP-${106 + employees.length}`;
     const newEmp: EmployeeProfile = {
-      id: `EMP-${106 + employees.length}`,
+      id: empId,
       name: empName,
       department: empDept,
       role: empRole || "Staff Specialist",
@@ -131,6 +157,17 @@ export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast 
       status: "Active & Present",
       phone: "+234 (0) 800 000 0000",
     };
+
+    // Save to Database
+    hrApi.create({
+      employeeId: empId,
+      fullName: empName,
+      department: empDept,
+      jobTitle: empRole || "Staff Specialist",
+      assignedBranch: empBranch,
+      employmentType: "Permanent Executive",
+      status: "Active & Present",
+    }).catch(() => {});
 
     setEmployees([...employees, newEmp]);
     setIsNewEmpModalOpen(false);

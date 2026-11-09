@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import { FaScaleBalanced } from "react-icons/fa6";
 import { Button, Card, KPICard, Badge, Modal, Input, Dropdown, Table } from "@/components/ui";
+import { vaultApi } from "@/lib/api";
 
 export interface DocumentVaultPageProps {
   onDownloadDoc: (doc: {
@@ -76,6 +77,27 @@ export const DocumentVaultPage: React.FC<DocumentVaultPageProps> = ({ onDownload
     { name: "SCUML & EFCC Anti-Money Laundering Deal Clearance", car: "Bentley Continental GT (VIN: SCBCB...009)", type: "AML Compliance Filing", date: "2026-10-18", size: "1.4 MB PDF", classification: "Regulatory Audit" },
   ]);
 
+  // Fetch live documents from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    vaultApi.getAll().then((res) => {
+      if (res.success && res.data?.documents && Array.isArray(res.data.documents) && res.data.documents.length > 0) {
+        if (isMounted) {
+          const apiDocs = res.data.documents.map((d: any) => ({
+            name: d.title || d.name,
+            car: d.vehicleReference || d.car || "Inventory Vehicle",
+            type: d.documentType || d.type || "Statutory Document",
+            date: new Date(d.createdAt || Date.now()).toISOString().split("T")[0],
+            size: d.fileSize || "2.1 MB PDF",
+            classification: d.classification || "Statutory Document",
+          }));
+          setDocumentsList(apiDocs);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const contracts: ContractAgreement[] = [
     { id: "CTR-901", title: "Vehicle Sales Agreement & Retention of Title", clientOrParty: "Alhaji Bello & Sons Ltd", vehicleRef: "Maybach S580", contractType: "Sales Agreement", status: "Fully Countersigned", date: "2026-11-04" },
     { id: "CTR-902", title: "Mutual Trade-In Equity & Settlement Deed", clientOrParty: "Dr. K. Somoye", vehicleRef: "Porsche 911 Turbo S", contractType: "Trade-In Swap Agreement", status: "Fully Countersigned", date: "2026-11-02" },
@@ -105,6 +127,16 @@ export const DocumentVaultPage: React.FC<DocumentVaultPageProps> = ({ onDownload
       size: "2.4 MB PDF",
       classification: "Certified Vault Record",
     };
+
+    // Save to Database
+    vaultApi.create({
+      title: docName,
+      vehicleReference: docCar,
+      documentType: docType,
+      fileSize: "2.4 MB PDF",
+      classification: "Certified Vault Record",
+    }).catch(() => {});
+
     setDocumentsList([newDoc, ...documentsList]);
     setIsUploadOpen(false);
     showToast(`Uploaded and cryptographically registered ${docName} to Document Vault.`);

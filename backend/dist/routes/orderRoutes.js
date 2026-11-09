@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const orderController_js_1 = require("../controllers/orderController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, orderController_js_1.getOrders);
+router.get("/:identifier", auth_js_1.protect, orderController_js_1.getOrderById);
+router.post("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "sales", "customer"), orderController_js_1.createOrder);
+router.put("/:id", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "sales", "accounting"), orderController_js_1.updateOrder);
+exports.default = router;

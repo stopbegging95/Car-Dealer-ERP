@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const financingController_js_1 = require("../controllers/financingController.js");
+const auth_js_1 = require("../middlewares/auth.js");
+const rbac_js_1 = require("../middlewares/rbac.js");
+const router = (0, express_1.Router)();
+router.get("/", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "financing", "sales"), financingController_js_1.getFinancingApplications);
+router.post("/", auth_js_1.protect, financingController_js_1.createFinancingApplication);
+router.patch("/:id/status", auth_js_1.protect, (0, rbac_js_1.restrictTo)("admin", "financing"), financingController_js_1.updateFinancingStatus);
+exports.default = router;

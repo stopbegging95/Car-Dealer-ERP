@@ -17,8 +17,9 @@ import {
 } from "react-icons/fi";
 import { Button, Badge, Modal, Input, Dropdown, MasterDropdown } from "@/components/ui";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { VEHICLES, Vehicle } from "@/data/vehicles";
+import { VEHICLES, Vehicle, VehicleCategory } from "@/data/vehicles";
 import { downloadVaultDocumentPdf } from "@/utils/pdfGenerator";
+import { vehiclesApi, accountingApi, vaultApi } from "@/lib/api";
 import { OverviewTab, ActiveRequestItem } from "./OverviewTab";
 import { GarageTab } from "./GarageTab";
 import { TestDrivesTab, TestDriveItem } from "./TestDrivesTab";
@@ -47,7 +48,47 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  const savedVehicles: Vehicle[] = VEHICLES.slice(0, 3);
+  const [savedVehicles, setSavedVehicles] = useState<Vehicle[]>(() => VEHICLES.slice(0, 3));
+
+  // Fetch live vehicles from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    vehiclesApi.getAll().then((res) => {
+      if (res.success && res.data?.vehicles && Array.isArray(res.data.vehicles) && res.data.vehicles.length > 0) {
+        if (isMounted) {
+          const apiVehicles: Vehicle[] = res.data.vehicles.slice(0, 4).map((v: any) => ({
+            stockId: v.stockId,
+            vin: v.vin,
+            category: (v.category || "Executive Class") as VehicleCategory,
+            make: v.make,
+            model: v.modelName || v.model,
+            trim: v.trim || "",
+            year: v.year,
+            mileage: v.mileageKm || 0,
+            condition: (v.condition === "Brand New" ? "Brand-new" : "Foreign-used") as any,
+            transmission: v.transmission,
+            fuel: v.fuelType,
+            exteriorColor: v.exteriorColor,
+            interiorColor: v.interiorColor,
+            purchaseCost: Math.round(v.acquisitionCostNGN / 1550),
+            landedCost: Math.round(v.landedCostNGN / 1550),
+            priceUSD: Math.round(v.listingPriceNGN / 1550),
+            priceNGN: v.listingPriceNGN,
+            status: "Available" as any,
+            location: (v.currentHub || "Lagos Showroom") as any,
+            image: v.thumbnail || v.images?.[0] || "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80",
+            gallery: v.images || [],
+            features: v.features || [],
+            horsepower: v.specifications?.horsepower || 500,
+            engine: v.engineCapacity || "4.0L V8",
+            description: v.notes || `${v.year} ${v.make} ${v.modelName}`,
+          }));
+          setSavedVehicles(apiVehicles);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   const [activeRequests, setActiveRequests] = useState<ActiveRequestItem[]>([
     {
@@ -118,7 +159,7 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
     },
   ];
 
-  const customerInvoices: CustomerInvoice[] = [
+  const [customerInvoices, setCustomerInvoices] = useState<CustomerInvoice[]>([
     {
       id: "INV-2026-9912",
       description: "Initial Commitment Deposit (Mercedes-Maybach S580)",
@@ -149,9 +190,32 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
       status: "Settled",
       method: "NCS Direct Remittance",
     },
-  ];
+  ]);
 
-  const documents: CustomerDocument[] = [
+  // Fetch live invoices from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    accountingApi.getAll().then((res) => {
+      if (res.success && res.data?.invoices && Array.isArray(res.data.invoices) && res.data.invoices.length > 0) {
+        if (isMounted) {
+          const apiInvoices: CustomerInvoice[] = res.data.invoices.slice(0, 5).map((inv: any) => ({
+            id: inv.invoiceNumber || inv._id,
+            description: inv.vehicleDetails || "Vehicle Invoice",
+            vehicle: inv.vehicleReference || "Car Order",
+            date: new Date(inv.createdAt || Date.now()).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }),
+            amountUSD: Math.round((inv.totalAmountNGN || 250000000) / 1550),
+            amountNGN: inv.totalAmountNGN || 250000000,
+            status: inv.status === "Settled & Verified" ? "Paid" : "Pending",
+            method: inv.wireReference ? `Wire (${inv.wireReference})` : "Bank Wire",
+          }));
+          setCustomerInvoices(apiInvoices);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
+  const [documents, setDocuments] = useState<CustomerDocument[]>([
     {
       name: "Sales Agreement & Title Transfer (Mercedes-Benz S580)",
       type: "Sales Contract",
@@ -176,7 +240,26 @@ export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string
       date: "Oct 18, 2026",
       size: "1.4 MB PDF",
     },
-  ];
+  ]);
+
+  // Fetch live vault documents from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    vaultApi.getAll().then((res) => {
+      if (res.success && res.data?.documents && Array.isArray(res.data.documents) && res.data.documents.length > 0) {
+        if (isMounted) {
+          const apiDocs: CustomerDocument[] = res.data.documents.map((d: any) => ({
+            name: d.title || d.name,
+            type: d.documentType || d.type || "Official Document",
+            date: new Date(d.createdAt || Date.now()).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }),
+            size: d.fileSize || "2.1 MB PDF",
+          }));
+          setDocuments(apiDocs);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   const mainMenuItems = [
     { name: "Overview", icon: <FiLayers className="w-4 h-4 shrink-0" /> },

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table } from "@/components/ui";
 import { TaxonomyManagerSection } from "../admin/MasterDataPage";
+import { financingApi } from "@/lib/api";
 
 export interface FinanceDealItem {
   app: string;
@@ -27,6 +28,28 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
     { app: "INS-2026-102", client: "Senator Godswill O.", car: "2023 Range Rover Autobiography", bank: "Leadway Comprehensive Luxury", loan: "₦302,250,000 Value", tenor: "Annual 2.8% Premium", status: "Cover Note Issued" },
   ]);
 
+  // Fetch live financing deals from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    financingApi.getAll().then((res) => {
+      if (res.success && res.data?.applications && Array.isArray(res.data.applications) && res.data.applications.length > 0) {
+        if (isMounted) {
+          const apiDeals: FinanceDealItem[] = res.data.applications.map((d: any) => ({
+            app: d.applicationNumber || d._id,
+            client: d.applicantName || d.clientName,
+            car: d.vehicleTitle || "Luxury Vehicle",
+            bank: d.partnerBank || "Zenith Bank Asset Finance",
+            loan: `₦${(d.loanAmountNGN || 0).toLocaleString()}`,
+            tenor: `${d.tenorMonths || 36} Mo @ ${d.interestRateAPR || 12.5}%`,
+            status: d.status || "Pre-Approved",
+          }));
+          setDeals(apiDeals);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [activeTab, setActiveTab] = useState<"deals" | "taxonomies">("deals");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,15 +63,30 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!client || !loanAmount) return;
+    const loanNum = Number(loanAmount.replace(/[^0-9]/g, "") || 0);
+    const appId = `FIN-2026-${String(deals.length + 442)}`;
     const newEntry: FinanceDealItem = {
-      app: `FIN-2026-${String(deals.length + 442)}`,
+      app: appId,
       client,
       car,
       bank,
-      loan: `₦${Number(loanAmount.replace(/[^0-9]/g, "") || 0).toLocaleString()}`,
+      loan: `₦${loanNum.toLocaleString()}`,
       tenor: `${tenorMonths} Mo @ ${apr}%`,
       status: "Pre-Approval Issued",
     };
+
+    // Save to Database
+    financingApi.create({
+      applicationNumber: appId,
+      applicantName: client,
+      vehicleTitle: car,
+      partnerBank: bank,
+      loanAmountNGN: loanNum,
+      tenorMonths: Number(tenorMonths) || 36,
+      interestRateAPR: Number(apr) || 12,
+      status: "Pre-Approval Issued",
+    }).catch(() => {});
+
     setDeals([newEntry, ...deals]);
     setIsModalOpen(false);
     showToast(`Underwriting facility approved for ${client} via ${bank}.`);

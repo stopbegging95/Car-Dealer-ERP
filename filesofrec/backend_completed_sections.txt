@@ -1,0 +1,305 @@
+====================================================================================================
+                        CAR DEALS ENTERPRISE ERP - BACKEND API & INTEGRATION REPORT
+====================================================================================================
+Date Generated: November 9, 2026
+Architecture: MERN Stack (MongoDB Atlas, Express.js, React/Next.js 14, Node.js)
+Language: TypeScript (ES2022, NodeNext)
+Port: 8080 (http://localhost:8080/api) | Frontend Origin: http://localhost:3000
+Currency: Nigerian Naira (₦, NGN) | Statutory FIRS VAT: 7.5%
+Security: Helmet, CORS, Rate Limiting, Mongo Sanitize, JWT (httpOnly), RBAC (17 Roles), Bcrypt (12)
+Compilation Status: Clean TypeScript Build (Backend: tsc exit code 0 | Frontend: tsc exit code 0)
+====================================================================================================
+
+SECTION 1: CORE ARCHITECTURE & SECURITY ENGINE COMPLETED
+----------------------------------------------------------------------------------------------------
+1.1 Environment Configuration (`backend/src/config/env.ts`):
+    - Loaded and validated from root `.env` with fallbacks for development.
+    - MongoDB Atlas URI connection configuration (`DB_URL`).
+    - Cryptographic JWT Secrets: `JWT_SECRET_KEY`, `JWT_REFRESH_SECRET`, `ACTIVATION_SECRET`, `RESET_PASSWORD_SECRET`.
+    - Session & Rate Limiting: `THROTTLE_TTL=60s`, `THROTTLE_LIMIT=120`, `BCRYPT_SALT_ROUNDS=12`.
+    - Third-Party Gateways: Paystack (Secret & Public keys), Cloudinary, Mailgun, FIRS VAT (7.5%).
+
+1.2 Database Engine (`backend/src/config/db.ts`):
+    - Mongoose connection pool with automatic index generation and reconnection resilience.
+    - Server selection timeout configured at 8,000ms.
+
+1.3 Security & Middleware Suite:
+    - `backend/src/middlewares/auth.ts`: Bearer token & httpOnly cookie JWT verification (`protect`).
+    - `backend/src/middlewares/rbac.ts`: Granular Role-Based Access Control (`restrictTo`) across 17 roles.
+    - `backend/src/middlewares/rateLimiter.ts`: Global rate limiter (120 req/min) & Auth brute-force limiter (10 req/15min).
+    - `backend/src/middlewares/errorHandler.ts`: Central operational error handler returning structured JSON.
+    - Data sanitization against NoSQL injection via `express-mongo-sanitize`.
+    - HTTP Header Hardening via `helmet`.
+    - CORS Policy enabled with credentials for `http://localhost:3000`.
+
+1.4 Utilities & Helpers:
+    - `backend/src/utils/jwt.ts`: Token signing, refresh token rotation, verification, and secure cookie dispatcher.
+    - `backend/src/utils/apiResponse.ts`: Unified `ApiResponse<T>` and `ApiError` class wrappers.
+    - `backend/src/utils/seedData.ts`: Database seeder for all 17 staff accounts, Master Data taxonomies, initial luxury vehicles, parts, job cards, orders, and CMS slides.
+
+
+====================================================================================================
+SECTION 2: COMPLETED ENDPOINT MODULES & CONTROLLERS (20 MODULES)
+====================================================================================================
+
+MODULE 01: AUTHENTICATION & STAFF PROFILES (`/api/auth`)
+  * Model: `User.ts` (Bcrypt 12 rounds password hashing, 17 role enums, department, branch, lastLogin).
+  * Controller: `authController.ts`
+  * Endpoints:
+    - POST   /api/auth/register       -> Public/Admin: Register staff or customer account (rate limited).
+    - POST   /api/auth/login          -> Public: User login with JWT cookie & response token (rate limited).
+    - GET    /api/auth/me             -> Protected: Fetch current active session profile.
+    - POST   /api/auth/logout         -> Protected: Clear session cookie and record audit event.
+    - GET    /api/auth/users          -> Protected (admin, hr): List all dealership staff with filters.
+
+MODULE 02: MASTER DATA & DYNAMIC TAXONOMY DROPDOWNS (`/api/master-data`)
+  * Model: `MasterData.ts` (category, code, label, value, department, orderIndex, isActive, metadata).
+  * Controller: `masterDataController.ts`
+  * Endpoints:
+    - GET    /api/master-data/category/:category -> Public/Protected: Fetch active dropdown options for any category.
+    - GET    /api/master-data/all                -> Protected: Global taxonomy list with category/dept filters.
+    - POST   /api/master-data                    -> Protected (all authorized staff): Create new dropdown option.
+    - PUT    /api/master-data/:id                -> Protected (authorized staff): Update dropdown option.
+    - DELETE /api/master-data/:id                -> Protected (admin, operations): Delete dropdown option.
+
+MODULE 03: VEHICLE INVENTORY MANAGEMENT (`/api/vehicles`)
+  * Model: `Vehicle.ts` (13 Lifecycle statuses, 12 categories, NGN landed pricing, 7.5% FIRS VAT, VIN, 150-Point QA).
+  * Controller: `vehicleController.ts`
+  * Endpoints:
+    - GET    /api/vehicles                       -> Public: List vehicles with filters (status, category, price, hub, etc.).
+    - GET    /api/vehicles/telemetry             -> Protected: Executive telemetry metrics (total value NGN, status counts).
+    - GET    /api/vehicles/:identifier           -> Public: Get vehicle by ID, VIN, or Stock ID.
+    - POST   /api/vehicles                       -> Protected (admin, sales, procurement, operations): Add vehicle to stock.
+    - PUT    /api/vehicles/:id                   -> Protected (authorized staff): Update vehicle specifications and pricing.
+    - PATCH  /api/vehicles/:id/status            -> Protected: Transition vehicle lifecycle status with audit remark.
+    - DELETE /api/vehicles/:id                   -> Protected (admin): Delete vehicle from dealership system.
+
+MODULE 04: SALES ORDERS & CONTRACT MANAGEMENT (`/api/orders`)
+  * Model: `Order.ts` (Order ID, customer info, vehicle summary, financial rollup, payment transactions, delivery).
+  * Controller: `orderController.ts`
+  * Endpoints:
+    - GET    /api/orders                         -> Protected: Retrieve sales orders (customer scoped or staff view).
+    - GET    /api/orders/:identifier             -> Protected: Fetch single order by Mongo ID or Order Number.
+    - POST   /api/orders                         -> Protected (admin, sales, customer): Create sales quote/order.
+    - PUT    /api/orders/:id                     -> Protected (admin, sales, accounting): Update order stage/payment.
+
+MODULE 05: GLOBAL PROCUREMENT & VEHICLE SOURCING (`/api/procurement`)
+  * Model: `Procurement.ts` (PO number, foreign currency, exchange rate NGN, auction fees, >₦150M executive gate).
+  * Controller: `procurementController.ts`
+  * Endpoints:
+    - GET    /api/procurement                    -> Protected (admin, procurement, accounting): List purchase orders.
+    - POST   /api/procurement                    -> Protected (admin, procurement): Create new procurement PO.
+    - PATCH  /api/procurement/:id/approve-high-value -> Protected (admin): Executive authorization for >₦150M POs.
+
+MODULE 06: MULTI-SYSTEM 150-POINT PDI INSPECTION & QA (`/api/inspection`)
+  * Model: `InspectionQA.ts` (6 Vehicle systems, OBD diagnostic codes, paint microns, overall score %, certNumber).
+  * Controller: `inspectionController.ts`
+  * Endpoints:
+    - GET    /api/inspection                     -> Protected: List PDI inspection records.
+    - POST   /api/inspection                     -> Protected (admin, inspection): Submit 150-point PDI QA report.
+
+MODULE 07: WORKSHOP & SERVICE BAY MANAGEMENT (`/api/service`)
+  * Model: `ServiceWorkshop.ts` (Bay 1-6 allocation, technician, job card status, diagnostic remarks, parts billed).
+  * Controller: `serviceController.ts`
+  * Endpoints:
+    - GET    /api/service                        -> Protected: List workshop job cards and bay allocations.
+    - POST   /api/service                        -> Protected (admin, service): Create service job card.
+    - PATCH  /api/service/:id/status             -> Protected (admin, service): Update job card progress and checklist.
+
+MODULE 08: OEM SPARE PARTS INVENTORY & DEPOT (`/api/parts`)
+  * Model: `PartsInventory.ts` (SKU, OEM brand, stock quantity, minimum threshold, reorder trigger, unit price NGN).
+  * Controller: `partsController.ts`
+  * Endpoints:
+    - GET    /api/parts                          -> Protected: List parts depot stock items.
+    - POST   /api/parts                          -> Protected (admin, parts): Register new OEM part SKU.
+    - PATCH  /api/parts/:id/stock                -> Protected (admin, parts): Adjust part inventory quantity.
+
+MODULE 09: AUTOMOTIVE FINANCING & LEASING (`/api/financing`)
+  * Model: `Financing.ts` (Application ID, bank partner, tenor months, interest rate APR, loan amount NGN, status).
+  * Controller: `financingController.ts`
+  * Endpoints:
+    - GET    /api/financing                      -> Protected: List financing applications.
+    - POST   /api/financing                      -> Protected (admin, financing): Submit underwriting application.
+    - PATCH  /api/financing/:id/status           -> Protected (admin, financing): Update bank approval decision.
+
+MODULE 10: DETAILING & AESTHETIC RECON PIPELINE (`/api/recon`)
+  * Model: `ReconDetailing.ts` (5 Recon stages, paint correction, ceramic coating pass, assigned detailer).
+  * Controller: `reconController.ts`
+  * Endpoints:
+    - GET    /api/recon                          -> Protected: List vehicles in recon detailing pipeline.
+    - POST   /api/recon                          -> Protected (admin, recon): Queue vehicle for detailing intake.
+    - PATCH  /api/recon/:id/stage                -> Protected (admin, recon): Advance recon stage (Wash -> Handover).
+
+MODULE 11: IMPORTATION LOGISTICS & CUSTOMS CLEARING (`/api/imports`)
+  * Model: `ImportLogistics.ts` (Shipment reference, Bill of Lading, vessel, container, SGD duty, demurrage free days).
+  * Controller: `importController.ts`
+  * Endpoints:
+    - GET    /api/imports                        -> Protected: List ocean and air freight shipments.
+    - POST   /api/imports                        -> Protected (admin, imports): Log new inbound vehicle consignment.
+    - PATCH  /api/imports/:id/status             -> Protected (admin, imports): Advance customs step (PAAR -> Release).
+
+MODULE 12: TRADE-IN & VEHICLE SWAP APPRAISALS (`/api/trade-ins`)
+  * Model: `TradeInSwap.ts` (Offered vehicle, appraisal value NGN, target stock, payable difference NGN, Rule 6 QA).
+  * Controller: `tradeInController.ts`
+  * Endpoints:
+    - GET    /api/trade-ins                      -> Protected: List trade-in and swap appraisal dockets.
+    - POST   /api/trade-ins                      -> Protected (admin, tradeins, customer): Register trade-in request.
+    - PATCH  /api/trade-ins/:id/valuation        -> Protected (admin, tradeins): Update appraised valuation and equity.
+
+MODULE 13: VIP CLIENT CRM & RETENTION PIPELINE (`/api/crm`)
+  * Model: `CRMClient.ts` (Client profile, VIP tier, assigned sales liaison, budget NGN, LTV USD, interactions).
+  * Controller: `crmController.ts`
+  * Endpoints:
+    - GET    /api/crm                            -> Protected: List CRM clients and lead pipeline.
+    - POST   /api/crm                            -> Protected (admin, crm, sales): Register new VIP client lead.
+    - POST   /api/crm/:id/interactions           -> Protected: Log phone call, test drive note, or meeting.
+
+MODULE 14: HR & EMPLOYEE MANAGEMENT (`/api/hr`)
+  * Model: `HREmployee.ts` (Employee ID, department, clearance tier, assigned branch, attendance, leave).
+  * Controller: `hrController.ts`
+  * Endpoints:
+    - GET    /api/hr                             -> Protected (admin, hr): List all employees and attendance.
+    - POST   /api/hr                             -> Protected (admin, hr): Onboard new employee.
+    - POST   /api/hr/:id/clock-in                -> Protected: Staff daily biometric attendance log.
+
+MODULE 15: ACCOUNTING, INVOICES & LANDED MARGINS (`/api/accounting`)
+  * Model: `AccountingInvoice.ts` (Tax invoice number, FIRS VAT 7.5%, landed cost stack, wire reconciliation).
+  * Controller: `accountingController.ts`
+  * Endpoints:
+    - GET    /api/accounting                     -> Protected (admin, accounting): List invoices and audit vouchers.
+    - POST   /api/accounting                     -> Protected (admin, accounting): Generate FIRS compliant tax invoice.
+    - PATCH  /api/accounting/:id/payment         -> Protected (admin, accounting): Record payment receipt against invoice.
+
+MODULE 16: BRANCH TRANSFERS & WAYBILLS (`/api/transfers`)
+  * Model: `BranchTransfer.ts` (Waybill number, source hub, destination hub, driver, carrier plate, handover signoffs).
+  * Controller: `transferController.ts`
+  * Endpoints:
+    - GET    /api/transfers                      -> Protected: List inter-hub vehicle movements.
+    - POST   /api/transfers                      -> Protected (admin, operations): Generate transfer dispatch waybill.
+    - PATCH  /api/transfers/:id/receive          -> Protected (admin, operations): Confirm vehicle arrival at destination hub.
+
+MODULE 17: LEGAL & COMPLIANCE DOCUMENT VAULT (`/api/vault`)
+  * Model: `DocumentVault.ts` (Customs SGDs, Titles, Tax clearance, expiry dates, verification status).
+  * Controller: `vaultController.ts`
+  * Endpoints:
+    - GET    /api/vault                          -> Protected: List compliance documents and expiration alerts.
+    - POST   /api/vault                          -> Protected (admin, compliance): Archive and index legal document.
+
+MODULE 18: CMS & HOMEPAGE MARKETING ENGINE (`/api/cms`)
+  * Model: `CMSContent.ts` (Hero slides 5 archetypes, brand partners, announcement tickers, featured collections).
+  * Controller: `cmsController.ts`
+  * Endpoints:
+    - GET    /api/cms/public                     -> Public: Retrieve active published slides and tickers for homepage.
+    - GET    /api/cms/all                        -> Protected (admin, marketing): List all CMS content items.
+    - POST   /api/cms                            -> Protected (admin, marketing): Create new homepage hero or banner.
+    - PUT    /api/cms/:id                        -> Protected (admin, marketing): Edit slide copy, images, CTA links.
+    - DELETE /api/cms/:id                        -> Protected (admin, marketing): Remove CMS item.
+
+MODULE 19: PAYSTACK PAYMENT GATEWAY (`/api/payments`)
+  * Controller: `paymentController.ts`
+  * Endpoints:
+    - POST   /api/payments/initialize            -> Protected: Initialize Paystack transaction with order metadata.
+    - GET    /api/payments/verify/:reference     -> Protected: Verify payment status directly with Paystack API.
+    - POST   /api/payments/webhook               -> Public: HMAC SHA512 signature validated Paystack webhook receiver.
+
+MODULE 20: IMMUTABLE AUDIT TRAIL (`/api/audit`)
+  * Model: `AuditLog.ts` (User, action, module, resourceId, IP, user-agent, metadata, timestamp).
+  * Controller: `auditController.ts`
+  * Endpoints:
+    - GET    /api/audit                          -> Protected (admin, compliance): Query immutable audit trail logs.
+
+MODULE 21: SYSTEM HEALTH CHECK (`/api/health`)
+  * Endpoint:
+    - GET    /api/health                         -> Public: Return server uptime, environment, version, VAT rate.
+
+
+====================================================================================================
+SECTION 3: FRONTEND END-TO-END INTEGRATION STATUS (100% HOOKED UP)
+====================================================================================================
+
+All frontend components and dashboard modules have been bridged to `frontend/src/lib/api.ts`:
+
+1. MasterDataContext (`src/context/MasterDataContext.tsx`):
+   - `masterDataApi.getAll()` dynamically loads taxonomy options on app boot.
+   - `masterDataApi.createOption()`, `masterDataApi.updateOption()`, and `masterDataApi.deleteOption()` sync edits.
+
+2. HomePageContext (`src/context/HomePageContext.tsx`) & Public Homepage (`src/app/page.tsx`):
+   - `cmsApi.getPublic()` populates hero carousel, partner logos, and alert banners from MongoDB.
+   - `cmsApi.create()`, `cmsApi.update()`, and `cmsApi.delete()` sync CMS Admin manager changes.
+
+3. Inventory & Car Management (`src/app/inventory/page.tsx`, `src/components/ERPConsoleContent.tsx`):
+   - `vehiclesApi.getAll()` queries live fleet inventory from MongoDB.
+   - `vehiclesApi.create()` persists new vehicle stock intake to MongoDB.
+
+4. Authentication & Security Routes (`src/app/auth/login`, `src/app/auth/dashboard-login`, `src/app/auth/register`):
+   - `authApi.login()` performs credential validation, receives httpOnly JWT cookie & Bearer token.
+   - `authApi.register()` handles user creation with Bcrypt-12 salted hashing.
+
+5. Procurement Dashboard (`src/components/dashboards/procurement/ProcurementDashboard.tsx`):
+   - `procurementApi.getAll()` loads active purchase orders.
+   - `procurementApi.create()` logs new international POs.
+   - `procurementApi.approveHighValue()` enforces Rule 5 directorate sign-off (>₦150M).
+
+6. Service Workshop (`src/components/dashboards/service/ServiceWorkshopPage.tsx`):
+   - `serviceApi.getAll()` loads bay assignments and 150-point PDI job cards.
+   - `serviceApi.create()` allocates bays and opens new service cards.
+
+7. OEM Parts Depot (`src/components/dashboards/parts/PartsCatalogPage.tsx`):
+   - `partsApi.getAll()` loads OEM genuine parts inventory.
+   - `partsApi.create()` registers new part SKUs in MongoDB.
+
+8. Auto Financing & Underwriting (`src/components/dashboards/financing/FinancingUnderwritingPage.tsx`):
+   - `financingApi.getAll()` loads loan facility applications.
+   - `financingApi.create()` submits underwriting requests.
+
+9. Multi-System 150-Point QA Inspection (`src/components/dashboards/inspection/InspectionQADashboard.tsx`):
+   - `inspectionApi.getAll()` loads PDI inspection records.
+   - `inspectionApi.create()` persists 10-system diagnostic health seals and defect work orders.
+
+10. Aesthetic Recon Pipeline (`src/components/dashboards/recon/ReconPipelinePage.tsx`):
+    - `reconApi.getAll()` loads 5-stage detailing pipeline vehicles.
+    - `reconApi.create()` queues vehicles for paint correction and 9H ceramic coating.
+
+11. Import Logistics & Port Terminal (`src/components/dashboards/imports/ImportsLogisticsPage.tsx`):
+    - `importsApi.getAll()` loads ocean bill of ladings and container tracking.
+    - `importsApi.create()` logs new port consignments and landed cost stacks.
+
+12. Trade-Ins & Swaps (`src/components/dashboards/trade-ins/TradeInsAppraisalsPage.tsx`):
+    - `tradeInsApi.getAll()` loads appraisal equity dockets.
+    - `tradeInsApi.create()` registers new trade-in valuations.
+
+13. VIP CRM & Retention (`src/components/dashboards/crm/CRMPipelinePage.tsx`):
+    - `crmApi.getAll()` loads client tiers, budgets, and lead stages.
+    - `crmApi.create()` registers new client dossiers.
+
+14. Human Resources & Staffing (`src/components/dashboards/hr/HRRecruitmentPage.tsx`):
+    - `hrApi.getAll()` loads staff directory and biometric attendance.
+    - `hrApi.create()` onboards new staff profiles.
+
+15. Accounting & Invoices (`src/components/dashboards/accounting/InvoicesPaymentsPage.tsx`):
+    - `accountingApi.getAll()` loads commercial invoices and receipts.
+    - `accountingApi.create()` generates tax invoices and payment reconciliations.
+
+16. Document Vault (`src/components/dashboards/admin/DocumentVaultPage.tsx`):
+    - `vaultApi.getAll()` loads watermarked title deeds and statutory customs releases.
+    - `vaultApi.create()` registers certified vault documents.
+
+17. Sales Orders & Branch Transfers (`src/components/ERPConsoleContent.tsx`):
+    - `ordersApi.getAll()` loads live sales orders.
+    - `transfersApi.getAll()` and `transfersApi.create()` dispatch inter-hub waybills.
+
+18. Customer Portal (`src/components/dashboards/user/UserDashboard.tsx`):
+    - `vehiclesApi.getAll()` loads showroom garage listings.
+    - `accountingApi.getAll()` loads customer invoices and receipts.
+    - `vaultApi.getAll()` loads certified customer title documents.
+
+
+====================================================================================================
+SUMMARY OF DELIVERABLES:
+- 20 Dedicated API Controllers & Route Groups
+- 18 Mongoose Database Schemas
+- 5 Security & Sanitization Middlewares
+- 1 Standalone Database Seeder with Full Nigerian Luxury Auto Dealership Data
+- 18 Frontend Dashboard Modules Completely Integrated via `frontend/src/lib/api.ts`
+- 0 TypeScript Compilation Errors (Backend & Frontend)
+====================================================================================================

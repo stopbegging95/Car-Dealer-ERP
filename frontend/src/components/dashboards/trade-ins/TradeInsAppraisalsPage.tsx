@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
 import { TaxonomyManagerSection } from "../admin/MasterDataPage";
+import { tradeInsApi } from "@/lib/api";
 
 export interface TradeInItem {
   id: string;
@@ -91,6 +92,37 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
     },
   ]);
 
+  // Fetch live trade-ins from MongoDB API
+  React.useEffect(() => {
+    let isMounted = true;
+    tradeInsApi.getAll().then((res) => {
+      if (res.success && res.data?.tradeIns && Array.isArray(res.data.tradeIns) && res.data.tradeIns.length > 0) {
+        if (isMounted) {
+          const apiTradeIns: TradeInItem[] = res.data.tradeIns.map((t: any) => ({
+            id: t.appraisalNumber || t._id,
+            client: t.clientName,
+            carOffered: t.offeredVehicleDetails || t.carOffered,
+            target: t.targetVehicleDetails || t.target,
+            targetPriceUSD: Math.round((t.targetVehiclePriceNGN || 250000000) / 1550),
+            valuationUSD: Math.round((t.appraisedValueNGN || 70000000) / 1550),
+            payableDiffUSD: Math.round(((t.targetVehiclePriceNGN || 250000000) - (t.appraisedValueNGN || 70000000)) / 1550),
+            targetPriceNGN: t.targetVehiclePriceNGN,
+            valuationNGN: t.appraisedValueNGN,
+            payableDiffNGN: t.payableDifferenceNGN,
+            status: t.status || "Physical Appraisal Complete",
+            linkedStock: t.linkedStockId || "STK-2026-001",
+            inspectionSigned: t.inspectionSigned ?? true,
+            intakeStatus: t.intakeStatus || "Pending Intake",
+            projectedResaleUSD: Math.round((t.projectedResaleNGN || 96000000) / 1550),
+            reconBudgetUSD: Math.round((t.reconBudgetNGN || 5000000) / 1550),
+          }));
+          setTradeIns(apiTradeIns);
+        }
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"appraisals" | "taxonomies">("appraisals");
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
@@ -138,6 +170,20 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
       projectedResaleUSD: Math.round(valNum * 1.25),
       reconBudgetUSD: 3000,
     };
+
+    // Save to Database
+    tradeInsApi.create({
+      appraisalNumber: newEntry.id,
+      clientName: client,
+      offeredVehicleDetails: carOffered,
+      targetVehicleDetails: target,
+      targetVehiclePriceNGN: tarNum,
+      appraisedValueNGN: valNum,
+      payableDifferenceNGN: diffNum,
+      status: "Initial Appraisal Registered",
+      inspectionSigned: false,
+    }).catch(() => {});
+
     setTradeIns([newEntry, ...tradeIns]);
     setIsModalOpen(false);
     showToast(`Appraisal ${newEntry.id} registered for ${client}. Awaiting Rule 6 inspection certification.`);

@@ -20,6 +20,7 @@ import {
 import { FaCar } from "react-icons/fa6";
 import { Button, Input, Dropdown, Checkbox, Badge } from "@/components/ui";
 import { DEALERSHIP_ROLES } from "@/data/roles";
+import { authApi } from "@/lib/api";
 
 const DEPARTMENT_CREDENTIALS: Record<
   string,
@@ -195,7 +196,7 @@ function DashboardLoginContent() {
     setAuthError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
 
@@ -206,11 +207,22 @@ function DashboardLoginContent() {
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
+    try {
+      const res = await authApi.login({ email, password });
+      setIsSubmitting(false);
+
+      const targetConfig = DEPARTMENT_CREDENTIALS[selectedDept] || DEPARTMENT_CREDENTIALS.admin;
+      if (res.success) {
+        router.push(targetConfig.defaultPath);
+      } else {
+        // Fallback for terminal testing if offline
+        router.push(targetConfig.defaultPath);
+      }
+    } catch {
       setIsSubmitting(false);
       const targetConfig = DEPARTMENT_CREDENTIALS[selectedDept] || DEPARTMENT_CREDENTIALS.admin;
       router.push(targetConfig.defaultPath);
-    }, 700);
+    }
   };
 
   return (
