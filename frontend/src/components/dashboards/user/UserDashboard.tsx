@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   FiLayers,
   FiHeart,
@@ -31,6 +32,21 @@ import { DocumentVaultTab, CustomerDocument } from "./DocumentVaultTab";
 import { SecuritySettingsTab } from "./SecuritySettingsTab";
 
 export function UserDashboard({ initialTab = "Overview" }: { initialTab?: string }) {
+  const router = useRouter();
+
+  // Authentication Guard: Ensure VIP customer is authenticated
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("cardeals_auth_token");
+      const hasCookieToken =
+        document.cookie.includes("cardeals_auth_token=") ||
+        document.cookie.includes("token=");
+      if (!token && !hasCookieToken) {
+        router.push("/auth/login");
+      }
+    }
+  }, [router]);
+
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [isNewBriefModalOpen, setIsNewBriefModalOpen] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<"NGN">("NGN");

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   FiChevronLeft,
+  FiChevronRight,
   FiLogOut,
   FiBell,
   FiCheckCircle,
@@ -66,6 +67,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [notifications, setNotifications] = useState([
     {
       id: "NOTIF-01",
@@ -126,68 +128,115 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="flex bg-[#F8FAFC] selection:bg-[#2563EB] w-screen h-screen overflow-hidden font-sans text-[#0F172A] selection:text-[#FFFFFF]">
       {/* ========================================================================= */}
-      {/* 1. FIXED REUSABLE SIDEBAR                                                 */}
+      {/* 1. FIXED REUSABLE SIDEBAR (Collapsible / Expandable)                       */}
       {/* ========================================================================= */}
-      <aside className="z-30 flex flex-col justify-between bg-[#FFFFFF] p-3 border-[#E2E8F0] border-r w-60 h-screen max-h-screen overflow-y-auto shrink-0 shadow-xs">
-        <div className="space-y-3">
-          {/* Header Logo */}
-          <div className="flex justify-between items-center px-2 pt-1 pb-2 border-[#E2E8F0] border-b">
-            <Link href="/" className="group flex items-center gap-2.5">
-              <div className="flex justify-center items-center bg-[#EFF6FF] border border-[#BFDBFE] rounded-xl w-7 h-7 group-hover:scale-105 transition-transform">
-                <FaAward className="w-3.5 h-3.5 text-[#2563EB]" />
-              </div>
-              <span className="font-bold text-[#0F172A] text-base tracking-wide">
-                LuxAuto
-              </span>
-            </Link>
+      <aside
+        className={`z-30 flex flex-col justify-between bg-[#FFFFFF] border-[#E2E8F0] border-r h-screen max-h-screen overflow-y-auto shrink-0 shadow-xs transition-all duration-300 ease-in-out ${
+          isSidebarCollapsed ? "w-20 p-2.5 items-center" : "w-60 sm:w-64 p-3"
+        }`}
+      >
+        <div className={`space-y-3 w-full ${isSidebarCollapsed ? "flex flex-col items-center" : ""}`}>
+          {/* Header Logo & Sidebar Toggle */}
+          <div
+            className={`flex items-center pb-2.5 border-[#E2E8F0] border-b w-full ${
+              isSidebarCollapsed
+                ? "flex-col justify-center gap-2 pt-1 px-1 text-center"
+                : "justify-between px-2 pt-1"
+            }`}
+          >
             <Link
               href="/"
-              className="p-1 text-[#64748B] hover:text-[#2563EB] text-xs transition-colors"
-              title="Return to Public Website"
+              className="group flex items-center gap-2.5 shrink-0"
+              title="LuxAuto Dealership Master HQ"
             >
-              <FiChevronLeft className="w-4 h-4" />
+              <div className="flex justify-center items-center bg-[#EFF6FF] border border-[#BFDBFE] rounded-xl w-7 h-7 group-hover:scale-105 transition-transform shrink-0">
+                <FaAward className="w-3.5 h-3.5 text-[#2563EB]" />
+              </div>
+              {!isSidebarCollapsed && (
+                <span className="font-bold text-[#0F172A] text-base tracking-wide">
+                  LuxAuto
+                </span>
+              )}
             </Link>
+
+            {/* Toggle expansion button: Toggles sidebar state, does NOT navigate away */}
+            <button
+              type="button"
+              onClick={() => setIsSidebarCollapsed((prev) => !prev)}
+              className="p-1.5 text-[#64748B] hover:text-[#2563EB] hover:bg-[#EFF6FF] rounded-md transition-colors cursor-pointer shrink-0"
+              title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+              aria-label={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              {isSidebarCollapsed ? (
+                <FiChevronRight className="w-4 h-4 text-[#2563EB]" />
+              ) : (
+                <FiChevronLeft className="w-4 h-4" />
+              )}
+            </button>
           </div>
 
           {/* Department Desk Pill */}
-          <div className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-[11px]">
-            <div className="font-bold text-[#64748B] text-[9px] uppercase tracking-wider flex items-center justify-between">
-              <span>Department Desk</span>
-              <span className="font-mono text-[#2563EB] font-bold">{userRole}</span>
-            </div>
-            <div className="text-[#0F172A] font-bold truncate mt-0.5" title={departmentName || branchName}>
-              {departmentName || branchName}
-            </div>
-          </div>
-
-          {/* MAIN MENU */}
-          <div>
-            <div className="mb-1.5 px-3 flex items-center justify-between">
-              <p className="font-bold text-[#94A3B8] text-[10px] uppercase tracking-widest">
-                MAIN MENU
-              </p>
-              <span className="text-[9px] font-mono text-[#64748B]">
-                {mainMenuItems.length} Desks
+          {isSidebarCollapsed ? (
+            <div
+              className="flex justify-center items-center py-1 w-full cursor-help"
+              title={`Department Desk: ${departmentName || branchName} (${userRole})`}
+            >
+              <span className="font-mono text-[#2563EB] text-[10px] font-bold bg-[#EFF6FF] border border-[#BFDBFE] px-1.5 py-0.5 rounded truncate max-w-full text-center">
+                {userRole ? userRole.split(" ")[0].slice(0, 4) : "HQ"}
               </span>
             </div>
-            <nav className="space-y-1">
+          ) : (
+            <div className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-[11px]">
+              <div className="font-bold text-[#64748B] text-[9px] uppercase tracking-wider flex items-center justify-between">
+                <span>Department Desk</span>
+                <span className="font-mono text-[#2563EB] font-bold">{userRole}</span>
+              </div>
+              <div
+                className="text-[#0F172A] font-bold truncate mt-0.5"
+                title={departmentName || branchName}
+              >
+                {departmentName || branchName}
+              </div>
+            </div>
+          )}
+
+          {/* MAIN MENU */}
+          <div className="w-full">
+            {!isSidebarCollapsed ? (
+              <div className="mb-1.5 px-3 flex items-center justify-between">
+                <p className="font-bold text-[#94A3B8] text-[10px] uppercase tracking-widest">
+                  MAIN MENU
+                </p>
+                <span className="text-[9px] font-mono text-[#64748B]">
+                  {mainMenuItems.length} Desks
+                </span>
+              </div>
+            ) : (
+              <div className="h-px bg-[#E2E8F0] my-2 w-full" />
+            )}
+            <nav className="space-y-1 w-full">
               {mainMenuItems.map((item) => {
                 const isActive = activeModule === item.name;
                 return (
                   <button
                     key={item.name}
                     onClick={() => onSelectModule(item.name)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                    title={item.name}
+                    className={`w-full flex items-center rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                      isSidebarCollapsed
+                        ? "justify-center p-2.5"
+                        : "justify-between px-3 py-2"
+                    } ${
                       isActive
                         ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/25"
                         : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#2563EB]"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 truncate">
+                    <div className={`flex items-center gap-2.5 ${isSidebarCollapsed ? "justify-center" : "truncate"}`}>
                       <span className="shrink-0">{item.icon}</span>
-                      <span className="truncate">{item.name}</span>
+                      {!isSidebarCollapsed && <span className="truncate">{item.name}</span>}
                     </div>
-                    {item.badge && (
+                    {!isSidebarCollapsed && item.badge && (
                       <span
                         className={`text-[9px] font-mono px-1.5 py-0.2 rounded-full shrink-0 ${
                           isActive
@@ -206,25 +255,34 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* SYSTEM & ROLES MENU (Filtered per role) */}
           {systemMenuItems.length > 0 && (
-            <div>
-              <p className="mb-1.5 px-3 font-bold text-[#94A3B8] text-[10px] uppercase tracking-widest">
-                SYSTEM & SETTINGS
-              </p>
-              <nav className="space-y-1">
+            <div className="w-full">
+              {!isSidebarCollapsed ? (
+                <p className="mb-1.5 px-3 font-bold text-[#94A3B8] text-[10px] uppercase tracking-widest">
+                  SYSTEM & SETTINGS
+                </p>
+              ) : (
+                <div className="h-px bg-[#E2E8F0] my-2 w-full" />
+              )}
+              <nav className="space-y-1 w-full">
                 {systemMenuItems.map((item) => {
                   const isActive = activeModule === item.name;
                   return (
                     <button
                       key={item.name}
                       onClick={() => onSelectModule(item.name)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                      title={item.name}
+                      className={`w-full flex items-center rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                        isSidebarCollapsed
+                          ? "justify-center p-2.5"
+                          : "gap-2.5 px-3 py-2"
+                      } ${
                         isActive
                           ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/25"
                           : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#2563EB]"
                       }`}
                     >
                       <span className="shrink-0">{item.icon}</span>
-                      <span className="truncate">{item.name}</span>
+                      {!isSidebarCollapsed && <span className="truncate">{item.name}</span>}
                     </button>
                   );
                 })}
@@ -233,80 +291,113 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           )}
 
           {/* USER ACCOUNT & AUDIT MENU */}
-          <div>
-            <p className="mb-1.5 px-3 font-bold text-[#94A3B8] text-[10px] uppercase tracking-widest">
-              ACCOUNT & AUDIT
-            </p>
-            <nav className="space-y-1">
+          <div className="w-full">
+            {!isSidebarCollapsed ? (
+              <p className="mb-1.5 px-3 font-bold text-[#94A3B8] text-[10px] uppercase tracking-widest">
+                ACCOUNT & AUDIT
+              </p>
+            ) : (
+              <div className="h-px bg-[#E2E8F0] my-2 w-full" />
+            )}
+            <nav className="space-y-1 w-full">
               <button
                 type="button"
                 onClick={() => onSelectModule("Personal Staff Dashboard")}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                title="Staff Work Desk"
+                className={`w-full flex items-center rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  isSidebarCollapsed
+                    ? "justify-center p-2.5"
+                    : "justify-between px-3 py-2"
+                } ${
                   activeModule === "Personal Staff Dashboard"
                     ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/25"
                     : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#2563EB]"
                 }`}
               >
-                <div className="flex items-center gap-2.5 truncate">
+                <div className={`flex items-center gap-2.5 ${isSidebarCollapsed ? "justify-center" : "truncate"}`}>
                   <FiCheckCircle className="w-4 h-4 shrink-0" />
-                  <span className="truncate">Staff Work Desk</span>
+                  {!isSidebarCollapsed && <span className="truncate">Staff Work Desk</span>}
                 </div>
-                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-[#EFF6FF] text-[#1D4ED8] font-bold shrink-0">
-                  L3
-                </span>
+                {!isSidebarCollapsed && (
+                  <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-[#EFF6FF] text-[#1D4ED8] font-bold shrink-0">
+                    L3
+                  </span>
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => onSelectModule("My Profile")}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                title="My Profile"
+                className={`w-full flex items-center rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  isSidebarCollapsed
+                    ? "justify-center p-2.5"
+                    : "gap-2.5 px-3 py-2"
+                } ${
                   activeModule === "My Profile"
                     ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/25"
                     : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#2563EB]"
                 }`}
               >
-                <FiUser className="w-4 h-4 shrink-0" />
-                <span>My Profile</span>
+                <span className="shrink-0"><FiUser className="w-4 h-4 shrink-0" /></span>
+                {!isSidebarCollapsed && <span>My Profile</span>}
               </button>
 
               <button
                 type="button"
                 onClick={() => onSelectModule("Session History")}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                title="Session History"
+                className={`w-full flex items-center rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  isSidebarCollapsed
+                    ? "justify-center p-2.5"
+                    : "justify-between px-3 py-2"
+                } ${
                   activeModule === "Session History"
                     ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/25"
                     : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#2563EB]"
                 }`}
               >
-                <div className="flex items-center gap-2.5 truncate">
+                <div className={`flex items-center gap-2.5 ${isSidebarCollapsed ? "justify-center" : "truncate"}`}>
                   <FiClock className="w-4 h-4 shrink-0" />
-                  <span className="truncate">Session History</span>
+                  {!isSidebarCollapsed && <span className="truncate">Session History</span>}
                 </div>
-                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-[#EFF6FF] text-[#1D4ED8] font-bold shrink-0">
-                  WORM
-                </span>
+                {!isSidebarCollapsed && (
+                  <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-[#EFF6FF] text-[#1D4ED8] font-bold shrink-0">
+                    WORM
+                  </span>
+                )}
               </button>
             </nav>
           </div>
         </div>
 
         {/* Bottom Actions: Return to website & Logout */}
-        <div className="space-y-1 pt-2.5 border-[#E2E8F0] border-t">
+        <div className="space-y-1 pt-2.5 border-[#E2E8F0] border-t w-full">
           <Link
             href="/"
-            className="flex items-center gap-2 hover:bg-[#EFF6FF] px-3 py-1.5 rounded-md w-full font-semibold text-[#2563EB] text-xs transition-colors"
+            title="Public Showroom Website"
+            className={`flex items-center hover:bg-[#EFF6FF] rounded-md w-full font-semibold text-[#2563EB] text-xs transition-colors ${
+              isSidebarCollapsed
+                ? "justify-center p-2.5"
+                : "gap-2 px-3 py-2"
+            }`}
           >
-            <FiChevronLeft className="w-3.5 h-3.5" />
-            <span>Public Website</span>
+            <FiGlobe className="w-4 h-4 shrink-0" />
+            {!isSidebarCollapsed && <span>Public Website</span>}
           </Link>
 
           <button
             type="button"
             onClick={() => setIsLogoutModalOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md w-full font-semibold text-[#64748B] hover:text-red-600 text-xs transition-colors cursor-pointer"
+            title="Sign Out"
+            className={`flex items-center rounded-md w-full font-semibold text-[#64748B] hover:text-red-600 hover:bg-red-50 text-xs transition-colors cursor-pointer ${
+              isSidebarCollapsed
+                ? "justify-center p-2.5"
+                : "gap-2 px-3 py-2"
+            }`}
           >
-            <FiLogOut className="w-3.5 h-3.5" />
-            <span>Sign Out</span>
+            <FiLogOut className="w-4 h-4 shrink-0" />
+            {!isSidebarCollapsed && <span>Sign Out</span>}
           </button>
         </div>
       </aside>
@@ -315,26 +406,35 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       {/* 2. MAIN VIEWPORT (Fixed Header, Scrollable Content, Fixed Footer)          */}
       {/* ========================================================================= */}
       <div className="flex flex-col flex-1 min-w-0 h-screen overflow-hidden">
-        {/* FIXED HEADER */}
-        <header className="z-20 flex justify-between items-center bg-[#FFFFFF] px-4 sm:px-6 border-[#E2E8F0] border-b h-13 shrink-0 shadow-xs">
-          <div className="flex items-center gap-3">
-            <h2 className="font-bold text-[#0F172A] text-base sm:text-lg tracking-tight">
-              {title === "Dashboard" || title === "Customer Portal" ? (
-                <>
-                  Welcome back, <span className="text-[#2563EB]">{userName}</span>
-                </>
-              ) : (
-                <>
-                  <span>{title}</span>
-                  <span className="text-xs font-normal text-[#64748B] hidden sm:inline ml-2.5">
-                    &bull; Welcome back, <span className="text-[#2563EB] font-semibold">{userName}</span>
-                  </span>
-                </>
-              )}
-            </h2>
+        {/* FIXED HEADER - Executive Proportional Height (min 76px - 80px) */}
+        <header className="z-20 flex justify-between items-center bg-[#FFFFFF] px-5 sm:px-8 border-[#E2E8F0] border-b min-h-[76px] sm:min-h-[80px] h-20 shrink-0 shadow-xs">
+          <div className="flex items-center gap-3.5">
+            <div>
+              <h2 className="font-bold text-[#0F172A] text-lg sm:text-xl tracking-tight flex items-center gap-2">
+                {title === "Dashboard" || title === "Customer Portal" ? (
+                  <>
+                    Welcome back, <span className="text-[#2563EB]">{userName}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{title}</span>
+                    <span className="text-xs font-normal text-[#64748B] hidden md:inline ml-2.5">
+                      &bull; Welcome back, <span className="text-[#2563EB] font-semibold">{userName}</span>
+                    </span>
+                  </>
+                )}
+              </h2>
+              <div className="flex items-center gap-2 text-[11px] sm:text-xs text-[#64748B] mt-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-medium text-[#0F172A]">{departmentName || branchName}</span>
+                <span className="text-[#CBD5E1]">&bull;</span>
+                <span className="font-mono text-[#2563EB] font-bold">{userRole}</span>
+                <span className="hidden lg:inline text-[#94A3B8]">&bull; Victoria Island Flagship HQ</span>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             {/* Notification Bell & Interactive Drawer */}
             <div className="relative">
               <Button
@@ -342,11 +442,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 size="icon"
                 aria-label="Notifications"
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                className="relative rounded-full w-8 h-8 text-[#64748B] hover:text-[#2563EB]"
+                className="relative rounded-full w-9 h-9 sm:w-10 sm:h-10 text-[#64748B] hover:text-[#2563EB] hover:border-[#BFDBFE]"
               >
-                <FiBell className="w-3.5 h-3.5" />
+                <FiBell className="w-4 h-4" />
                 {notifications.filter((n) => !n.read).length > 0 && (
-                  <span className="top-1 right-1 absolute bg-red-500 rounded-full w-2 h-2 animate-pulse" />
+                  <span className="top-1.5 right-1.5 absolute bg-red-500 rounded-full w-2.5 h-2.5 ring-2 ring-white animate-pulse" />
                 )}
               </Button>
 
@@ -439,19 +539,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <button
                 type="button"
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className={`flex items-center gap-2 bg-[#FFFFFF] py-0.5 pr-2.5 pl-1 border border-[#CBD5E1] hover:border-[#2563EB] rounded-full shadow-xs cursor-pointer transition-colors ${
+                className={`flex items-center gap-2.5 bg-[#FFFFFF] py-1.5 pr-3 pl-1.5 border border-[#CBD5E1] hover:border-[#2563EB] rounded-full shadow-xs cursor-pointer transition-colors ${
                   isProfileDropdownOpen ? "ring-2 ring-[#2563EB]/20 border-[#2563EB]" : ""
                 }`}
                 title="Account Menu"
               >
-                <div className="flex justify-center items-center bg-[#EFF6FF] border border-[#BFDBFE] rounded-full w-6 h-6 font-bold text-[#2563EB] text-[10px]">
+                <div className="flex justify-center items-center bg-[#EFF6FF] border border-[#BFDBFE] rounded-full w-8 h-8 font-bold text-[#2563EB] text-xs">
                   {userInitials}
                 </div>
                 <div className="text-left hidden sm:block">
                   <span className="block font-semibold text-[#0F172A] text-xs leading-tight">
                     {userName}
                   </span>
-                  <span className="block font-mono text-[#2563EB] text-[9px] leading-none font-bold">
+                  <span className="block font-mono text-[#2563EB] text-[10px] leading-none font-bold mt-0.5">
                     {userRole}
                   </span>
                 </div>

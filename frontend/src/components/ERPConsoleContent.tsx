@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   FiLayers,
   FiShoppingCart,
@@ -138,6 +138,37 @@ const SALES_ORDERS: OrderItem[] = [
   },
 ];
 
+export const MODULE_TO_SLUG: Record<string, string> = {
+  "Dashboard": "dashboard",
+  "Car Management": "inventory",
+  "Vehicles & Inventory": "inventory",
+  "Orders & Sales": "sales",
+  "Sales & Orders": "sales",
+  "Procurement": "procurement",
+  "Service & Workshop": "service",
+  "Parts & Inventory": "parts",
+  "Finance": "financing",
+  "Detailing & Recon": "recon",
+  "Inspection & Quality": "inspection",
+  "Import Logistics": "imports",
+  "Trade-In & Swap": "trade-ins",
+  "CRM Pipeline & 360": "crm",
+  "Accounting": "accounting",
+  "Invoices & Payments": "invoices",
+  "Financial Reports": "financial-reports",
+  "Branch Transfers": "transfers",
+  "HR & Recruitment": "hr",
+  "Department Portals & Accounts": "department-portals",
+  "Document Vault": "documents",
+  "CMS Manager": "cms",
+  "Reports & Analytics": "reports",
+  "Settings": "settings",
+  "Master Data & Dropdowns": "master-data",
+  "Personal Staff Dashboard": "staff",
+  "My Profile": "profile",
+  "Session History": "sessions",
+};
+
 export function ERPConsoleContent({
   initialModule = "Dashboard",
   initialRole = "admin",
@@ -145,6 +176,8 @@ export function ERPConsoleContent({
   initialModule?: string;
   initialRole?: string;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const roleFromUrl = searchParams?.get("role") || initialRole;
   const moduleFromUrl = searchParams?.get("module") || initialModule;
@@ -159,6 +192,38 @@ export function ERPConsoleContent({
     }
     return role.defaultModule;
   });
+
+  // Authentication Guard: Ensure user has valid session token
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("cardeals_auth_token");
+      const hasCookieToken =
+        document.cookie.includes("cardeals_auth_token=") ||
+        document.cookie.includes("token=");
+      if (!token && !hasCookieToken) {
+        router.push("/auth/dashboard-login");
+      }
+    }
+  }, [router]);
+
+  // Keep activeModule in sync if initialModule changes
+  React.useEffect(() => {
+    if (initialModule && initialModule !== activeModule) {
+      setActiveModule(initialModule);
+    }
+  }, [initialModule]);
+
+  // Synchronize browser URL whenever module is selected so route equals page name
+  const handleSelectModule = (moduleName: string) => {
+    setActiveModule(moduleName);
+    const slug = MODULE_TO_SLUG[moduleName] || "dashboard";
+    const isUnderAdmin = pathname ? pathname.startsWith("/admin") : activeRoleId === "admin";
+    const basePath = isUnderAdmin ? "/admin" : "/erp";
+    const targetUrl = slug === "dashboard" ? basePath : `${basePath}/${slug}`;
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", targetUrl);
+    }
+  };
 
   const [stockList, setStockList] = useState<Vehicle[]>(VEHICLES);
 
@@ -510,7 +575,7 @@ export function ERPConsoleContent({
     <DashboardLayout
       title={activeModule}
       activeModule={activeModule}
-      onSelectModule={setActiveModule}
+      onSelectModule={handleSelectModule}
       mainMenuItems={filteredMainMenuItems}
       systemMenuItems={filteredSystemMenuItems}
       branchName={activeRole.branchName}
@@ -547,7 +612,7 @@ export function ERPConsoleContent({
         <AccessRestrictedGuard
           attemptedModule={activeModule}
           activeRole={activeRole}
-          onReturnToAllowedModule={setActiveModule}
+          onReturnToAllowedModule={handleSelectModule}
           onSwitchRole={handleRoleChange}
         />
       ) : (
@@ -586,7 +651,7 @@ export function ERPConsoleContent({
               onOpenCreateModal={() => setIsCreateAccountModalOpen(true)}
               onOpenDashboard={(acc) => {
                 handleRoleChange(acc.departmentId);
-                setActiveModule(acc.dashboardModule);
+                handleSelectModule(acc.dashboardModule);
                 showToast(`Switched into ${acc.departmentName} session for ${acc.name}.`);
               }}
               onToggleStatus={toggleStaffStatus}

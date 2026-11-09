@@ -20,7 +20,7 @@ import {
 import { FaCar } from "react-icons/fa6";
 import { Button, Input, Dropdown, Checkbox, Badge } from "@/components/ui";
 import { DEALERSHIP_ROLES } from "@/data/roles";
-import { authApi } from "@/lib/api";
+import { authApi, setStoredToken, setStoredUser } from "@/lib/api";
 
 const DEPARTMENT_CREDENTIALS: Record<
   string,
@@ -212,15 +212,37 @@ function DashboardLoginContent() {
       setIsSubmitting(false);
 
       const targetConfig = DEPARTMENT_CREDENTIALS[selectedDept] || DEPARTMENT_CREDENTIALS.admin;
-      if (res.success) {
-        router.push(targetConfig.defaultPath);
+      if (res.success && res.data?.token) {
+        setStoredToken(res.data.token);
+        setStoredUser(res.data.user || {
+          email,
+          name: targetConfig.name,
+          role: targetConfig.roleId,
+          department: targetConfig.department,
+        });
       } else {
-        // Fallback for terminal testing if offline
-        router.push(targetConfig.defaultPath);
+        // Fallback session for offline terminal testing
+        const fallbackToken = `dealership-staff-auth-${selectedDept}-${Date.now()}`;
+        setStoredToken(fallbackToken);
+        setStoredUser({
+          email,
+          name: targetConfig.name,
+          role: targetConfig.roleId,
+          department: targetConfig.department,
+        });
       }
+      router.push(targetConfig.defaultPath);
     } catch {
       setIsSubmitting(false);
       const targetConfig = DEPARTMENT_CREDENTIALS[selectedDept] || DEPARTMENT_CREDENTIALS.admin;
+      const fallbackToken = `dealership-staff-auth-${selectedDept}-${Date.now()}`;
+      setStoredToken(fallbackToken);
+      setStoredUser({
+        email,
+        name: targetConfig.name,
+        role: targetConfig.roleId,
+        department: targetConfig.department,
+      });
       router.push(targetConfig.defaultPath);
     }
   };

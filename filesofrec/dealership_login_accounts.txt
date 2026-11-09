@@ -1,0 +1,325 @@
+====================================================================================================
+                        CAR DEALS ENTERPRISE ERP - COMPLETE LOGIN DIRECTORY
+====================================================================================================
+Generated Date: November 9, 2026
+System: LuxAuto ERP Enterprise Edition (MERN Stack)
+Base Website: http://localhost:3000
+Backend API Base: http://localhost:8080/api
+Unified Staff Login Gateway: http://localhost:3000/auth/dashboard-login
+Customer VIP Login Gateway: http://localhost:3000/auth/login
+ERP Console Alternative: http://localhost:3000/erp/login
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+1. SUPER ADMIN & EXECUTIVE DIRECTORS
+----------------------------------------------------------------------------------------------------
+[ACCOUNT 01] SUPER ADMIN / EXECUTIVE MANAGEMENT
+  * Title: Chief Executive Officer & System Administrator
+  * Department: Executive Directorate & Dealership Master HQ
+  * Desk Number: Desk #01 (Super Admin)
+  * Email: admin@luxauto.dealers.com
+  * Password: Password123!   (Alternative Demo Pass: admin123)
+  * Security PIN: 8821
+  * Clearance: Tier 1 - Unrestricted Dealership Master Access
+  * Hub Node: Victoria Island Flagship Showroom & HQ, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=admin
+  * Default Landing Workspace: http://localhost:3000/admin (or /erp)
+  * Authorized Workspaces: All 18 Workspaces (Full Read/Write/Delete/Approve/Audit)
+
+
+----------------------------------------------------------------------------------------------------
+2. VIP CLIENT & CUSTOMER PORTAL ACCOUNTS
+----------------------------------------------------------------------------------------------------
+[ACCOUNT 02] VIP HIGH-NET-WORTH INDIVIDUAL (HNWI)
+  * Client Name: Chief Alexander Vance
+  * Category: VIP & Private Collector Suite
+  * Email: vance@luxuryinvest.com
+  * Password: Password123!
+  * Portal Login Route: http://localhost:3000/auth/login
+  * Landing Workspace: http://localhost:3000/portal (Client Virtual Garage, Invoices, Title Deeds)
+
+[ACCOUNT 03] CORPORATE FLEET CLIENT
+  * Client Name: Alhaji Bello & Sons Ltd (Corporate Director)
+  * Category: Corporate Fleet & Diplomatic Sourcing
+  * Email: bello@bellosons.com
+  * Password: Password123!
+  * Portal Login Route: http://localhost:3000/auth/login
+  * Landing Workspace: http://localhost:3000/portal
+
+[ACCOUNT 04] MOTORSPORT & ENTHUSIAST CLIENT
+  * Client Name: Dr. K. Somoye (Porsche Club Nigeria)
+  * Category: Motorsport & Performance VIP
+  * Email: somoye@porscheclub.ng
+  * Password: Password123!
+  * Portal Login Route: http://localhost:3000/auth/login
+  * Landing Workspace: http://localhost:3000/portal
+
+
+----------------------------------------------------------------------------------------------------
+3. DEPARTMENTAL STAFF DESKS (ISOLATED WORKSPACES & RBAC)
+----------------------------------------------------------------------------------------------------
+
+[ACCOUNT 05] INTERNATIONAL PROCUREMENT & VEHICLE SOURCING
+  * Staff Name: Babatunde Adeleke
+  * Designation: Head of International Sourcing & Auction Desk
+  * Desk Number: Desk #02 (Procurement)
+  * Role Identifier: procurement
+  * Email: procurement.lead@luxauto.dealers.com
+  * Password: Password123!   (Alternative Demo Pass: Pass#2026@Lux)
+  * Security PIN: 7701
+  * Clearance: Department Head / Director
+  * Hub Node: Victoria Island Flagship Showroom, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=procurement
+  * Default Landing Workspace: http://localhost:3000/erp/procurement
+  * Authorized Modules: Procurement & Sourcing, Supplier Scorecards, International Auction Logs
+
+[ACCOUNT 06] SHOWROOM FLOOR SALES & ORDER CLOSERS
+  * Staff Name: Emeka Okafor
+  * Designation: Senior VIP Sales Director & Closer
+  * Desk Number: Desk #03 (Sales & Orders)
+  * Role Identifier: sales
+  * Email: sales.liaison@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 4410
+  * Clearance: Senior Specialist / Closer
+  * Hub Node: Victoria Island Flagship Showroom, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=sales
+  * Default Landing Workspace: http://localhost:3000/erp/sales
+  * Authorized Modules: Showroom Sales & Orders, Client Quotations, Vehicle Inventory, Handover
+
+[ACCOUNT 07] MASTER SERVICE & WORKSHOP OPERATIONS
+  * Staff Name: Engr. Tunde Bakare
+  * Designation: Chief Master Diagnostic & Workshop Supervisor
+  * Desk Number: Desk #04 (Service & Maintenance)
+  * Role Identifier: service
+  * Email: workshop.lead@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 5521
+  * Clearance: Department Head / Director
+  * Hub Node: Central Workshop & PDI Facility, Lekki, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=service
+  * Default Landing Workspace: http://localhost:3000/erp/service
+  * Authorized Modules: Service Bay Job Cards, Dyno & Diagnostics, Mechanical Sign-offs
+
+[ACCOUNT 08] OEM SPARE PARTS & WAREHOUSE INVENTORY
+  * Staff Name: Chinedu Momoh
+  * Designation: Lead Parts Specialist & Inventory Controller
+  * Desk Number: Desk #05 (Parts & Accessories)
+  * Role Identifier: parts
+  * Email: parts.specialist@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 3312
+  * Clearance: Associate Specialist / Auditor
+  * Hub Node: Ikeja Central Parts Depot, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=parts
+  * Default Landing Workspace: http://localhost:3000/erp/parts
+  * Authorized Modules: Parts Catalog, OEM SKU Intake, Reorder Thresholds, Parts Dispatch
+
+[ACCOUNT 09] AUTOMOTIVE FINANCING & BANK UNDERWRITING (F&I)
+  * Staff Name: Aisha Mohammed
+  * Designation: Senior Loan Underwriter & Banking Liaison
+  * Desk Number: Desk #06 (Finance & Insurance)
+  * Role Identifier: financing
+  * Email: financing.officer@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 9918
+  * Clearance: Senior Specialist / Closer
+  * Hub Node: Maitama Diplomatic Zone Suite, Abuja
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=financing
+  * Default Landing Workspace: http://localhost:3000/erp/financing
+  * Authorized Modules: Auto Loan Underwriting, Banking Credit Facilities, Lease Schedules
+
+[ACCOUNT 10] AESTHETIC DETAILING & RECON PIPELINE
+  * Staff Name: Sola Ogundipe
+  * Designation: Master Automotive Detailer & Recon Supervisor
+  * Desk Number: Desk #07 (Detailing & Recon)
+  * Role Identifier: recon
+  * Email: recon.lead@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 2209
+  * Clearance: Department Head / Director
+  * Hub Node: Central Workshop & Detailing Center, Lekki, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=recon
+  * Default Landing Workspace: http://localhost:3000/erp/recon
+  * Authorized Modules: 5-Stage Detailing Pipeline, 9H Ceramic Seal Verification, Paint Correction
+
+[ACCOUNT 11] 150-POINT QUALITY ASSURANCE & DIAGNOSTIC INSPECTION
+  * Staff Name: Engr. Chidi Okafor
+  * Designation: QA Diagnostic Lead & Pre-Delivery Certifier
+  * Desk Number: Desk #08 (Inspection & QA)
+  * Role Identifier: inspection (or recon)
+  * Email: qa.lead@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 6632
+  * Clearance: Department Head / Director
+  * Hub Node: Victoria Island Flagship Showroom, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=inspection
+  * Default Landing Workspace: http://localhost:3000/erp/inspection
+  * Authorized Modules: 150-Point QA Diagnostic Seals, 10-System Checklists, Defect Work Orders
+
+[ACCOUNT 12] IMPORT LOGISTICS & PORT CUSTOMS CLEARING
+  * Staff Name: Chibuike Alao
+  * Designation: Maritime Port Operations & Customs Clearing Officer
+  * Desk Number: Desk #09 (Imports & Shipping)
+  * Role Identifier: imports
+  * Email: imports.clearing@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 1148
+  * Clearance: Senior Specialist / Closer
+  * Hub Node: Tin Can Island Port Holding Bay, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=imports
+  * Default Landing Workspace: http://localhost:3000/erp/imports
+  * Authorized Modules: Bill of Lading Tracking, SGD 35% Duty Assessment, Landed Cost Stack
+
+[ACCOUNT 13] TRADE-IN & VEHICLE SWAP APPRAISALS
+  * Staff Name: Tariq Danladi
+  * Designation: Chief Vehicle Valuation Officer & Trade-In Appraiser
+  * Desk Number: Desk #10 (Trade-In & Swap)
+  * Role Identifier: trade-ins
+  * Email: tradein.valuer@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 8830
+  * Clearance: Senior Specialist / Closer
+  * Hub Node: Victoria Island Flagship Showroom, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=trade-ins
+  * Default Landing Workspace: http://localhost:3000/erp/trade-ins
+  * Authorized Modules: Trade-In Appraisals, Equity Differential Calculator, Intake to Stock
+
+[ACCOUNT 14] VIP CLIENT RELATIONSHIP MANAGEMENT (CRM & 360)
+  * Staff Name: Ngozi Eze
+  * Designation: VIP Concierge Director & Client Relations Lead
+  * Desk Number: Desk #11 (CRM & Retention)
+  * Role Identifier: crm
+  * Email: crm.concierge@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 5540
+  * Clearance: Senior Specialist / Closer
+  * Hub Node: Ikoyi VIP Client Suite, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=crm
+  * Default Landing Workspace: http://localhost:3000/erp/crm
+  * Authorized Modules: VIP Client Dossiers, SLA Complaint Ticketing, Loyalty Drip Campaigns
+
+[ACCOUNT 15] INTER-BRANCH TRANSFERS & LOGISTICS YARD
+  * Staff Name: Olumide Adeleke
+  * Designation: Regional Yard Controller & Waybill Dispatcher
+  * Desk Number: Desk #12 (Transfers & Operations)
+  * Role Identifier: parts (or operations)
+  * Email: transfers.yard@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 4492
+  * Clearance: Senior Specialist / Closer
+  * Hub Node: Ikeja Central Logistics Depot, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=transfers
+  * Default Landing Workspace: http://localhost:3000/erp/transfers
+  * Authorized Modules: Inter-Hub Flatbed Waybills, Gate-Out/Gate-In Tracking, Custody Signoffs
+
+[ACCOUNT 16] ACCOUNTING, GENERAL LEDGER & LANDED MARGINS
+  * Staff Name: Samuel Oladipo, FCA
+  * Designation: Chief Financial Accountant & Ledger Controller
+  * Desk Number: Desk #13 (Accounting)
+  * Role Identifier: accounting
+  * Email: chief.accountant@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 9021
+  * Clearance: Department Head / Director
+  * Hub Node: Victoria Island HQ, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=accounting
+  * Default Landing Workspace: http://localhost:3000/accounting (or /erp/accounting)
+  * Authorized Modules: Landed Margin Vouchers, Accounts Payable Wire Disburse, Receivables Audit, Fiscal Lock
+
+[ACCOUNT 17] COMMERCIAL BILLING & INVOICE MANAGEMENT
+  * Staff Name: Ifeoma Nwosu
+  * Designation: Commercial Billing Specialist & Escrow Auditor
+  * Desk Number: Desk #14 (Invoices & Billing)
+  * Role Identifier: accounting
+  * Email: invoices.payments@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 1209
+  * Clearance: Associate Specialist / Auditor
+  * Hub Node: Victoria Island HQ, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=invoices
+  * Default Landing Workspace: http://localhost:3000/erp/invoices
+  * Authorized Modules: FIRS 7.5% VAT Invoices, Proforma Quotations, Bank Wire Reconciliation
+
+[ACCOUNT 18] PEOPLE OPERATIONS & HR RECRUITMENT
+  * Staff Name: Fatima Al-Hassan
+  * Designation: Head of People, Culture & Talent Acquisition
+  * Desk Number: Desk #15 (HR & People Ops)
+  * Role Identifier: hr
+  * Email: hr.director@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 6671
+  * Clearance: Department Head / Director
+  * Hub Node: Victoria Island HQ, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=hr
+  * Default Landing Workspace: http://localhost:3000/erp/hr
+  * Authorized Modules: Employee Directory, Biometric Attendance, Leave Approval, Staff Onboarding
+
+[ACCOUNT 19] LEGAL, REGULATORY COMPLIANCE & DOCUMENT VAULT
+  * Staff Name: Barrister O. Ajayi
+  * Designation: Legal Counsel & Statutory Document Registrar
+  * Desk Number: Desk #16 (Legal & Vault)
+  * Role Identifier: admin (or compliance)
+  * Email: legal.registry@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 3390
+  * Clearance: Department Head / Director
+  * Hub Node: Victoria Island HQ, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=documents
+  * Default Landing Workspace: http://localhost:3000/erp/documents
+  * Authorized Modules: Certified Title Deeds, Police CMR Micro-Dots, SCUML AML Clearance, Permits
+
+[ACCOUNT 20] BUSINESS INTELLIGENCE & PERFORMANCE ANALYTICS
+  * Staff Name: Dapo Williams
+  * Designation: BI Lead & Dealership Strategy Analyst
+  * Desk Number: Desk #17 (Reports & Analytics)
+  * Role Identifier: admin
+  * Email: analytics.lead@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 8812
+  * Clearance: Senior Specialist / Closer
+  * Hub Node: Victoria Island HQ, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=analytics
+  * Default Landing Workspace: http://localhost:3000/erp/analytics
+  * Authorized Modules: Velocity Turnovers, Gross Margin Ratios, Stock Ageing Heatmaps
+
+[ACCOUNT 21] DIGITAL CONTENT & HOMEPAGE CMS MANAGER
+  * Staff Name: Grace Adebayo
+  * Designation: Digital Content Specialist & Creative Director
+  * Desk Number: Desk #18 (CMS & Marketing)
+  * Role Identifier: cms (or marketing)
+  * Email: marketing.lead@luxauto.dealers.com
+  * Password: Password123!
+  * Security PIN: 4420
+  * Clearance: Senior Specialist / Closer
+  * Hub Node: Victoria Island HQ, Lagos
+  * Dashboard Login Route: http://localhost:3000/auth/dashboard-login?role=cms
+  * Default Landing Workspace: http://localhost:3000/erp/cms (or /admin/cms)
+  * Authorized Modules: Hero Carousel Slides Upload, Brand Partners, Announcement Tickers
+
+====================================================================================================
+SUMMARY TABLE OF ALL LOGIN ROUTES & CREDENTIALS
+====================================================================================================
+| Department / Desk | Role | Official Email | Default Password | Exact Login Route |
+| :--- | :--- | :--- | :--- | :--- |
+| Super Admin HQ | admin | admin@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=admin |
+| VIP Customer Portal | customer | vance@luxuryinvest.com | Password123! | /auth/login |
+| Showroom Sales | sales | sales.liaison@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=sales |
+| Procurement Desk | procurement | procurement.lead@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=procurement |
+| Service Workshop | service | workshop.lead@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=service |
+| OEM Parts Depot | parts | parts.specialist@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=parts |
+| F&I Auto Loans | financing | financing.officer@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=financing |
+| 150-Point QA | inspection | qa.lead@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=inspection |
+| Detailing Recon | recon | recon.lead@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=recon |
+| Import Logistics | imports | imports.clearing@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=imports |
+| Trade-In Valuations | trade-ins | tradein.valuer@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=trade-ins |
+| VIP Concierge CRM | crm | crm.concierge@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=crm |
+| Accounting & Ledger | accounting | chief.accountant@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=accounting |
+| Commercial Billing | accounting | invoices.payments@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=invoices |
+| Yard & Transfers | parts | transfers.yard@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=transfers |
+| HR & People Ops | hr | hr.director@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=hr |
+| Document Vault | admin | legal.registry@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=documents |
+| BI & Analytics | admin | analytics.lead@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=analytics |
+| Digital CMS Manager | cms | marketing.lead@luxauto.dealers.com | Password123! | /auth/dashboard-login?role=cms |
+====================================================================================================
+

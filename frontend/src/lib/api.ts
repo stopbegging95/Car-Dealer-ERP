@@ -17,18 +17,26 @@ export interface ApiResponse<T = any> {
 // Token helper
 export const getStoredToken = (): string | null => {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("cardeals_auth_token");
+  const localToken = localStorage.getItem("cardeals_auth_token");
+  if (localToken) return localToken;
+  // Fallback to cookie
+  const match = document.cookie.match(/(?:^|;\s*)cardeals_auth_token=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
 };
 
 export const setStoredToken = (token: string): void => {
   if (typeof window === "undefined") return;
   localStorage.setItem("cardeals_auth_token", token);
+  document.cookie = `cardeals_auth_token=${encodeURIComponent(token)}; path=/; max-age=604800; SameSite=Lax`;
 };
 
 export const clearStoredToken = (): void => {
   if (typeof window === "undefined") return;
   localStorage.removeItem("cardeals_auth_token");
   localStorage.removeItem("cardeals_current_user");
+  document.cookie = "cardeals_auth_token=; path=/; max-age=0";
+  document.cookie = "cardeals_user_role=; path=/; max-age=0";
+  document.cookie = "token=; path=/; max-age=0";
 };
 
 export const getStoredUser = (): any | null => {
@@ -44,6 +52,9 @@ export const getStoredUser = (): any | null => {
 export const setStoredUser = (user: any): void => {
   if (typeof window === "undefined") return;
   localStorage.setItem("cardeals_current_user", JSON.stringify(user));
+  if (user?.role) {
+    document.cookie = `cardeals_user_role=${encodeURIComponent(user.role)}; path=/; max-age=604800; SameSite=Lax`;
+  }
 };
 
 async function request<T = any>(

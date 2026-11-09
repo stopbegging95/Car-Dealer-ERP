@@ -62,114 +62,132 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
     { title: "Contact Us", href: "/contact", desc: "Showroom directory, WhatsApp chat and enquiries" },
   ];
 
-  const departmentDesks = [
+  const dashboardLoginRoutes = [
     {
-      name: "Sales & Orders",
-      href: "/erp/sales",
-      dept: "Showroom Deals & Quotes",
-      icon: <FiShoppingCart className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Procurement & Sourcing",
-      href: "/erp/procurement",
-      dept: "Global Auctions & POs",
-      icon: <FiPackage className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Service & Workshop",
-      href: "/erp/service",
-      dept: "150-Point PDI & Bays",
-      icon: <FiTool className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Parts & Accessories",
-      href: "/erp/parts",
-      dept: "OEM Spares & Depot",
-      icon: <FiBox className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Finance (F&I)",
-      href: "/erp/financing",
-      dept: "Auto Loans & Mortgages",
-      icon: <FiActivity className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Inspection & Quality",
-      href: "/erp/inspection",
-      dept: "150-Point QA Diagnostic",
-      icon: <FiCheckCircle className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Detailing & Recon",
-      href: "/erp/recon",
-      dept: "9H Ceramic & PDI Quality",
-      icon: <FiCheckSquare className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Import Logistics",
-      href: "/erp/imports",
-      dept: "Port Clearing & Shipping",
-      icon: <FiTruck className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Accounting",
-      href: "/erp/accounting",
-      dept: "Landed Margins & GL Ledger",
-      icon: <FiDollarSign className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Invoices & Payments",
-      href: "/erp/invoices",
-      dept: "Commercial Invoices & Wires",
-      icon: <FiFileText className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Financial Reports",
-      href: "/erp/financial-reports",
-      dept: "Audited Income Statements",
-      icon: <FiTrendingUp className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Trade-In & Swap",
-      href: "/erp/trade-ins",
-      dept: "150-Point Appraisals & Equity",
-      icon: <FiRepeat className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "CRM Pipeline & 360",
-      href: "/erp/crm",
-      dept: "VIP Concierge & Leads",
-      icon: <FiUsers className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Branch Transfers & Yard",
-      href: "/erp/transfers",
-      dept: "Multi-Showroom Transfers",
-      icon: <FiNavigation className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "HR & Recruitment",
-      href: "/erp/hr",
-      dept: "People Ops & Staff Roster",
-      icon: <FiBriefcase className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Reports & Analytics",
-      href: "/erp/analytics",
-      dept: "Turnover, Velocity & Ratios",
-      icon: <FiTrendingUp className="w-3.5 h-3.5 text-[#2563EB]" />,
-    },
-    {
-      name: "Legal & Document Vault",
-      href: "/erp/documents",
-      dept: "Title Deeds & Customs SGDs",
+      name: "Super Admin & Executive Login",
+      route: "/auth/dashboard-login?role=admin",
+      desk: "Executive Directorate",
+      badge: "Admin Desk #01",
       icon: <FiShield className="w-3.5 h-3.5 text-[#2563EB]" />,
     },
     {
-      name: "Department Portals & Accounts",
-      href: "/erp/accounts",
-      dept: "Staff Access & Clearances",
-      icon: <FiUserPlus className="w-3.5 h-3.5 text-[#2563EB]" />,
+      name: "VIP Customer Portal Login",
+      route: "/auth/login",
+      desk: "Client Private Suite",
+      badge: "VIP Client Desk",
+      icon: <FaCar className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Showroom Sales & Orders Login",
+      route: "/auth/dashboard-login?role=sales",
+      desk: "Sales & Contracts Desk",
+      badge: "Sales Desk #03",
+      icon: <FiShoppingCart className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Procurement & Sourcing Login",
+      route: "/auth/dashboard-login?role=procurement",
+      desk: "International Sourcing Desk",
+      badge: "Procurement Desk #02",
+      icon: <FiPackage className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Service & Workshop Login",
+      route: "/auth/dashboard-login?role=service",
+      desk: "Workshop & Bay Operations",
+      badge: "Service Desk #04",
+      icon: <FiTool className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Parts & Accessories Depot Login",
+      route: "/auth/dashboard-login?role=parts",
+      desk: "OEM Warehouse & Spares",
+      badge: "Parts Desk #05",
+      icon: <FiBox className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Finance (F&I) Auto Loans Login",
+      route: "/auth/dashboard-login?role=financing",
+      desk: "Loan Underwriting Desk",
+      badge: "Finance Desk #06",
+      icon: <FiActivity className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Inspection & Quality QA Login",
+      route: "/auth/dashboard-login?role=inspection",
+      desk: "150-Point PDI Diagnostic",
+      badge: "QA Desk #08",
+      icon: <FiCheckCircle className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Detailing & Recon Center Login",
+      route: "/auth/dashboard-login?role=recon",
+      desk: "Ceramic Seal & Recon",
+      badge: "Recon Desk #07",
+      icon: <FiCheckSquare className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Import Logistics & Customs Login",
+      route: "/auth/dashboard-login?role=imports",
+      desk: "Port Clearing & Haulage",
+      badge: "Logistics Desk #09",
+      icon: <FiTruck className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Accounting & General Ledger Login",
+      route: "/auth/dashboard-login?role=accounting",
+      desk: "Landed Margins & Audit",
+      badge: "Accounts Desk #13",
+      icon: <FiDollarSign className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Invoices & Payments Control Login",
+      route: "/auth/dashboard-login?role=invoices",
+      desk: "Commercial Invoices & Wire",
+      badge: "Billing Desk #14",
+      icon: <FiFileText className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Trade-In & Vehicle Swap Login",
+      route: "/auth/dashboard-login?role=trade-ins",
+      desk: "Swap Appraisal Desk",
+      badge: "Trade-In Desk #10",
+      icon: <FiRepeat className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "VIP CRM & Client 360 Login",
+      route: "/auth/dashboard-login?role=crm",
+      desk: "VIP Relations & Concierge",
+      badge: "CRM Desk #11",
+      icon: <FiUsers className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Branch Transfers & Yard Login",
+      route: "/auth/dashboard-login?role=transfers",
+      desk: "Multi-Hub Logistics Desk",
+      badge: "Transfers Desk #12",
+      icon: <FiNavigation className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "HR & People Operations Login",
+      route: "/auth/dashboard-login?role=hr",
+      desk: "Staff Roster & Payroll",
+      badge: "HR Desk #15",
+      icon: <FiBriefcase className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Legal & Document Vault Login",
+      route: "/auth/dashboard-login?role=documents",
+      desk: "Title Deeds & Regulatory",
+      badge: "Legal Desk #16",
+      icon: <FiShield className="w-3.5 h-3.5 text-[#2563EB]" />,
+    },
+    {
+      name: "Reports & Analytics Strategy Login",
+      route: "/auth/dashboard-login?role=analytics",
+      desk: "BI & Performance Audit",
+      badge: "Analytics Desk #17",
+      icon: <FiTrendingUp className="w-3.5 h-3.5 text-[#2563EB]" />,
     },
   ];
 
@@ -353,126 +371,88 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
             </Button>
 
             {loginDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-96 sm:w-[460px] bg-[#FFFFFF] border border-[#CBD5E1] rounded-md shadow-2xl p-3.5 z-50 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
-                {/* 1. Primary Dashboards */}
+              <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-[#FFFFFF] border border-[#CBD5E1] rounded-md shadow-2xl p-3.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                {/* 1. Header & Direct Login Gateways */}
                 <div className="pb-2 border-b border-[#E2E8F0] flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-[#2563EB] font-bold">
-                    PRIMARY ENTERPRISE DASHBOARDS
+                    DASHBOARD LOGIN ROUTES
                   </span>
-                  <span className="text-[10px] font-mono text-[#64748B]">Direct Sign-In</span>
+                  <span className="text-[10px] font-mono text-[#64748B]">Authorized Gateways</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2.5 pb-3 border-b border-[#E2E8F0]">
+                <div className="flex flex-col gap-2.5 pt-3 pb-3">
+                  {/* 1. Admin Dashboard Login */}
                   <Link
-                    href="/erp"
+                    href="/auth/dashboard-login?role=admin"
                     onClick={() => setLoginDropdownOpen(false)}
-                    className="p-3 rounded-md bg-[#0F172A] text-white hover:bg-[#1E293B] border border-[#0F172A] transition-all flex flex-col justify-between group shadow-xs cursor-pointer"
+                    className="p-3.5 rounded-md bg-[#0F172A] text-white hover:bg-[#1E293B] border border-[#0F172A] transition-all flex flex-col justify-between group shadow-xs cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="p-1.5 rounded-md bg-[#2563EB] text-white">
-                        <FiShield className="w-4 h-4" />
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-md bg-[#2563EB] text-white">
+                          <FiShield className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white group-hover:text-[#60A5FA] transition-colors">
+                            Admin Dashboard Login
+                          </div>
+                          <div className="text-[10px] text-[#94A3B8]">
+                            Dealership Master HQ & Executive Console
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-white/10 text-[#60A5FA] font-bold">
-                        Admin & Staff
+                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-white/10 text-[#60A5FA] font-bold shrink-0">
+                        Admin
                       </span>
                     </div>
-                    <div className="mt-3">
-                      <div className="text-xs font-bold text-white group-hover:text-[#60A5FA] transition-colors">
-                        Admin Dashboard
-                      </div>
-                      <div className="text-[10px] text-[#94A3B8] line-clamp-1 mt-0.5">
-                        Dealership Master ERP & P&L
-                      </div>
+                    <div className="mt-2.5 text-[10px] font-mono text-[#38BDF8] bg-black/40 px-2 py-1 rounded border border-white/10">
+                      /auth/dashboard-login?role=admin
                     </div>
                   </Link>
 
+                  {/* 2. User / Customer Portal Login */}
                   <Link
-                    href="/portal"
+                    href="/auth/login"
                     onClick={() => setLoginDropdownOpen(false)}
-                    className="p-3 rounded-md bg-[#EFF6FF] hover:bg-[#DBEAFE] border border-[#BFDBFE] transition-all flex flex-col justify-between group shadow-xs cursor-pointer"
+                    className="p-3.5 rounded-md bg-[#EFF6FF] hover:bg-[#DBEAFE] border border-[#BFDBFE] transition-all flex flex-col justify-between group shadow-xs cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="p-1.5 rounded-md bg-[#2563EB] text-white">
-                        <FaCar className="w-4 h-4" />
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-md bg-[#2563EB] text-white">
+                          <FaCar className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-[#0F172A] group-hover:text-[#2563EB] transition-colors">
+                            User / Customer Login
+                          </div>
+                          <div className="text-[10px] text-[#64748B]">
+                            VIP Client Suite & Private Garage Portal
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-[#2563EB]/15 text-[#1D4ED8] font-bold">
-                        Customer VIP
+                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-[#2563EB]/15 text-[#1D4ED8] font-bold shrink-0">
+                        User
                       </span>
                     </div>
-                    <div className="mt-3">
-                      <div className="text-xs font-bold text-[#0F172A] group-hover:text-[#2563EB] transition-colors">
-                        User Dashboard
-                      </div>
-                      <div className="text-[10px] text-[#64748B] line-clamp-1 mt-0.5">
-                        Garage, Test Drives & Vault
-                      </div>
+                    <div className="mt-2.5 text-[10px] font-mono text-[#2563EB] bg-white px-2 py-1 rounded border border-[#BFDBFE]">
+                      /auth/login
                     </div>
                   </Link>
-                </div>
-
-                {/* 2. Dealership Department Desks (Direct Access) */}
-                <div className="pt-3 pb-1.5 flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#0F172A] font-bold">
-                    DEALERSHIP DEPARTMENT DESKS
-                  </span>
-                  <span className="text-[10px] font-mono text-[#2563EB]">ERP Workspaces</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
-                  {departmentDesks.map((dept) => (
-                    <Link
-                      key={dept.name}
-                      href={dept.href}
-                      onClick={() => setLoginDropdownOpen(false)}
-                      className="p-2 rounded-md hover:bg-[#EFF6FF] border border-transparent hover:border-[#BFDBFE] transition-all flex items-center gap-2.5 group cursor-pointer"
-                    >
-                      <div className="p-1.5 rounded-md bg-[#F1F5F9] group-hover:bg-[#EFF6FF] text-[#2563EB] shrink-0 border border-[#CBD5E1] group-hover:border-[#BFDBFE]">
-                        {dept.icon}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-bold text-[#0F172A] group-hover:text-[#2563EB] transition-colors truncate">
-                          {dept.name}
-                        </div>
-                        <div className="text-[10px] text-[#64748B] truncate">
-                          {dept.dept}
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
                 </div>
 
                 {/* Footer Quick Links & Security */}
-                <div className="mt-3 pt-2.5 border-t border-[#E2E8F0] space-y-2">
-                  <div className="flex items-center justify-between text-[10px] text-[#64748B]">
-                    <span className="flex items-center gap-1.5 font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      Encrypted Session & RBAC Protected
-                    </span>
-                    <Link
-                      href="/auth/dashboard-login"
-                      onClick={() => setLoginDropdownOpen(false)}
-                      className="font-bold text-[#2563EB] hover:underline"
-                    >
-                      Staff Dashboard Login &rarr;
-                    </Link>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px]">
-                    <Link
-                      href="/auth/login"
-                      onClick={() => setLoginDropdownOpen(false)}
-                      className="text-[#64748B] hover:text-[#2563EB]"
-                    >
-                      Client Portal Login
-                    </Link>
-                    <Link
-                      href="/auth/register"
-                      onClick={() => setLoginDropdownOpen(false)}
-                      className="font-bold text-[#2563EB] hover:underline"
-                    >
-                      Create Customer Account &rarr;
-                    </Link>
-                  </div>
+                <div className="pt-2.5 border-t border-[#E2E8F0] flex items-center justify-between text-[10px] text-[#64748B]">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Encrypted Session & RBAC Protected
+                  </span>
+                  <Link
+                    href="/auth/dashboard-login"
+                    onClick={() => setLoginDropdownOpen(false)}
+                    className="font-bold text-[#2563EB] hover:underline"
+                  >
+                    Staff Gateway &rarr;
+                  </Link>
                 </div>
               </div>
             )}
@@ -511,40 +491,30 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
           </Link>
           <div className="pt-2 border-t border-[#E2E8F0] space-y-1.5">
             <span className="text-[10px] font-mono uppercase tracking-wider text-[#64748B] block px-3">
-              Primary Dashboards
+              Dashboard Login Routes
             </span>
             <Link
-              href="/erp"
+              href="/auth/dashboard-login?role=admin"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center justify-between px-3 py-2 rounded-md text-xs font-bold text-[#FFFFFF] bg-[#0F172A]"
             >
-              <span>Admin Dashboard</span>
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#2563EB] text-[#FFFFFF]">ERP</span>
+              <div>
+                <span>Admin Dashboard Login</span>
+                <span className="block font-mono text-[9px] text-[#38BDF8]">/auth/dashboard-login?role=admin</span>
+              </div>
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#2563EB] text-[#FFFFFF]">Admin</span>
             </Link>
             <Link
-              href="/portal"
+              href="/auth/login"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center justify-between px-3 py-2 rounded-md text-xs font-bold text-[#2563EB] bg-[#EFF6FF] border border-[#BFDBFE]"
             >
-              <span>User Dashboard</span>
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#2563EB]/15 text-[#2563EB]">Customer</span>
+              <div>
+                <span>Customer Portal Login</span>
+                <span className="block font-mono text-[9px] text-[#2563EB]">/auth/login</span>
+              </div>
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#2563EB]/15 text-[#2563EB]">Client</span>
             </Link>
-
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#64748B] block px-3 pt-2">
-              Dealership Department Desks
-            </span>
-            <div className="grid grid-cols-2 gap-1 px-1">
-              {departmentDesks.map((d) => (
-                <Link
-                  key={d.name}
-                  href={d.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-2.5 py-1.5 rounded-md text-[11px] font-semibold text-[#475569] hover:text-[#2563EB] hover:bg-[#EFF6FF] transition-colors"
-                >
-                  {d.name}
-                </Link>
-              ))}
-            </div>
 
             <div className="pt-2.5 mt-2 border-t border-[#E2E8F0] flex flex-col gap-1.5 px-1">
               <Link
@@ -553,7 +523,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookTestDrive }) => {
                 className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-[#FFFFFF] bg-[#2563EB] hover:bg-[#1D4ED8]"
               >
                 <FiShield className="w-3.5 h-3.5" />
-                <span>Staff Dashboard Login</span>
+                <span>Unified Staff Login Gateway</span>
               </Link>
               <Link
                 href="/auth/register"

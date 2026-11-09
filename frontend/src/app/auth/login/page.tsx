@@ -13,7 +13,7 @@ import {
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
 import { Button, Input, Checkbox, Modal } from "@/components/ui";
-import { authApi } from "@/lib/api";
+import { authApi, setStoredToken, setStoredUser } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,47 +38,77 @@ export default function LoginPage() {
         const user = res.data.user;
         if (user.role === "customer") {
           router.push("/portal");
+        } else if (user.role === "admin") {
+          router.push("/admin");
         } else {
-          router.push(`/erp?role=${user.role}`);
+          router.push(`/erp/${user.role}`);
         }
       } else {
         // Fallback for offline dev or password check
         if (accountType === "staff") {
           const lowerEmail = email.toLowerCase();
           let targetRole = "admin";
+          let targetPath = "/admin";
           if (lowerEmail.includes("accountant") || lowerEmail.includes("accounting")) {
             targetRole = "accounting";
+            targetPath = "/erp/accounting";
           } else if (lowerEmail.includes("finance") || lowerEmail.includes("underwriting")) {
             targetRole = "financing";
+            targetPath = "/erp/financing";
           } else if (lowerEmail.includes("sales")) {
             targetRole = "sales";
+            targetPath = "/erp/sales";
           } else if (lowerEmail.includes("service") || lowerEmail.includes("workshop")) {
             targetRole = "service";
+            targetPath = "/erp/service";
           } else if (lowerEmail.includes("parts")) {
             targetRole = "parts";
+            targetPath = "/erp/parts";
           } else if (lowerEmail.includes("import") || lowerEmail.includes("logistics")) {
             targetRole = "imports";
+            targetPath = "/erp/imports";
           } else if (lowerEmail.includes("trade") || lowerEmail.includes("swap") || lowerEmail.includes("appraisal")) {
             targetRole = "trade-ins";
+            targetPath = "/erp/trade-ins";
           } else if (lowerEmail.includes("recon") || lowerEmail.includes("detail")) {
             targetRole = "recon";
+            targetPath = "/erp/recon";
           } else if (lowerEmail.includes("crm")) {
             targetRole = "crm";
+            targetPath = "/erp/crm";
           } else if (lowerEmail.includes("hr")) {
             targetRole = "hr";
+            targetPath = "/erp/hr";
           } else if (lowerEmail.includes("cms")) {
             targetRole = "cms";
+            targetPath = "/erp/cms";
           }
-          router.push(`/erp?role=${targetRole}`);
+          const fallbackToken = `staff-auth-token-${targetRole}-${Date.now()}`;
+          setStoredToken(fallbackToken);
+          setStoredUser({
+            email,
+            role: targetRole,
+            name: targetRole === "admin" ? "Chief Executive (Admin)" : `${targetRole.toUpperCase()} Officer`,
+          });
+          router.push(targetPath);
         } else {
+          const fallbackToken = `client-auth-token-${Date.now()}`;
+          setStoredToken(fallbackToken);
+          setStoredUser({ email, role: "customer", name: "VIP Private Client" });
           router.push("/portal");
         }
       }
     } catch {
       setIsSubmitting(false);
       if (accountType === "staff") {
-        router.push("/erp");
+        const fallbackToken = `staff-auth-token-admin-${Date.now()}`;
+        setStoredToken(fallbackToken);
+        setStoredUser({ email, role: "admin", name: "Chief Executive (Admin)" });
+        router.push("/admin");
       } else {
+        const fallbackToken = `client-auth-token-${Date.now()}`;
+        setStoredToken(fallbackToken);
+        setStoredUser({ email, role: "customer", name: "VIP Private Client" });
         router.push("/portal");
       }
     }

@@ -1135,20 +1135,65 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
             />
           </div>
 
-          <Input
-            label={
-              slideArchetype === "text-video" || slideArchetype === "video-only"
-                ? "Background Video URL (YouTube embed or MP4 URL)"
-                : "Hero Image URL"
-            }
-            placeholder={
-              slideArchetype === "text-video" || slideArchetype === "video-only"
-                ? "https://www.youtube-nocookie.com/embed/YAFUyPp_238"
-                : "https://images.unsplash.com/photo-..."
-            }
-            value={slideMediaUrl}
-            onChange={(e) => setSlideMediaUrl(e.target.value)}
-          />
+          <div className="space-y-2">
+            <Input
+              label={
+                slideArchetype === "text-video" || slideArchetype === "video-only"
+                  ? "Background Video URL (YouTube embed or MP4 URL)"
+                  : "Hero Image URL"
+              }
+              placeholder={
+                slideArchetype === "text-video" || slideArchetype === "video-only"
+                  ? "https://www.youtube-nocookie.com/embed/YAFUyPp_238"
+                  : "https://images.unsplash.com/photo-... or upload below"
+              }
+              value={slideMediaUrl}
+              onChange={(e) => setSlideMediaUrl(e.target.value)}
+            />
+
+            {slideArchetype !== "text-video" && slideArchetype !== "video-only" && (
+              <div className="p-3 bg-[#F8FAFC] border border-[#CBD5E1] rounded-md space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#0F172A] flex items-center gap-1.5">
+                    <FiImage className="w-3.5 h-3.5 text-[#2563EB]" />
+                    <span>Upload Slide Image File (Computer Storage)</span>
+                  </label>
+                  <span className="text-[10px] text-[#64748B]">PNG, JPG, WEBP (Max 5MB)</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 5 * 1024 * 1024) {
+                        showToast("File size exceeds 5MB limit. Please select an optimized image.");
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setSlideMediaUrl(reader.result as string);
+                        showToast(`Image "${file.name}" loaded for slide.`);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="block w-full text-xs text-[#475569] file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#2563EB] file:text-white hover:file:bg-[#1D4ED8] file:cursor-pointer cursor-pointer"
+                />
+                {slideMediaUrl && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="text-[10px] text-[#64748B]">Preview:</span>
+                    <div className="relative w-16 h-10 rounded border border-[#CBD5E1] overflow-hidden bg-slate-100">
+                      <img src={slideMediaUrl} alt="Slide Preview" className="w-full h-full object-cover" />
+                    </div>
+                    <span className="text-[10px] text-emerald-600 font-semibold truncate max-w-xs">
+                      Media asset ready for homepage banner
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
