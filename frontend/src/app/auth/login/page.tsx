@@ -12,7 +12,7 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import { FaCar } from "react-icons/fa6";
-import { Button, Input, Checkbox } from "@/components/ui";
+import { Button, Input, Checkbox, Modal } from "@/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,7 +169,7 @@ export default function LoginPage() {
                     href="#forgot"
                     onClick={(e) => {
                       e.preventDefault();
-                      alert("Password reset OTP instructions sent to your registered email.");
+                      setIsForgotModalOpen(true);
                     }}
                     className="font-semibold text-[#2563EB] text-[11px] hover:underline"
                   >
@@ -307,6 +308,35 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
+
+      {/* Password Reset Confirmation Modal */}
+      <Modal
+        isOpen={isForgotModalOpen}
+        onClose={() => setIsForgotModalOpen(false)}
+        title="Password Reset Instructions"
+        description="Secure credentials recovery for authorized client & staff accounts."
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsForgotModalOpen(false)}
+            leftIcon={<FiCheckCircle className="w-3.5 h-3.5" />}
+          >
+            Acknowledge & Close
+          </Button>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            A secure one-time password (OTP) reset link and verification instructions have been dispatched to your registered email address.
+          </p>
+          <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8] flex items-start gap-2">
+            <FiShield className="w-4 h-4 shrink-0 text-[#2563EB] mt-0.5" />
+            <span>If you do not see the email within 2 minutes, please verify your spam folder or contact Dealership IT Concierge.</span>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

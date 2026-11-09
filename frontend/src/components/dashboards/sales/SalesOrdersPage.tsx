@@ -221,41 +221,30 @@ export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
 
       {/* Sales Sub-Views Selector */}
       <Card className="shadow-xs p-3">
-        <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2">
-          <div className="flex flex-wrap gap-1">
-            <Button
-              variant={activeSubTab === "orders" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveSubTab("orders")}
-              className="text-xs font-bold"
-            >
-              Sales Orders & Delivery Handover ({orders.length})
-            </Button>
-            <Button
-              variant={activeSubTab === "reps" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveSubTab("reps")}
-              className="text-xs font-bold"
-            >
-              Rep Quotas & Commissions ({salesRepLedger.length})
-            </Button>
-            <Button
-              variant={activeSubTab === "lost" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveSubTab("lost")}
-              className="text-xs font-bold"
-            >
-              Lost Deals Registry ({lostDeals.length})
-            </Button>
-          </div>
-
+        <div className="flex flex-wrap gap-1">
           <Button
-            variant="primary"
+            variant={activeSubTab === "orders" ? "primary" : "ghost"}
             size="sm"
-            onClick={() => setIsCreateOpen(true)}
-            leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+            onClick={() => setActiveSubTab("orders")}
+            className="text-xs font-bold"
           >
-            + Create Sales Order
+            Sales Orders & Delivery Handover ({orders.length})
+          </Button>
+          <Button
+            variant={activeSubTab === "reps" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveSubTab("reps")}
+            className="text-xs font-bold"
+          >
+            Rep Quotas & Commissions ({salesRepLedger.length})
+          </Button>
+          <Button
+            variant={activeSubTab === "lost" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveSubTab("lost")}
+            className="text-xs font-bold"
+          >
+            Lost Deals Registry ({lostDeals.length})
           </Button>
         </div>
       </Card>
@@ -263,13 +252,23 @@ export const SalesOrdersPage: React.FC<SalesOrdersPageProps> = ({
       {/* VIEW 1: Sales Orders Table */}
       {activeSubTab === "orders" && (
         <Card className="space-y-4 shadow-xs p-4 sm:p-5">
-          <div>
-            <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-              Active Luxury Sales Orders Pipeline
-            </h3>
-            <p className="text-[#64748B] text-[11px]">
-              Enforcing Business Rule 3 (48h Reservation Expiration) & Business Rule 8 (Mandatory Handover Gatekeeper)
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3">
+            <div>
+              <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
+                Active Luxury Sales Orders Pipeline
+              </h3>
+              <p className="text-[#64748B] text-[11px]">
+                Enforcing Business Rule 3 (48h Reservation Expiration) & Business Rule 8 (Mandatory Handover Gatekeeper)
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsCreateOpen(true)}
+              leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+            >
+              + Create Sales Order
+            </Button>
           </div>
 
           <Table

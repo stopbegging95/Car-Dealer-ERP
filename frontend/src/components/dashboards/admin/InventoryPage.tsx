@@ -25,6 +25,7 @@ import {
 } from "react-icons/fi";
 import { Button, Badge, Table, Card, KPICard, Modal, Input, Dropdown } from "@/components/ui";
 import { Vehicle, VehicleCategory, VehicleStatus } from "@/data/vehicles";
+import { TaxonomyManagerSection } from "./MasterDataPage";
 
 export interface InventoryPageProps {
   vehicles: Vehicle[];
@@ -77,6 +78,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
     }))
   );
 
+  const [inventoryViewTab, setInventoryViewTab] = useState<"fleet" | "taxonomies">("fleet");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
@@ -275,8 +277,40 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
         </div>
       )}
 
-      {/* Top Inventory Valuation & Profitability Summary Strip */}
-      <div className="gap-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Sub-Tab Navigation Strip */}
+      <Card className="shadow-xs p-3">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={inventoryViewTab === "fleet" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setInventoryViewTab("fleet")}
+            className="text-xs font-bold"
+          >
+            Vehicle Fleet Inventory ({filteredVehicles.length} Units)
+          </Button>
+          <Button
+            variant={inventoryViewTab === "taxonomies" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setInventoryViewTab("taxonomies")}
+            className="text-xs font-bold"
+          >
+            Showroom Hubs & Fleet Taxonomies (3 Taxonomies)
+          </Button>
+        </div>
+      </Card>
+
+      {inventoryViewTab === "taxonomies" ? (
+        <TaxonomyManagerSection
+          allowedCategories={["hubs", "categories", "makes"]}
+          title="Showroom Hubs & Vehicle Allocation Taxonomies"
+          description="Create, edit, and delete physical showroom hubs (Lagos Flagship, Abuja Suite, Port Transit), vehicle specification classes, and automotive makes."
+          headerBadge="Inventory Desk Authorized"
+          showToast={showToast}
+        />
+      ) : (
+        <>
+          {/* Top Inventory Valuation & Profitability Summary Strip */}
+          <div className="gap-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Fleet Acquisition Cost"
           value={`₦${(valuationMetrics.totalAcq / 1_000_000_000).toFixed(2)}B`}
@@ -552,6 +586,8 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
           },
         ]}
       />
+        </>
+      )}
 
       {/* In-Place Vehicle Inspection & Status Transition Modal */}
       {selectedVehicle && (

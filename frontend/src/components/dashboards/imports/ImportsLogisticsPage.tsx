@@ -18,6 +18,7 @@ import {
   FiActivity,
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
+import { TaxonomyManagerSection } from "../admin/MasterDataPage";
 
 export interface LandedCostBreakdown {
   fobUSD: number;
@@ -138,7 +139,7 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
     },
   ]);
 
-  const [activeTab, setActiveTab] = useState<"shipments" | "containers" | "rollup" | "predictive">("shipments");
+  const [activeTab, setActiveTab] = useState<"shipments" | "containers" | "rollup" | "predictive" | "taxonomies">("shipments");
   const [selectedCostShipment, setSelectedCostShipment] = useState<ShipmentItem | null>(null);
 
   // Phase 3: Supplier & Shipping Predictive Analytics (Section 24)
@@ -275,15 +276,6 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
               Ocean consignments, Grimaldi/MSC sea transit, port demurrage countdown, and automated landed cost rollups.
             </p>
           </div>
-
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsModalOpen(true)}
-            leftIcon={<FiPlus className="w-3.5 h-3.5" />}
-          >
-            + Log Inbound Shipment
-          </Button>
         </div>
       </Card>
 
@@ -322,19 +314,38 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
           >
             Predictive Shipping & Port Telemetry ({predictiveRoutes.length})
           </Button>
+          <Button
+            variant={activeTab === "taxonomies" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("taxonomies")}
+            className="text-xs font-bold"
+          >
+            Ports & Carriers Dropdowns (3 Taxonomies)
+          </Button>
         </div>
       </Card>
 
       {/* VIEW 1: Live Consignments & Port Demurrage */}
       {activeTab === "shipments" && (
         <Card className="space-y-4 shadow-xs p-4 sm:p-5">
-          <div>
-            <h4 className="font-bold text-[#0F172A] text-sm uppercase tracking-wider">
-              Live Ocean Consignments & Port Customs Stages
-            </h4>
-            <p className="text-[11px] text-[#64748B]">
-              Real-time Tin Can Island berth tracking and demurrage free-time monitoring.
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3 pb-3 border-b border-[#E2E8F0]">
+            <div>
+              <h4 className="font-bold text-[#0F172A] text-sm uppercase tracking-wider">
+                Live Ocean Consignments & Port Customs Stages
+              </h4>
+              <p className="text-[11px] text-[#64748B]">
+                Real-time Tin Can Island berth tracking and demurrage free-time monitoring.
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsModalOpen(true)}
+              leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+              className="text-xs font-bold"
+            >
+              + Log Inbound Shipment
+            </Button>
           </div>
 
           <Table
@@ -698,6 +709,18 @@ export const ImportsLogisticsPage: React.FC<ImportsLogisticsPageProps> = ({ show
           />
         </Card>
       )}
+
+      {/* VIEW 5: Logistics Taxonomies & Dropdowns */}
+      {activeTab === "taxonomies" && (
+        <TaxonomyManagerSection
+          allowedCategories={["ports", "carriers", "hubs"]}
+          title="Importation & Logistics Dropdowns & Taxonomies"
+          description="Manage international shipping ports of loading/discharge, ocean freight carriers, and customs bonded holding bays."
+          headerBadge="Logistics Desk Authorized"
+          showToast={showToast}
+        />
+      )}
+
       {selectedCostShipment && (
         <Modal
           isOpen={!!selectedCostShipment}

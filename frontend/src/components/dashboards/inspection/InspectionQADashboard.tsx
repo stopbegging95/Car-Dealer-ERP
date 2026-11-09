@@ -14,6 +14,7 @@ import {
   FiSend,
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, Table, KPICard } from "@/components/ui";
+import { TaxonomyManagerSection } from "../admin/MasterDataPage";
 
 export interface InspectionRecord {
   id: string;
@@ -91,7 +92,7 @@ export const InspectionQADashboard: React.FC<InspectionQADashboardProps> = ({ sh
     },
   ]);
 
-  const [activeTab, setActiveTab] = useState<"pending" | "completed" | "defects">("pending");
+  const [activeTab, setActiveTab] = useState<"pending" | "completed" | "defects" | "taxonomies">("pending");
   const [selectedInspection, setSelectedInspection] = useState<InspectionRecord | null>(null);
   const [isDiagnosticModalOpen, setIsDiagnosticModalOpen] = useState(false);
 
@@ -247,16 +248,32 @@ export const InspectionQADashboard: React.FC<InspectionQADashboardProps> = ({ sh
             >
               Defect Dispatches ({defectsList.length})
             </Button>
+            <Button
+              variant={activeTab === "taxonomies" ? "primary" : "ghost"}
+              size="sm"
+              onClick={() => setActiveTab("taxonomies")}
+              className="text-xs font-bold"
+            >
+              Diagnostic Centers Dropdowns
+            </Button>
           </div>
         </div>
 
-        {/* Dynamic Table for selected queue */}
-        <Table
-          data={activeTab === "pending" ? pendingList : activeTab === "completed" ? completedList : defectsList}
-          keyExtractor={(item) => item.id}
-          pageSize={15}
-          showSerialNumber={true}
-          columns={[
+        {activeTab === "taxonomies" ? (
+          <TaxonomyManagerSection
+            allowedCategories={["inspection_centers"]}
+            title="Diagnostic Inspection Centers & PDI Bays"
+            description="Manage authorized physical diagnostic centers, PDI intake inspection bays, and trade-in examination centers."
+            headerBadge="QA Desk Authorized"
+            showToast={showToast}
+          />
+        ) : (
+          <Table
+            data={activeTab === "pending" ? pendingList : activeTab === "completed" ? completedList : defectsList}
+            keyExtractor={(item) => item.id}
+            pageSize={15}
+            showSerialNumber={true}
+            columns={[
             {
               key: "id",
               header: "Inspection Ref",
@@ -322,6 +339,7 @@ export const InspectionQADashboard: React.FC<InspectionQADashboardProps> = ({ sh
             },
           ]}
         />
+        )}
       </Card>
 
       {/* Modal: 10-System Diagnostic Checklist & Rule 2 Sign-Off */}

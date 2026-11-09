@@ -102,60 +102,47 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ showToast }) => {
 
       {/* 2. Sub-Tabs Bar */}
       <Card className="shadow-xs p-3">
-        <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2">
-          <div className="flex flex-wrap gap-1">
-            <Button
-              variant={activeTab === "parameters" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("parameters")}
-              className="text-xs font-bold"
-            >
-              Approval Limits & Governance
-            </Button>
-            <Button
-              variant={activeTab === "master-data" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("master-data")}
-              className="text-xs font-bold"
-            >
-              Master Data & Dropdown Registry
-            </Button>
-            <Button
-              variant={activeTab === "telemetry" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("telemetry")}
-              className="text-xs font-bold"
-            >
-              System Health & Node Status
-            </Button>
-            <Button
-              variant={activeTab === "security" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("security")}
-              className="text-xs font-bold"
-            >
-              Security Alerts & IP Lockout ({securityLogs.length})
-            </Button>
-            <Button
-              variant={activeTab === "backups" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("backups")}
-              className="text-xs font-bold"
-            >
-              Backup & Disaster Recovery ({backups.length})
-            </Button>
-          </div>
-
-          {activeTab === "backups" && (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleTriggerBackupNow}
-              leftIcon={<FiRefreshCw className="w-3.5 h-3.5" />}
-            >
-              Snapshot Now
-            </Button>
-          )}
+        <div className="flex flex-wrap gap-1">
+          <Button
+            variant={activeTab === "parameters" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("parameters")}
+            className="text-xs font-bold"
+          >
+            Approval Limits & Governance
+          </Button>
+          <Button
+            variant={activeTab === "master-data" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("master-data")}
+            className="text-xs font-bold"
+          >
+            Master Data & Dropdown Registry
+          </Button>
+          <Button
+            variant={activeTab === "telemetry" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("telemetry")}
+            className="text-xs font-bold"
+          >
+            System Health & Node Status
+          </Button>
+          <Button
+            variant={activeTab === "security" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("security")}
+            className="text-xs font-bold"
+          >
+            Security Alerts & IP Lockout ({securityLogs.length})
+          </Button>
+          <Button
+            variant={activeTab === "backups" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("backups")}
+            className="text-xs font-bold"
+          >
+            Backup & Disaster Recovery ({backups.length})
+          </Button>
         </div>
       </Card>
 
@@ -345,13 +332,23 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ showToast }) => {
       {/* VIEW 4: Backup & Disaster Recovery */}
       {activeTab === "backups" && (
         <Card className="space-y-4 shadow-xs p-4 sm:p-5">
-          <div>
-            <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-              Automated Database Backup & Disaster Recovery Schedule
-            </h3>
-            <p className="text-[11px] text-[#64748B]">
-              Daily automated full cluster snapshots and immutable WORM SHA-256 archive ledger verification
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3">
+            <div>
+              <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
+                Automated Database Backup & Disaster Recovery Schedule
+              </h3>
+              <p className="text-[11px] text-[#64748B]">
+                Daily automated full cluster snapshots and immutable WORM SHA-256 archive ledger verification
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleTriggerBackupNow}
+              leftIcon={<FiRefreshCw className="w-3.5 h-3.5" />}
+            >
+              Snapshot Now
+            </Button>
           </div>
 
           <Table

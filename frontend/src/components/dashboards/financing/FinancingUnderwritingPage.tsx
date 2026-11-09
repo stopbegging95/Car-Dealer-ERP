@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FiPlus, FiCheck } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table } from "@/components/ui";
+import { TaxonomyManagerSection } from "../admin/MasterDataPage";
 
 export interface FinanceDealItem {
   app: string;
@@ -25,6 +26,8 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
     { app: "FIN-2026-438", client: "Apex Dynamics Ltd", car: "2024 Mercedes-AMG G63", bank: "First Bank of Nigeria", loan: "₦248,000,000", tenor: "48 Mo @ 13.0%", status: "Approved & Funded" },
     { app: "INS-2026-102", client: "Senator Godswill O.", car: "2023 Range Rover Autobiography", bank: "Leadway Comprehensive Luxury", loan: "₦302,250,000 Value", tenor: "Annual 2.8% Premium", status: "Cover Note Issued" },
   ]);
+
+  const [activeTab, setActiveTab] = useState<"deals" | "taxonomies">("deals");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [client, setClient] = useState("");
@@ -54,7 +57,39 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
   };
 
   return (
-    <Card className="space-y-3 shadow-xs p-4 sm:p-5">
+    <div className="space-y-4">
+      {/* Sub-Tab Navigation Bar */}
+      <Card className="shadow-xs p-3">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={activeTab === "deals" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("deals")}
+            className="text-xs font-bold"
+          >
+            Auto Loan Underwriting Deals ({deals.length} Active)
+          </Button>
+          <Button
+            variant={activeTab === "taxonomies" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("taxonomies")}
+            className="text-xs font-bold"
+          >
+            Lending Banks & Payment Channels (2 Taxonomies)
+          </Button>
+        </div>
+      </Card>
+
+      {activeTab === "taxonomies" ? (
+        <TaxonomyManagerSection
+          allowedCategories={["banks", "payment_channels"]}
+          title="Financing Lending Banks & Remittance Channels"
+          description="Manage accredited underwriting banking partners and client credit remittance channels."
+          headerBadge="F&I Desk Authorized"
+          showToast={showToast}
+        />
+      ) : (
+        <Card className="space-y-3 shadow-xs p-4 sm:p-5">
       <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2 pb-2.5 border-[#E2E8F0] border-b">
         <div>
           <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">Auto Loan Underwriting, Leasing & Credit Facilities</h3>
@@ -260,6 +295,8 @@ export const FinancingUnderwritingPage: React.FC<FinancingUnderwritingPageProps>
         ]}
       />
     </Card>
+      )}
+    </div>
   );
 };
 

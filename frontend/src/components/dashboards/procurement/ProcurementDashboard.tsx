@@ -14,6 +14,7 @@ import {
   FiSliders,
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, KPICard, Table } from "@/components/ui";
+import { TaxonomyManagerSection } from "../admin/MasterDataPage";
 
 export interface PurchaseOrderItem {
   id: string;
@@ -109,7 +110,7 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
     },
   ]);
 
-  const [activeTab, setActiveTab] = useState<"orders" | "suppliers" | "auctions" | "compare">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "suppliers" | "auctions" | "compare" | "taxonomies">("orders");
 
   // Suppliers with Quality Scorecards
   const suppliers: SupplierRecord[] = [
@@ -255,15 +256,6 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
               International luxury dealership fleet acquisitions, Manheim/BCA auction bidding fees, and vendor scoring.
             </p>
           </div>
-
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsCreateModalOpen(true)}
-            leftIcon={<FiPlus className="w-3.5 h-3.5" />}
-          >
-            + Create Purchase Order
-          </Button>
         </div>
       </Card>
 
@@ -330,19 +322,37 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
           >
             Supplier Quality Directory ({suppliers.length})
           </Button>
+          <Button
+            variant={activeTab === "taxonomies" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("taxonomies")}
+            className="text-xs font-bold"
+          >
+            Sourcing Taxonomies & Dropdowns (4 Taxonomies)
+          </Button>
         </div>
       </Card>
 
       {/* VIEW 1: Active Purchase Orders */}
       {activeTab === "orders" && (
         <Card className="space-y-4 p-4 sm:p-5 shadow-xs">
-          <div>
-            <h4 className="font-bold text-[#0F172A] text-sm uppercase tracking-wider">
-              Purchase Orders Pipeline & Rule 5 Executive Sign-Off
-            </h4>
-            <p className="text-[11px] text-[#64748B]">
-              Business Rule 5: Vehicle acquisitions &ge;₦150,000,000 require formal Executive Management sign-off.
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3">
+            <div>
+              <h4 className="font-bold text-[#0F172A] text-sm uppercase tracking-wider">
+                Purchase Orders Pipeline & Rule 5 Executive Sign-Off
+              </h4>
+              <p className="text-[11px] text-[#64748B]">
+                Business Rule 5: Vehicle acquisitions &ge;₦150,000,000 require formal Executive Management sign-off.
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsCreateModalOpen(true)}
+              leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+            >
+              + Create Purchase Order
+            </Button>
           </div>
 
           <Table
@@ -673,6 +683,17 @@ export const ProcurementDashboard: React.FC<{ showToast?: (msg: string) => void 
             ]}
           />
         </Card>
+      )}
+
+      {/* VIEW 5: Sourcing Taxonomies & Dropdown Management */}
+      {activeTab === "taxonomies" && (
+        <TaxonomyManagerSection
+          allowedCategories={["suppliers", "sourcing_markets", "makes", "categories"]}
+          title="Procurement Sourcing Taxonomies & Supplier Dropdowns"
+          description="Manage international verified suppliers, auction desks, sourcing origin markets, brands, and vehicle classes."
+          headerBadge="Procurement Desk Authorized"
+          showToast={showToast}
+        />
       )}
 
       {/* Create Purchase Order Modal */}

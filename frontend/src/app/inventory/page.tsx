@@ -16,6 +16,7 @@ export default function InventoryPage() {
 
   // Modal
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
+  const [isAppointmentSuccessOpen, setIsAppointmentSuccessOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [testDriveDate, setTestDriveDate] = useState("2026-11-20");
   const [testDriveLocation, setTestDriveLocation] = useState("Lagos Showroom");
@@ -204,8 +205,8 @@ export default function InventoryPage() {
               variant="primary"
               size="sm"
               onClick={() => {
-                alert("VIP appointment scheduled successfully!");
                 setIsTestDriveOpen(false);
+                setIsAppointmentSuccessOpen(true);
               }}
               leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
@@ -235,6 +236,38 @@ export default function InventoryPage() {
                 { label: "Abuja Showroom (Maitama)", value: "Abuja Showroom" },
               ]}
             />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Appointment Confirmation Modal */}
+      <Modal
+        isOpen={isAppointmentSuccessOpen}
+        onClose={() => setIsAppointmentSuccessOpen(false)}
+        title="VIP Appointment Scheduled"
+        description="Your viewing request has been assigned to a senior sales concierge."
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsAppointmentSuccessOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Close
+          </Button>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            Your appointment for{" "}
+            <strong className="text-[#0F172A]">
+              {selectedVehicle ? `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}` : "the selected vehicle"}
+            </strong>{" "}
+            has been confirmed for <span className="text-[#2563EB] font-bold">{testDriveDate}</span> at the <span className="font-semibold text-[#0F172A]">{testDriveLocation}</span>.
+          </p>
+          <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8]">
+            A private concierge liaison will contact you via phone or WhatsApp 24 hours prior to confirm your viewing suite and gate access credentials.
           </div>
         </div>
       </Modal>

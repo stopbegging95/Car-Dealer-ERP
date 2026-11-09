@@ -155,49 +155,38 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ onOpenTransferModa
 
       {/* 2. Sub-Tabs Bar */}
       <Card className="shadow-xs p-3">
-        <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2">
-          <div className="flex flex-wrap gap-1">
-            <Button
-              variant={activeTab === "branches" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("branches")}
-              className="text-xs font-bold"
-            >
-              Multi-Branch Performance Matrix ({locations.length})
-            </Button>
-            <Button
-              variant={activeTab === "keys" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("keys")}
-              className="text-xs font-bold"
-            >
-              Yard Key Slot & RFID Audit ({yardKeySlots.length})
-            </Button>
-            <Button
-              variant={activeTab === "assets" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("assets")}
-              className="text-xs font-bold"
-            >
-              Physical Equipment & Assets ({physicalAssets.length})
-            </Button>
-            <Button
-              variant={activeTab === "activity" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("activity")}
-              className="text-xs font-bold"
-            >
-              Daily Operations Log ({dailyActivities.length})
-            </Button>
-          </div>
-
+        <div className="flex flex-wrap gap-1">
           <Button
-            variant="primary"
+            variant={activeTab === "branches" ? "primary" : "ghost"}
             size="sm"
-            onClick={onOpenTransferModal}
-            leftIcon={<FiNavigation className="w-3.5 h-3.5" />}
+            onClick={() => setActiveTab("branches")}
+            className="text-xs font-bold"
           >
-            + Initiate Inter-Branch Transfer
+            Multi-Branch Performance Matrix ({locations.length})
+          </Button>
+          <Button
+            variant={activeTab === "keys" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("keys")}
+            className="text-xs font-bold"
+          >
+            Yard Key Slot & RFID Audit ({yardKeySlots.length})
+          </Button>
+          <Button
+            variant={activeTab === "assets" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("assets")}
+            className="text-xs font-bold"
+          >
+            Physical Equipment & Assets ({physicalAssets.length})
+          </Button>
+          <Button
+            variant={activeTab === "activity" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("activity")}
+            className="text-xs font-bold"
+          >
+            Daily Operations Log ({dailyActivities.length})
           </Button>
         </div>
       </Card>
@@ -205,13 +194,23 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ onOpenTransferModa
       {/* VIEW 1: Multi-Branch Performance Matrix */}
       {activeTab === "branches" && (
         <Card className="space-y-4 shadow-xs p-4 sm:p-5">
-          <div>
-            <h4 className="font-bold text-[#0F172A] text-sm uppercase tracking-wider">
-              Multi-Branch Comparative Performance & Facility Matrix
-            </h4>
-            <p className="text-[11px] text-[#64748B]">
-              Comparing vehicle inventory capacity, throughput velocity, bay utilization, and facility OPEX
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3">
+            <div>
+              <h4 className="font-bold text-[#0F172A] text-sm uppercase tracking-wider">
+                Multi-Branch Comparative Performance & Facility Matrix
+              </h4>
+              <p className="text-[11px] text-[#64748B]">
+                Comparing vehicle inventory capacity, throughput velocity, bay utilization, and facility OPEX
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onOpenTransferModal}
+              leftIcon={<FiNavigation className="w-3.5 h-3.5" />}
+            >
+              + Initiate Inter-Branch Transfer
+            </Button>
           </div>
 
           <Table

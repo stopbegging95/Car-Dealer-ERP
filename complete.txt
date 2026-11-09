@@ -410,7 +410,91 @@ COMPLETED MODULES & CAPABILITIES:
     - Embedded into `SettingsPage.tsx` as the "Master Data & Dropdown Registry" tab, rendered directly from the ERP sidebar ("Master Data & Dropdowns"), and mapped to the direct `/erp/master-data` route.
   * Verified with full Next.js production build: 30/30 static and dynamic routes compiled cleanly with 0 errors.
 
+
+[COMPLETED] 21. FULL AUDIT & ELIMINATION OF WINDOW.ALERT & CONFIRM WITH REUSABLE MODALS
+- Files Audited & Refactored:
+  * frontend/src/app/auth/login/page.tsx (Password reset OTP instructions modal)
+  * frontend/src/app/careers/page.tsx (Job application submission success modal)
+  * frontend/src/app/inventory/page.tsx (VIP showroom appointment confirmation modal)
+  * frontend/src/app/inventory/[stockId]/page.tsx (Dossier download dispatch modal & Test drive confirmed modal)
+  * frontend/src/app/page.tsx (Homepage VIP test drive booking confirmation modal)
+  * frontend/src/app/services/ai-car-match/page.tsx (AI matchmaking concierge booking confirmation modal)
+  * frontend/src/app/services/loan-calculator/page.tsx (Financing pre-qualification submission confirmation modal)
+  * frontend/src/components/DashboardLayout.tsx (Sidebar & profile dropdown session termination confirmation modal)
+  * frontend/src/components/dashboards/admin/MasterDataPage.tsx (Option deletion confirmation modal & Category factory reset confirmation modal)
+- Implemented:
+  * 100% elimination of all `window.alert`, `alert()`, `window.confirm`, and `confirm()` calls across all pages, components, and dashboards.
+  * Replaced every browser-blocking alert and confirm popup with standardized, accessible, responsive `Modal` dialogs with custom titles, context descriptions, warning/success status badges, and Cancel/Confirm action controls.
+  * Automated codebase AST scan verified: exactly 0 occurrences of alert/confirm remain in the repository.
+  * Next.js production build verified: all 30 routes cleanly compiled with 0 errors.
+
+
+[COMPLETED] 22. DROPDOWN COMPONENT STREAMLINING & CLEAN MODAL DECOUPLING
+- Files Refactored:
+  * frontend/src/components/ui/MasterDropdown.tsx
+  * frontend/src/components/ui/Dropdown.tsx
+- Implemented:
+  * Completely removed edit, delete, and manage modals from inline dropdown components inside modals.
+  * Form modal dropdowns are now clean, focused, and fast, preventing multi-modal stacking and interface clutter.
+  * Dropdown options are consumed cleanly from `MasterDataContext` and synced application-wide.
+
+[COMPLETED] 23. DEDICATED IN-DASHBOARD CRUD MANAGEMENT SECTIONS FOR AUTHORIZED TAXONOMIES
+- Files Refactored & Integrated:
+  * frontend/src/components/dashboards/admin/MasterDataPage.tsx (`TaxonomyManagerSection` reusable component with `allowedCategories`, `title`, `description`, and `headerBadge` props)
+  * frontend/src/components/dashboards/admin/InventoryPage.tsx (Sub-tab navigation: "Vehicle Fleet Inventory" vs. "Showroom Hubs & Fleet Taxonomies" for `hubs`, `categories`, `makes`)
+  * frontend/src/components/dashboards/procurement/ProcurementDashboard.tsx (Sub-tab navigation: "Sourcing Taxonomies & Dropdowns" for `suppliers`, `sourcing_markets`, `makes`, `categories`)
+  * frontend/src/components/dashboards/imports/ImportsLogisticsPage.tsx (Sub-tab navigation: "Ports & Carriers Dropdowns" for `ports`, `carriers`, `hubs`)
+  * frontend/src/components/dashboards/trade-ins/TradeInsAppraisalsPage.tsx (Sub-tab navigation: "Appraisal Centers & Dropdowns" for `inspection_centers`, `categories`, `hubs`)
+  * frontend/src/components/dashboards/inspection/InspectionQADashboard.tsx (Sub-tab navigation: "Diagnostic Centers Dropdowns" for `inspection_centers`)
+  * frontend/src/components/dashboards/crm/CRMPipelinePage.tsx (Sub-tab navigation: "Dispute Taxonomies" for `dispute_categories`)
+  * frontend/src/components/dashboards/accounting/AccountingDashboard.tsx (Sub-tab navigation: "Banks & Payment Channels" for `banks`, `payment_channels`)
+  * frontend/src/components/dashboards/financing/FinancingUnderwritingPage.tsx (Sub-tab navigation: "Lending Banks & Payment Channels" for `banks`, `payment_channels`)
+  * frontend/src/components/dashboards/hr/HRRecruitmentPage.tsx (Sub-tab navigation: "Departments & Hubs Registry" for `departments`, `hubs`)
+  * frontend/src/components/dashboards/admin/MasterDataPage.tsx (Super Admin Master Data suite managing all 12 categories)
+- Implemented:
+  * Every authorized dashboard has its own dedicated page/tab section to manage (Create, Edit, Delete, Reset) its permitted dropdown options.
+  * Reusable `Table` with auto Serial Number (S/N), 15 items per page pagination, search filter, and collapse accordion toggle.
+  * KPI summary cards showing total category options, default system presets, custom dynamic entries, and 100% sync status.
+  * Reusable modal dialogs for Adding New Options, Editing Option Labels & Notes, Danger Delete Confirmation, and Factory Reset.
+  * Strict RBAC isolation: Each department dashboard can only create, edit, or delete options for taxonomies permitted within its operational domain.
+  * Instant application-wide synchronization via `MasterDataContext` and `localStorage`.
+
+[COMPLETED] 24. IN-TAB CONTEXTUAL CREATION BUTTON RESTRUCTURING ACROSS ALL TABS AND DASHBOARDS
+- Files Refactored:
+  * frontend/src/components/dashboards/admin/MasterDataPage.tsx (TaxonomyManagerSection & MasterDataPage)
+  * frontend/src/components/dashboards/procurement/ProcurementDashboard.tsx
+  * frontend/src/components/dashboards/imports/ImportsLogisticsPage.tsx
+  * frontend/src/components/dashboards/crm/CRMPipelinePage.tsx
+  * frontend/src/components/dashboards/hr/HRRecruitmentPage.tsx
+  * frontend/src/components/dashboards/admin/CMSPage.tsx
+  * frontend/src/components/dashboards/admin/DocumentVaultPage.tsx
+  * frontend/src/components/dashboards/admin/SettingsPage.tsx
+  * frontend/src/components/dashboards/admin/TransfersPage.tsx
+  * frontend/src/components/dashboards/sales/SalesOrdersPage.tsx
+- Implemented:
+  * Master Data & Dropdowns Page (`/erp/master-data` & `TaxonomyManagerSection`):
+    - Removed single generic "+ Create New Option" and "Reset Category" buttons from the outer card header.
+    - Implemented `CATEGORY_META` dictionary defining distinct singular terms, customized button copy (`addBtnText`), field prompts, and placeholders across all 12 taxonomies (e.g. "+ Add Showroom Hub", "+ Add Vehicle Class", "+ Add Shipping Port", "+ Add Sourcing Supplier", "+ Add Commercial Bank", "+ Add Diagnostic Center").
+    - Positioned tailored creation and reset buttons strictly inside the active tab's control strip, ensuring each tab triggers creation exclusively for its own separate data.
+    - Contextualized Create and Edit modals to reflect the active tab's specific title, singular noun, input label, and placeholder.
+  * Across All Other Department Dashboards with Sub-Tabs:
+    - Removed misplaced global creation buttons from outer card headers and sub-tabs switcher bars.
+    - Scoped creation buttons strictly inside each respective sub-tab view:
+      * Procurement: "+ Create Purchase Order" placed strictly inside Active Purchase Orders view (`activeTab === "orders"`).
+      * Imports: "+ Log Inbound Shipment" placed strictly inside Active Container Shipments view (`activeTab === "shipments"`).
+      * CRM: "+ New Client Dossier" placed strictly inside Leads view (`activeTab === "leads"`), and "+ Open Dispute Ticket" placed strictly inside Complaints view (`activeTab === "complaints"`).
+      * HR: "+ Register Staff Profile" placed strictly inside Staff Directory view (`activeTab === "directory"`).
+      * CMS: "+ Launch Campaign" placed strictly inside Campaigns view (`activeTab === "campaigns"`), and "+ Create Editorial" placed strictly inside Articles view (`activeTab === "articles"`).
+      * Document Vault: "+ Upload Vault File" placed strictly inside Vault Repository view (`activeTab === "vault"`).
+      * Settings: "Snapshot Now" placed strictly inside Backup & Disaster Recovery view (`activeTab === "backups"`).
+      * Transfers: "+ Initiate Inter-Branch Transfer" placed strictly inside Multi-Branch Matrix view (`activeTab === "branches"`).
+      * Sales: "+ Create Sales Order" placed strictly inside Sales Orders view (`activeSubTab === "orders"`).
+  * Quality Verification:
+    - Zero TypeScript compilation errors (`tsc --noEmit` exited 0).
+    - Production build verification: all 30 routes compiled and prerendered cleanly (`next build --webpack` exited 0).
+
 ================================================================================
-ALL 17 MODULES, 12 BUSINESS RULES, AND DYNAMIC MASTER DATA TAXONOMY ENGINE
-ARE 100% COMPLETED, VERIFIED, AND CATALOGED.
+ALL 17 MODULES, 12 BUSINESS RULES, DYNAMIC MASTER DATA TAXONOMY ENGINE,
+STRICT REUSABLE MODAL AUDIT, DEDICATED IN-DASHBOARD CRUD SECTIONS, AND
+IN-TAB CONTEXTUAL CREATION BUTTON RESTRUCTURING ARE 100% COMPLETED AND VERIFIED.
 ================================================================================

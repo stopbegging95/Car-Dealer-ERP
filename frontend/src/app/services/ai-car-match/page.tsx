@@ -27,6 +27,7 @@ export default function AICarMatchPage() {
   const [familySize, setFamilySize] = useState<string>("1-2");
   const [powertrainInterest, setPowertrainInterest] = useState<string>("Petrol");
   const [isLeadModalOpen, setIsLeadModalOpen] = useState<boolean>(false);
+  const [isConsultationSuccessOpen, setIsConsultationSuccessOpen] = useState<boolean>(false);
   const [selectedMatchCar, setSelectedMatchCar] = useState<Vehicle | null>(null);
 
   // Calculation of recommendations
@@ -382,8 +383,8 @@ export default function AICarMatchPage() {
               variant="primary"
               size="sm"
               onClick={() => {
-                alert("Consultation booked! A concierge will message you shortly.");
                 setIsLeadModalOpen(false);
+                setIsConsultationSuccessOpen(true);
               }}
               leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
             >
@@ -396,6 +397,36 @@ export default function AICarMatchPage() {
           <Input label="Full Name" placeholder="e.g. Chief Alexander Vance" />
           <Input label="Phone Number / WhatsApp" placeholder="+234 (0) 800 123 4567" />
           <Input label="Email Address" type="email" placeholder="alexander@company.com" />
+        </div>
+      </Modal>
+
+      {/* Consultation Booked Confirmation Modal */}
+      <Modal
+        isOpen={isConsultationSuccessOpen}
+        onClose={() => setIsConsultationSuccessOpen(false)}
+        title="Consultation Request Received"
+        description="Private luxury concierge liaison assigned."
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsConsultationSuccessOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Close
+          </Button>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            Your AI Match consultation request for{" "}
+            <strong className="text-[#0F172A]">{selectedMatchCar ? `${selectedMatchCar.make} ${selectedMatchCar.model}` : "your selected match"}</strong>{" "}
+            has been successfully logged.
+          </p>
+          <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8]">
+            A dedicated luxury concierge executive will message you shortly via WhatsApp with a detailed high-resolution video walkaround and private viewing arrangements.
+          </div>
         </div>
       </Modal>
 

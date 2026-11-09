@@ -13,6 +13,7 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 import { Button, Badge, Card, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
+import { TaxonomyManagerSection } from "../admin/MasterDataPage";
 
 export interface TradeInItem {
   id: string;
@@ -91,6 +92,7 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"appraisals" | "taxonomies">("appraisals");
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [selectedForCalc, setSelectedForCalc] = useState<TradeInItem | null>(null);
 
@@ -184,7 +186,38 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
         </div>
       )}
 
-      <Card className="space-y-4 shadow-xs p-4 sm:p-5">
+      {/* Sub-Tab Navigation Bar */}
+      <Card className="shadow-xs p-3">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={activeTab === "appraisals" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("appraisals")}
+            className="text-xs font-bold"
+          >
+            Client Trade-In Appraisals ({tradeIns.length} Queued)
+          </Button>
+          <Button
+            variant={activeTab === "taxonomies" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("taxonomies")}
+            className="text-xs font-bold"
+          >
+            Appraisal Centers & Dropdowns (3 Taxonomies)
+          </Button>
+        </div>
+      </Card>
+
+      {activeTab === "taxonomies" ? (
+        <TaxonomyManagerSection
+          allowedCategories={["inspection_centers", "categories", "hubs"]}
+          title="Trade-In Appraisal Centers & Vehicle Taxonomies"
+          description="Manage authorized physical appraisal diagnostic centers, vehicle specification classes, and intake showroom hubs."
+          headerBadge="Trade-In Desk Authorized"
+          showToast={showToast}
+        />
+      ) : (
+        <Card className="space-y-4 shadow-xs p-4 sm:p-5">
         <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2 pb-2.5 border-[#E2E8F0] border-b">
           <div>
             <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
@@ -331,6 +364,7 @@ export const TradeInsAppraisalsPage: React.FC<TradeInsAppraisalsPageProps> = ({
           ]}
         />
       </Card>
+      )}
 
       {/* Modal: New Appraisal Dossier */}
       <Modal

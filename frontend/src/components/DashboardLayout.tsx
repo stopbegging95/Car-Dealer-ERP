@@ -15,7 +15,7 @@ import {
   FiMail,
 } from "react-icons/fi";
 import { FaAward } from "react-icons/fa6";
-import { Button } from "./ui";
+import { Button, Modal } from "./ui";
 
 export interface DashboardMenuItem {
   name: string;
@@ -66,6 +66,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [activeCurrency] = useState<"NGN">("NGN");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([
@@ -310,7 +311,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </Link>
 
           <button
-            onClick={() => alert("Session securely signed out. Telemetry logged to immutable audit ledger.")}
+            type="button"
+            onClick={() => setIsLogoutModalOpen(true)}
             className="flex items-center gap-2 px-3 py-1.5 rounded-md w-full font-semibold text-[#64748B] hover:text-red-600 text-xs transition-colors cursor-pointer"
           >
             <FiLogOut className="w-3.5 h-3.5" />
@@ -564,7 +566,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       type="button"
                       onClick={() => {
                         setIsProfileDropdownOpen(false);
-                        alert("Session securely terminated. Logout event cryptographically recorded.");
+                        setIsLogoutModalOpen(true);
                       }}
                       className="w-full text-left px-3 py-2 rounded-md hover:bg-red-50 text-xs font-bold text-red-600 flex items-center gap-2.5 transition-colors cursor-pointer"
                     >
@@ -603,6 +605,48 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
         </footer>
       </div>
+
+      {/* Session Sign Out Confirmation Modal */}
+      <Modal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        title="Confirm Session Sign Out"
+        description="Terminating active enterprise session."
+        size="sm"
+        footer={
+          <div className="flex items-center justify-end gap-2 w-full">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsLogoutModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                setIsLogoutModalOpen(false);
+                window.location.href = "/auth/login";
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              leftIcon={<FiLogOut className="w-3.5 h-3.5 text-white" />}
+            >
+              Confirm Sign Out
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            Are you sure you want to log out of your <strong className="text-[#0F172A]">{userRole}</strong> session (<span className="text-[#2563EB]">{userEmail}</span>)?
+          </p>
+          <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8] flex items-start gap-2">
+            <FiCheckCircle className="w-4 h-4 shrink-0 text-[#2563EB] mt-0.5" />
+            <span>Session revocation telemetry and audit trail will be cryptographically written to the immutable ledger.</span>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

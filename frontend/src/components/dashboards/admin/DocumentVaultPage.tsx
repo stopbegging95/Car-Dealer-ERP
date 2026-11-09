@@ -150,49 +150,38 @@ export const DocumentVaultPage: React.FC<DocumentVaultPageProps> = ({ onDownload
 
       {/* 2. Sub-Tabs Bar */}
       <Card className="shadow-xs p-3">
-        <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2">
-          <div className="flex flex-wrap gap-1">
-            <Button
-              variant={activeTab === "vault" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("vault")}
-              className="text-xs font-bold"
-            >
-              Document Vault ({documentsList.length})
-            </Button>
-            <Button
-              variant={activeTab === "contracts" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("contracts")}
-              className="text-xs font-bold"
-            >
-              Digital Contracts ({contracts.length})
-            </Button>
-            <Button
-              variant={activeTab === "renewals" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("renewals")}
-              className="text-xs font-bold"
-            >
-              License Expirations & Renewals ({renewals.length})
-            </Button>
-            <Button
-              variant={activeTab === "disputes" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("disputes")}
-              className="text-xs font-bold"
-            >
-              Legal Matters Docket ({disputes.length})
-            </Button>
-          </div>
-
+        <div className="flex flex-wrap gap-1">
           <Button
-            variant="primary"
+            variant={activeTab === "vault" ? "primary" : "ghost"}
             size="sm"
-            onClick={() => setIsUploadOpen(true)}
-            leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+            onClick={() => setActiveTab("vault")}
+            className="text-xs font-bold"
           >
-            + Upload Vault File
+            Document Vault ({documentsList.length})
+          </Button>
+          <Button
+            variant={activeTab === "contracts" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("contracts")}
+            className="text-xs font-bold"
+          >
+            Digital Contracts ({contracts.length})
+          </Button>
+          <Button
+            variant={activeTab === "renewals" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("renewals")}
+            className="text-xs font-bold"
+          >
+            License Expirations & Renewals ({renewals.length})
+          </Button>
+          <Button
+            variant={activeTab === "disputes" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("disputes")}
+            className="text-xs font-bold"
+          >
+            Legal Matters Docket ({disputes.length})
           </Button>
         </div>
       </Card>
@@ -200,13 +189,23 @@ export const DocumentVaultPage: React.FC<DocumentVaultPageProps> = ({ onDownload
       {/* VIEW 1: Document Vault Repository */}
       {activeTab === "vault" && (
         <Card className="space-y-4 shadow-xs p-4 sm:p-5">
-          <div>
-            <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-              Encrypted Vehicle Title & Regulatory Document Vault
-            </h3>
-            <p className="text-[11px] text-[#64748B]">
-              Cryptographically watermarked titles, customs Single Goods Declarations (SGD), police clearances & inspection certificates
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3">
+            <div>
+              <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
+                Encrypted Vehicle Title & Regulatory Document Vault
+              </h3>
+              <p className="text-[11px] text-[#64748B]">
+                Cryptographically watermarked titles, customs Single Goods Declarations (SGD), police clearances & inspection certificates
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsUploadOpen(true)}
+              leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+            >
+              + Upload Vault File
+            </Button>
           </div>
 
           <Table

@@ -214,7 +214,7 @@ export function ERPConsoleContent({
   >("Department Head / Director");
 
   // Accounting Department Dashboard State
-  const [accountingTab, setAccountingTab] = useState<"margins" | "payables" | "receivables" | "tax">("margins");
+  const [accountingTab, setAccountingTab] = useState<"margins" | "payables" | "receivables" | "tax" | "taxonomies">("margins");
   const [fiscalPeriodLocked, setFiscalPeriodLocked] = useState<boolean>(false);
   const [selectedVoucherForAudit, setSelectedVoucherForAudit] = useState<{
     stockId: string;

@@ -15,12 +15,13 @@ import { LandedMarginsPage, LandedMarginVoucher } from "./LandedMarginsPage";
 import { PayablesPage, PayableItem } from "./PayablesPage";
 import { ReceivablesPage, ReceivableItem } from "./ReceivablesPage";
 import { TaxCompliancePage } from "./TaxCompliancePage";
+import { TaxonomyManagerSection } from "../admin/MasterDataPage";
 
 export interface AccountingDashboardProps {
   payablesList: PayableItem[];
   receivablesList: ReceivableItem[];
-  accountingTab: "margins" | "payables" | "receivables" | "tax";
-  onTabChange: (tab: "margins" | "payables" | "receivables" | "tax") => void;
+  accountingTab: "margins" | "payables" | "receivables" | "tax" | "taxonomies";
+  onTabChange: (tab: "margins" | "payables" | "receivables" | "tax" | "taxonomies") => void;
   onAuditVoucher: (voucher: LandedMarginVoucher) => void;
   onDisburse: (id: string) => void;
   onVerifyWire: (id: string) => void;
@@ -138,6 +139,7 @@ export const AccountingDashboard: React.FC<AccountingDashboardProps> = ({
             { id: "payables", label: `Accounts Payable (${payablesList.filter(p => p.status !== "Settled via Wire").length} Due)` },
             { id: "receivables", label: `Accounts Receivable (${receivablesList.filter(r => r.status !== "Verified & Reconciled to GL").length} Pending)` },
             { id: "tax", label: "FIRS VAT & Tax Compliance" },
+            { id: "taxonomies", label: "Banks & Payment Channels (2 Taxonomies)" },
           ].map((tab) => (
             <Button
               key={tab.id}
@@ -182,6 +184,16 @@ export const AccountingDashboard: React.FC<AccountingDashboardProps> = ({
 
       {accountingTab === "tax" && (
         <TaxCompliancePage showToast={showToast} />
+      )}
+
+      {accountingTab === "taxonomies" && (
+        <TaxonomyManagerSection
+          allowedCategories={["banks", "payment_channels"]}
+          title="Corporate Settlement Banks & Payment Remittance Channels"
+          description="Manage corporate escrow banking institutions, statutory NCS customs accounts, and payment remittance channels."
+          headerBadge="Accounting Desk Authorized"
+          showToast={showToast}
+        />
       )}
     </div>
   );

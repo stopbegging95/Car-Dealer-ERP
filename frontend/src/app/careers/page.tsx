@@ -30,6 +30,7 @@ export interface JobVacancy {
 export default function CareersPage() {
   const [selectedJob, setSelectedJob] = useState<JobVacancy | null>(null);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [isApplicationSuccessOpen, setIsApplicationSuccessOpen] = useState(false);
 
   const vacancies = [
     {
@@ -190,8 +191,8 @@ export default function CareersPage() {
                 variant="primary"
                 size="sm"
                 onClick={() => {
-                  alert("Application submitted! Our recruitment team will review your CV.");
                   setIsApplyModalOpen(false);
+                  setIsApplicationSuccessOpen(true);
                 }}
                 leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
               >
@@ -220,6 +221,34 @@ export default function CareersPage() {
           </div>
         </Modal>
       )}
+
+      {/* Application Confirmation Modal */}
+      <Modal
+        isOpen={isApplicationSuccessOpen}
+        onClose={() => setIsApplicationSuccessOpen(false)}
+        title="Application Successfully Submitted"
+        description="Thank you for your interest in joining the dealership executive team."
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsApplicationSuccessOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Close & Return
+          </Button>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            Your dossier has been securely submitted to our People Operations & Executive Talent Acquisition team.
+          </p>
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-[11px]">
+            Shortlisted candidates will receive confidential email correspondence within 3 business days for initial panel scheduling.
+          </div>
+        </div>
+      </Modal>
 
       <Footer />
     </div>

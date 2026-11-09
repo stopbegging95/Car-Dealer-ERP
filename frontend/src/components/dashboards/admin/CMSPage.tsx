@@ -197,60 +197,46 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
 
       {/* 2. Sub-Tabs Bar */}
       <Card className="shadow-xs p-3">
-        <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2">
-          <div className="flex flex-wrap gap-1">
-            <Button
-              variant={activeTab === "campaigns" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("campaigns")}
-              className="text-xs font-bold"
-            >
-              Advertising Campaigns & ROI ({campaigns.length})
-            </Button>
-            <Button
-              variant={activeTab === "articles" ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("articles")}
-              className="text-xs font-bold"
-            >
-              Public Editorial Dispatches ({articles.length})
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {activeTab === "campaigns" ? (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setIsCampaignModalOpen(true)}
-                leftIcon={<FiPlus className="w-3.5 h-3.5" />}
-              >
-                + Launch Campaign
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setIsArticleModalOpen(true)}
-                leftIcon={<FiPlus className="w-3.5 h-3.5" />}
-              >
-                + Create Editorial
-              </Button>
-            )}
-          </div>
+        <div className="flex flex-wrap gap-1">
+          <Button
+            variant={activeTab === "campaigns" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("campaigns")}
+            className="text-xs font-bold"
+          >
+            Advertising Campaigns & ROI ({campaigns.length})
+          </Button>
+          <Button
+            variant={activeTab === "articles" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("articles")}
+            className="text-xs font-bold"
+          >
+            Public Editorial Dispatches ({articles.length})
+          </Button>
         </div>
       </Card>
 
       {/* VIEW 1: Advertising Campaigns & Marketing ROI */}
       {activeTab === "campaigns" && (
         <Card className="space-y-4 shadow-xs p-4 sm:p-5">
-          <div>
-            <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-              Marketing Campaigns, Cost Per Lead (CPL) & Revenue Attribution
-            </h3>
-            <p className="text-[11px] text-[#64748B]">
-              Multi-channel ad performance across Google Ads, Meta, Out-of-Home digital billboards, and VIP private exhibits
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3">
+            <div>
+              <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
+                Marketing Campaigns, Cost Per Lead (CPL) & Revenue Attribution
+              </h3>
+              <p className="text-[11px] text-[#64748B]">
+                Multi-channel ad performance across Google Ads, Meta, Out-of-Home digital billboards, and VIP private exhibits
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsCampaignModalOpen(true)}
+              leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+            >
+              + Launch Campaign
+            </Button>
           </div>
 
           <Table
@@ -335,13 +321,23 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
       {/* VIEW 2: Editorial Articles */}
       {activeTab === "articles" && (
         <Card className="space-y-4 shadow-xs p-4 sm:p-5">
-          <div>
-            <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-              Website Content & Press Releases
-            </h3>
-            <p className="text-[11px] text-[#64748B]">
-              Admin CMS console: public banners, featured vehicles & automotive press updates
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-3">
+            <div>
+              <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
+                Website Content & Press Releases
+              </h3>
+              <p className="text-[11px] text-[#64748B]">
+                Admin CMS console: public banners, featured vehicles & automotive press updates
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsArticleModalOpen(true)}
+              leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+            >
+              + Create Editorial
+            </Button>
           </div>
 
           <Table

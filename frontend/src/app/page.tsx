@@ -89,6 +89,7 @@ export default function App() {
 
   // Modal states
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
+  const [isTestDriveConfirmModalOpen, setIsTestDriveConfirmModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [testDriveDate, setTestDriveDate] = useState("2026-11-15");
   const [testDriveLocation, setTestDriveLocation] = useState("Lagos Showroom");
@@ -851,8 +852,8 @@ export default function App() {
               variant="primary"
               size="sm"
               onClick={() => {
-                alert(`VIP Test Drive scheduled for ${selectedVehicle?.make} ${selectedVehicle?.model} on ${testDriveDate} at ${testDriveLocation}. Our concierge will contact you.`);
                 setIsTestDriveOpen(false);
+                setIsTestDriveConfirmModalOpen(true);
               }}
               leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
             >
@@ -897,6 +898,34 @@ export default function App() {
                 { label: "VIP Private Concierge Residence Dispatch", value: "Home Delivery" },
               ]}
             />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Test Drive Scheduled Confirmation Modal */}
+      <Modal
+        isOpen={isTestDriveConfirmModalOpen}
+        onClose={() => setIsTestDriveConfirmModalOpen(false)}
+        title="VIP Test Drive Scheduled"
+        description="Private viewing and test drive confirmed."
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsTestDriveConfirmModalOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Close
+          </Button>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            VIP Test Drive scheduled for <strong className="text-[#0F172A]">{selectedVehicle?.make} {selectedVehicle?.model}</strong> on <span className="text-[#2563EB] font-bold">{testDriveDate}</span> at the <span className="font-semibold text-[#0F172A]">{testDriveLocation}</span>.
+          </p>
+          <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8]">
+            Our private concierge liaison will contact you via phone or WhatsApp 24 hours prior to confirm your private suite and gate access clearance.
           </div>
         </div>
       </Modal>

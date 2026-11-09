@@ -14,6 +14,7 @@ import {
   FiDownload,
 } from "react-icons/fi";
 import { Badge, Card, Button, Modal, Input, Dropdown, MasterDropdown, Table, KPICard } from "@/components/ui";
+import { TaxonomyManagerSection } from "../admin/MasterDataPage";
 
 export interface EmployeeProfile {
   id: string;
@@ -73,7 +74,7 @@ export interface HRRecruitmentPageProps {
 }
 
 export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast }) => {
-  const [activeTab, setActiveTab] = useState<"directory" | "attendance" | "leave" | "payroll" | "recruitment">("directory");
+  const [activeTab, setActiveTab] = useState<"directory" | "attendance" | "leave" | "payroll" | "recruitment" | "taxonomies">("directory");
 
   const [employees, setEmployees] = useState<EmployeeProfile[]>([
     { id: "EMP-101", name: "Emeka Okafor", department: "Sales & Marketing", role: "Senior VIP Sales Director", branch: "Victoria Island Flagship", contract: "Permanent Executive", manager: "General Manager", status: "Active & Present", phone: "+234 802 334 1122" },
@@ -230,29 +231,39 @@ export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast 
             >
               Careers Job Applicants ({candidates.length})
             </Button>
+            <Button
+              variant={activeTab === "taxonomies" ? "primary" : "ghost"}
+              size="sm"
+              onClick={() => setActiveTab("taxonomies")}
+              className="text-xs font-bold"
+            >
+              Departments & Hubs Registry (2 Taxonomies)
+            </Button>
           </div>
-
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsNewEmpModalOpen(true)}
-            leftIcon={<FiPlus className="w-3.5 h-3.5" />}
-          >
-            + Register Staff Profile
-          </Button>
         </div>
       </Card>
 
       {/* VIEW 1: Workforce Directory */}
       {activeTab === "directory" && (
         <Card className="space-y-4 shadow-xs p-4 sm:p-5">
-          <div>
-            <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-              Dealership Enterprise Workforce Directory
-            </h3>
-            <p className="text-[11px] text-[#64748B]">
-              Department assignments, employment classifications, reporting lines, and facility nodes
-            </p>
+          <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-2 pb-2.5 border-b border-[#E2E8F0]">
+            <div>
+              <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
+                Dealership Enterprise Workforce Directory
+              </h3>
+              <p className="text-[11px] text-[#64748B]">
+                Department assignments, employment classifications, reporting lines, and facility nodes
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsNewEmpModalOpen(true)}
+              leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+              className="text-xs font-bold"
+            >
+              + Register Staff Profile
+            </Button>
           </div>
 
           <Table
@@ -595,6 +606,17 @@ export const HRRecruitmentPage: React.FC<HRRecruitmentPageProps> = ({ showToast 
             ]}
           />
         </Card>
+      )}
+
+      {/* VIEW 6: HR Departments & Hubs Taxonomies */}
+      {activeTab === "taxonomies" && (
+        <TaxonomyManagerSection
+          allowedCategories={["departments", "hubs"]}
+          title="Dealership Departments & Branch Facilities Registry"
+          description="Manage functional organizational departments, operational desks, and physical facility showroom hubs for employee placement."
+          headerBadge="HR Desk Authorized"
+          showToast={showToast}
+        />
       )}
 
       {/* Modal: Register Staff Profile */}

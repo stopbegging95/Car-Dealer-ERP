@@ -18,6 +18,7 @@ import {
   FiPause,
 } from "react-icons/fi";
 import { KPICard, Card, Button, Badge, Modal, Input, Dropdown, Table } from "@/components/ui";
+import { TaxonomyManagerSection } from "../admin/MasterDataPage";
 
 export type CustomerSegment =
   | "All"
@@ -64,7 +65,7 @@ export interface CRMPipelinePageProps {
 }
 
 export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) => {
-  const [activeTab, setActiveTab] = useState<"leads" | "complaints" | "reminders" | "drips">("leads");
+  const [activeTab, setActiveTab] = useState<"leads" | "complaints" | "reminders" | "drips" | "taxonomies">("leads");
   const [selectedSegment, setSelectedSegment] = useState<CustomerSegment>("All");
 
   const [leads, setLeads] = useState<CRMLeadItem[]>([
@@ -266,6 +267,14 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
   const [stage, setStage] = useState("Stage 1: Inbound Lead");
   const [rep, setRep] = useState("Emeka O. (VIP Sales)");
 
+  // New Ticket State
+  const [isNewTicketModalOpen, setIsNewTicketModalOpen] = useState(false);
+  const [newTicketClient, setNewTicketClient] = useState("");
+  const [newTicketVehicle, setNewTicketVehicle] = useState("");
+  const [newTicketSeverity, setNewTicketSeverity] = useState<ComplaintTicket["severity"]>("Medium (Standard)");
+  const [newTicketDept, setNewTicketDept] = useState<ComplaintTicket["assignedDept"]>("Service Workshop");
+  const [newTicketIssue, setNewTicketIssue] = useState("");
+
   const notify = (msg: string) => {
     if (showToast) showToast(msg);
   };
@@ -288,6 +297,27 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
     notify(`VIP Client dossier logged for ${name} (${car}).`);
     setName("");
     setBudget("");
+  };
+
+  const handleCreateTicket = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTicketClient || !newTicketIssue) return;
+    const newTicket: ComplaintTicket = {
+      id: `TKT-${8804 + complaints.length}`,
+      client: newTicketClient,
+      vehicle: newTicketVehicle || "2024 Mercedes-Maybach S580",
+      severity: newTicketSeverity,
+      assignedDept: newTicketDept,
+      issue: newTicketIssue,
+      slaHoursRemaining: newTicketSeverity.includes("High") ? 12 : 36,
+      status: "Open",
+    };
+    setComplaints([newTicket, ...complaints]);
+    setIsNewTicketModalOpen(false);
+    notify(`Dispute ticket ${newTicket.id} logged for ${newTicketClient}. Dispatched to ${newTicketDept}.`);
+    setNewTicketClient("");
+    setNewTicketVehicle("");
+    setNewTicketIssue("");
   };
 
   const filteredLeads = leads.filter(
@@ -360,16 +390,15 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
             >
               Marketing Nurture Drips ({dripCampaigns.length})
             </Button>
+            <Button
+              variant={activeTab === "taxonomies" ? "primary" : "ghost"}
+              size="sm"
+              onClick={() => setActiveTab("taxonomies")}
+              className="text-xs font-bold"
+            >
+              Dispute Taxonomies
+            </Button>
           </div>
-
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsModalOpen(true)}
-            leftIcon={<FiPlus className="w-3.5 h-3.5" />}
-          >
-            + New Client Dossier
-          </Button>
         </div>
       </Card>
 
@@ -386,21 +415,32 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
               </p>
             </div>
 
-            <div className="w-64">
-              <Dropdown
-                label="Filter Segment"
-                value={selectedSegment}
-                onChange={(val) => setSelectedSegment(val as CustomerSegment)}
-                options={[
-                  { label: "All 6 Segments", value: "All" },
-                  { label: "VIP & High-Net-Worth (HNWI)", value: "VIP & High-Net-Worth (HNWI)" },
-                  { label: "Corporate Accounts", value: "Corporate Accounts" },
-                  { label: "Government & Diplomatic", value: "Government & Diplomatic" },
-                  { label: "Commercial Fleet Accounts", value: "Commercial Fleet Accounts" },
-                  { label: "Individual Retail Clients", value: "Individual Retail Clients" },
-                  { label: "Automotive Dealers & Resellers", value: "Automotive Dealers & Resellers" },
-                ]}
-              />
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="w-56">
+                <Dropdown
+                  label="Filter Segment"
+                  value={selectedSegment}
+                  onChange={(val) => setSelectedSegment(val as CustomerSegment)}
+                  options={[
+                    { label: "All 6 Segments", value: "All" },
+                    { label: "VIP & High-Net-Worth (HNWI)", value: "VIP & High-Net-Worth (HNWI)" },
+                    { label: "Corporate Accounts", value: "Corporate Accounts" },
+                    { label: "Government & Diplomatic", value: "Government & Diplomatic" },
+                    { label: "Commercial Fleet Accounts", value: "Commercial Fleet Accounts" },
+                    { label: "Individual Retail Clients", value: "Individual Retail Clients" },
+                    { label: "Automotive Dealers & Resellers", value: "Automotive Dealers & Resellers" },
+                  ]}
+                />
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsModalOpen(true)}
+                leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+                className="text-xs font-bold shrink-0 mt-4 sm:mt-0"
+              >
+                + New Client Dossier
+              </Button>
             </div>
           </div>
 
@@ -480,9 +520,20 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
                 Formal ticketing system with severity grading, department routing, SLA timers, and sign-offs.
               </p>
             </div>
-            <Badge variant="gold" size="sm">
-              {complaints.filter((c) => c.status !== "Resolved & Closed").length} Active Tickets
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="gold" size="sm">
+                {complaints.filter((c) => c.status !== "Resolved & Closed").length} Active Tickets
+              </Badge>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsNewTicketModalOpen(true)}
+                leftIcon={<FiPlus className="w-3.5 h-3.5" />}
+                className="text-xs font-bold"
+              >
+                + Open Dispute Ticket
+              </Button>
+            </div>
           </div>
 
           <Table
@@ -762,6 +813,17 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
         </Card>
       )}
 
+      {/* VIEW 5: CRM Dispute & Ticket Taxonomies */}
+      {activeTab === "taxonomies" && (
+        <TaxonomyManagerSection
+          allowedCategories={["dispute_categories"]}
+          title="CRM Dispute & Escalation Taxonomies"
+          description="Manage customer complaint ticket categories, escalation classifications, and client dispute tags."
+          headerBadge="CRM Desk Authorized"
+          showToast={showToast}
+        />
+      )}
+
       {/* Modal: New Client Dossier */}
       <Modal
         isOpen={isModalOpen}
@@ -817,6 +879,71 @@ export const CRMPipelinePage: React.FC<CRMPipelinePageProps> = ({ showToast }) =
           </div>
         </form>
       </Modal>
+
+      {/* Modal: Open Dispute Ticket */}
+      {isNewTicketModalOpen && (
+        <Modal
+          isOpen={isNewTicketModalOpen}
+          onClose={() => setIsNewTicketModalOpen(false)}
+          size="md"
+          title="Open Customer Dispute & Warranty Claim Ticket"
+          description="Logs a formal client dispute with department assignment and SLA resolution tracking."
+        >
+          <form onSubmit={handleCreateTicket} className="space-y-3">
+            <Input
+              label="Client / Account Entity Name"
+              placeholder="e.g. Alhaji Bello & Sons Ltd"
+              value={newTicketClient}
+              onChange={(e) => setNewTicketClient(e.target.value)}
+              required
+            />
+            <Input
+              label="Associated Vehicle / VIN Reference"
+              placeholder="e.g. 2024 Mercedes-Maybach S580 (WDD223...)"
+              value={newTicketVehicle}
+              onChange={(e) => setNewTicketVehicle(e.target.value)}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Dropdown
+                label="Dispute Severity Tier"
+                value={newTicketSeverity}
+                onChange={(val) => setNewTicketSeverity(val as any)}
+                options={[
+                  { label: "High (Urgent - 12h SLA)", value: "High (Urgent)" },
+                  { label: "Medium (Standard - 36h SLA)", value: "Medium (Standard)" },
+                  { label: "Low (Cosmetic - 48h SLA)", value: "Low (Cosmetic)" },
+                ]}
+              />
+              <Dropdown
+                label="Assigned Department Desk"
+                value={newTicketDept}
+                onChange={(val) => setNewTicketDept(val as any)}
+                options={[
+                  { label: "Service Workshop", value: "Service Workshop" },
+                  { label: "Delivery & Logistics", value: "Delivery & Logistics" },
+                  { label: "Sales & Showroom", value: "Sales" },
+                  { label: "Finance & Insurance", value: "Finance & Insurance" },
+                ]}
+              />
+            </div>
+            <Input
+              label="Issue Description & Resolution Request"
+              placeholder="e.g. Customs SGD duty receipt copy requested for corporate tax filing"
+              value={newTicketIssue}
+              onChange={(e) => setNewTicketIssue(e.target.value)}
+              required
+            />
+            <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0]">
+              <Button variant="ghost" size="sm" type="button" onClick={() => setIsNewTicketModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="primary" size="sm" type="submit" leftIcon={<FiCheck />}>
+                Dispatch Ticket
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 };

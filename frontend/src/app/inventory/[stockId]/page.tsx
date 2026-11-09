@@ -45,6 +45,8 @@ function VehicleDetailContent() {
   const [activePhoto, setActivePhoto] = useState<string>(vehicle.image);
   const currency: "NGN" = "NGN";
   const [isTestDriveOpen, setIsTestDriveOpen] = useState(false);
+  const [isTestDriveConfirmedOpen, setIsTestDriveConfirmedOpen] = useState(false);
+  const [isBrochureModalOpen, setIsBrochureModalOpen] = useState(false);
   const [testDriveDate, setTestDriveDate] = useState("2026-11-15");
   const [testDriveLocation, setTestDriveLocation] = useState("Lagos Showroom");
   const [isCopied, setIsCopied] = useState(false);
@@ -291,7 +293,7 @@ function VehicleDetailContent() {
                   variant="ghost"
                   size="sm"
                   fullWidth
-                  onClick={() => alert(`Brochure for ${vehicle.make} ${vehicle.model} generated.`)}
+                  onClick={() => setIsBrochureModalOpen(true)}
                   leftIcon={<FiDownload className="w-3.5 h-3.5" />}
                   className="text-xs text-[#64748B] hover:text-[#2563EB]"
                 >
@@ -496,8 +498,8 @@ function VehicleDetailContent() {
               variant="primary"
               size="sm"
               onClick={() => {
-                alert(`Appointment confirmed for ${vehicle.make} ${vehicle.model} on ${testDriveDate}!`);
                 setIsTestDriveOpen(false);
+                setIsTestDriveConfirmedOpen(true);
               }}
               leftIcon={<FiCheck className="w-3.5 h-3.5 text-[#FFFFFF]" />}
             >
@@ -527,6 +529,62 @@ function VehicleDetailContent() {
                 { label: "Abuja Showroom (Maitama)", value: "Abuja Showroom" },
               ]}
             />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Brochure Generated Confirmation Modal */}
+      <Modal
+        isOpen={isBrochureModalOpen}
+        onClose={() => setIsBrochureModalOpen(false)}
+        title="Dossier & Brochure Dispatched"
+        description="Official vehicle specification dossier and title summary."
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsBrochureModalOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Done
+          </Button>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            The digital specification dossier for <strong className="text-[#0F172A]">{vehicle.year} {vehicle.make} {vehicle.model}</strong> ({vehicle.stockId}) has been generated and dispatched to your browser print spooler.
+          </p>
+          <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8]">
+            Includes authenticated factory build sheet, mechanical inspection grade, and customs clearance summary.
+          </div>
+        </div>
+      </Modal>
+
+      {/* Test Drive Confirmed Modal */}
+      <Modal
+        isOpen={isTestDriveConfirmedOpen}
+        onClose={() => setIsTestDriveConfirmedOpen(false)}
+        title="VIP Test Drive Scheduled"
+        description="Private showroom viewing and test drive experience."
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsTestDriveConfirmedOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Close
+          </Button>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            Your private test drive for <strong className="text-[#0F172A]">{vehicle.year} {vehicle.make} {vehicle.model}</strong> has been scheduled for <span className="text-[#2563EB] font-bold">{testDriveDate}</span> at our <span className="font-semibold text-[#0F172A]">{testDriveLocation}</span>.
+          </p>
+          <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8]">
+            Our executive sales liaison will reach out shortly to ensure the vehicle is fueled, detailed, and staged in the private viewing bay.
           </div>
         </div>
       </Modal>

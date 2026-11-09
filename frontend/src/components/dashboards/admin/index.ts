@@ -9,3 +9,4 @@ export * from "./ProfilePage";
 export * from "./SessionsPage";
 export * from "./ReportsAnalyticsPage";
 export * from "./AdminDashboard";
+export * from "./MasterDataPage";

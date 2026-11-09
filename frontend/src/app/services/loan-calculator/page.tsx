@@ -20,6 +20,7 @@ export default function LoanCalculatorPage() {
   const [loanTermMonths, setLoanTermMonths] = useState<number>(48);
   const [annualInterestRate, setAnnualInterestRate] = useState<number>(8.5);
   const [isPreQualModalOpen, setIsPreQualModalOpen] = useState<boolean>(false);
+  const [isPreQualSuccessOpen, setIsPreQualSuccessOpen] = useState<boolean>(false);
 
   const currentPrice = vehiclePrice;
   const downPaymentAmount = (currentPrice * downPaymentPct) / 100;
@@ -369,8 +370,8 @@ export default function LoanCalculatorPage() {
               variant="primary"
               size="sm"
               onClick={() => {
-                alert("Pre-qualification application submitted successfully!");
                 setIsPreQualModalOpen(false);
+                setIsPreQualSuccessOpen(true);
               }}
               leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
             >
@@ -404,6 +405,34 @@ export default function LoanCalculatorPage() {
               ]}
               onChange={() => {}}
             />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Pre-Qualification Submitted Modal */}
+      <Modal
+        isOpen={isPreQualSuccessOpen}
+        onClose={() => setIsPreQualSuccessOpen(false)}
+        title="Application Successfully Submitted"
+        description="Your financing pre-qualification request has been securely routed."
+        size="sm"
+        footer={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsPreQualSuccessOpen(false)}
+            leftIcon={<FiCheck className="w-3.5 h-3.5 text-white" />}
+          >
+            Acknowledge & Close
+          </Button>
+        }
+      >
+        <div className="space-y-3 text-xs text-[#475569]">
+          <p>
+            Your luxury asset financing pre-qualification application for <strong className="text-[#0F172A]">₦{principal.toLocaleString()} NGN principal</strong> has been received.
+          </p>
+          <div className="p-3 bg-[#EFF6FF] border border-[#BFDBFE] rounded-lg text-[11px] text-[#1D4ED8]">
+            Our underwriting desk and partner credit officers (Zenith, Stanbic IBTC, Access) will review your credit tier and issue an indicative conditional pre-approval within 24 business hours.
           </div>
         </div>
       </Modal>

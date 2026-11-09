@@ -25,6 +25,7 @@ export interface DropdownProps {
   disabled?: boolean;
   fullWidth?: boolean;
   className?: string;
+  renderOptionActions?: (opt: DropdownOption) => React.ReactNode;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -41,6 +42,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   disabled = false,
   fullWidth = true,
   className = "",
+  renderOptionActions,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -245,12 +247,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
                 filteredOptions.map((opt) => {
                   const isSelected = opt.value === value;
                   return (
-                    <button
+                    <div
                       key={String(opt.value)}
-                      type="button"
-                      disabled={opt.disabled}
                       onClick={() => handleSelect(opt)}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs sm:text-sm rounded transition-colors text-left
+                      className={`group w-full flex items-center justify-between px-3 py-2 text-xs sm:text-sm rounded transition-colors text-left
                         ${
                           isSelected
                             ? "bg-[#EFF6FF] text-[#2563EB] font-bold"
@@ -258,14 +258,17 @@ export const Dropdown: React.FC<DropdownProps> = ({
                         }
                         ${opt.disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                     >
-                      <span className="flex items-center gap-2 truncate">
+                      <span className="flex items-center gap-2 truncate flex-1 min-w-0">
                         {opt.icon && <span className="shrink-0">{opt.icon}</span>}
-                        <span>{opt.label}</span>
+                        <span className="truncate">{opt.label}</span>
                       </span>
-                      {isSelected && (
-                        <FiCheck className="w-4 h-4 text-[#2563EB] shrink-0" />
-                      )}
-                    </button>
+                      <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                        {renderOptionActions && renderOptionActions(opt)}
+                        {isSelected && (
+                          <FiCheck className="w-4 h-4 text-[#2563EB] shrink-0" />
+                        )}
+                      </div>
+                    </div>
                   );
                 })
               )}
