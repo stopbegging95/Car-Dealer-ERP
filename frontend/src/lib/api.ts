@@ -1,10 +1,10 @@
 /**
  * Central API Client for CarDeals Enterprise ERP
- * Connects Next.js Frontend to Express Backend on http://localhost:8080/api
+ * Connects Next.js Frontend to Express Backend on https://car-dealer-erp-1.onrender.com/api
  */
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://car-dealer-erp-1.onrender.com/api";
 
 export interface ApiResponse<T = any> {
   success: boolean;

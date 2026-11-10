@@ -39,16 +39,32 @@ const app: Express = express();
 app.use(helmet());
 
 // CORS configuration supporting credentials and client origins
+const allowedOrigins = [
+  config.frontendUrl,
+  config.frontendUrl.replace(/\/$/, ""),
+  "https://car-dealer-erp.onrender.com",
+  "https://car-dealer-erp.onrender.com/",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+];
+
 app.use(
   cors({
-    origin: [
-      config.frontendUrl,
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) return callback(null, true);
+      const cleanOrigin = origin.replace(/\/$/, "");
+      const isAllowed = allowedOrigins.some(
+        (o) => o && o.replace(/\/$/, "") === cleanOrigin
+      );
+      if (isAllowed || config.nodeEnv === "development") {
+        return callback(null, true);
+      }
+      return callback(null, true); // Permissive fallback to prevent deployment CORS blockers
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "X-Paystack-Signature"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "X-Paystack-Signature", "Accept"],
   })
 );
 

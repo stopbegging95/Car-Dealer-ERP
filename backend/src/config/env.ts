@@ -8,7 +8,7 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 export const config = {
   port: parseInt(process.env.PORT || "8080", 10),
   nodeEnv: process.env.NODE_ENV || "development",
-  frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+  frontendUrl: process.env.FRONTEND_URL || "https://car-dealer-erp.onrender.com",
   dbUrl:
     process.env.DB_URL ||
     "mongodb+srv://umariasoftwaretesting_db_user:EL0g4XoUlz37GjuA@cluster0.epphdka.mongodb.net/cardeals_erp?retryWrites=true&w=majority",

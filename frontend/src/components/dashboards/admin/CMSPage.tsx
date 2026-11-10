@@ -496,7 +496,7 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-                  Home Banner & Hero Slider Manager (http://localhost:3000)
+                  Home Banner & Hero Slider Manager
                 </h3>
                 <Badge variant="gold" size="sm">Live Homepage Sync</Badge>
               </div>
@@ -671,7 +671,7 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-[#2563EB] text-sm uppercase tracking-wider">
-                  Brand Partners Showcase Bar (http://localhost:3000)
+                  Brand Partners Showcase Bar
                 </h3>
                 <Badge variant="gold" size="sm">Public Logo Carousel</Badge>
               </div>
@@ -1088,7 +1088,7 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
         onClose={() => setIsSlideModalOpen(false)}
         size="lg"
         title={editingSlideId ? "Edit Homepage Hero Slide" : "Create New Homepage Hero Slide"}
-        description="Configure banner headline, archetype, media asset, and call-to-actions published on http://localhost:3000."
+        description="Configure banner headline, archetype, media asset, and call-to-actions published on the live dealership homepage."
       >
         <form onSubmit={handleSaveSlide} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1371,7 +1371,7 @@ export const CMSPage: React.FC<CMSPageProps> = ({ showToast }) => {
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-800 space-y-1">
           <p className="font-bold">Removing Slide: {slideToDelete?.title}</p>
           <p className="text-[11px] text-red-600">
-            This slide will be immediately removed from http://localhost:3000.
+            This slide will be immediately removed from the live website.
           </p>
         </div>
       </Modal>
