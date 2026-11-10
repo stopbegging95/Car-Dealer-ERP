@@ -68,6 +68,28 @@ app.use(cookieParser());
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
+// Root welcome & API health check
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({
+    status: "ok",
+    service: "Car Deals Enterprise ERP Backend API",
+    version: "2.4.0",
+    environment: config.nodeEnv,
+    healthCheck: "/api/health",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get("/api", (req: Request, res: Response) => {
+  res.status(200).json({
+    status: "ok",
+    service: "Car Deals Enterprise ERP REST API",
+    version: "2.4.0",
+    healthCheck: "/api/health",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Health Check API
 app.get("/api/health", (req: Request, res: Response) => {
   res.status(200).json({

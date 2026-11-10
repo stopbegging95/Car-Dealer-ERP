@@ -61,6 +61,26 @@ app.use(express_1.default.urlencoded({ extended: true, limit: "15mb" }));
 app.use((0, cookie_parser_1.default)());
 // Data sanitization against NoSQL query injection
 app.use((0, express_mongo_sanitize_1.default)());
+// Root welcome & API health check
+app.get("/", (req, res) => {
+    res.status(200).json({
+        status: "ok",
+        service: "Car Deals Enterprise ERP Backend API",
+        version: "2.4.0",
+        environment: env_js_1.config.nodeEnv,
+        healthCheck: "/api/health",
+        timestamp: new Date().toISOString(),
+    });
+});
+app.get("/api", (req, res) => {
+    res.status(200).json({
+        status: "ok",
+        service: "Car Deals Enterprise ERP REST API",
+        version: "2.4.0",
+        healthCheck: "/api/health",
+        timestamp: new Date().toISOString(),
+    });
+});
 // Health Check API
 app.get("/api/health", (req, res) => {
     res.status(200).json({
